@@ -310,7 +310,11 @@ Route::middleware(['auth'])->group(function () {
         });
 
         // Cetak Surat
-        Route::get('/cetak-surat', [AdminCetakSuratController::class, 'index'])->name('cetak_surat');
+        Route::prefix('cetak-surat')->name('cetak_surat.')->group(function () {
+            Route::get('/pengantar', [AdminCetakSuratController::class, 'pengantar'])->name('pengantar');
+
+            Route::get('/sptjm', [AdminCetakSuratController::class, 'sptjm'])->name('sptjm');
+        });
     });
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');

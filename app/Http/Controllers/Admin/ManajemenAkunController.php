@@ -15,24 +15,25 @@ class ManajemenAkunController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Query Dasar
-        $query = User::latest();
+        // Ambil juga relasi pegawai agar NIP bisa ditampilkan di tabel/modal
+        $query = User::with('pegawai')->latest();
 
-        // 2. Fitur Search (Nama atau Email)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    // Tambahan: Cari by NIP juga
+                    ->orWhereHas('pegawai', function ($q2) use ($search) {
+                        $q2->where('nip', 'like', "%{$search}%");
+                    });
             });
         }
 
-        // 3. Fitur Filter Role
         if ($request->filled('role')) {
             $query->where('role', $request->role);
         }
 
-        // 4. Pagination
         $users = $query->paginate(10)->withQueryString();
 
         return view('pages.admin.manajemen_akun.index', compact('users'));
@@ -41,70 +42,97 @@ class ManajemenAkunController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'nip'      => 'required|numeric|digits:18|unique:pegawais,nip', // <--- Validasi NIP Wajib
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'role'     => 'required|in:admin,user',
+        ], [
+            'nip.unique' => 'NIP sudah terdaftar pada akun lain.',
+            'nip.digits' => 'NIP harus 18 digit.',
         ]);
-
-
 
         try {
             DB::transaction(function () use ($request) {
-                $admin = Auth::user();
-                $satuanKerjaId = $admin->pegawai->satuan_kerja_id;
+                // Ambil Satker Admin yang sedang login
+                // Asumsi: Admin punya data pegawai & satker. Jika null, set default atau handle error.
+                $adminSatkerId = Auth::user()->pegawai->satuan_kerja_id ?? 1;
 
-                // 1. Buat Data User (Login)
+                // 1. Buat User (Login Data)
                 $user = User::create([
-                    'name'            => $request->name,
-                    'email'           => $request->email,
-                    'password'        => Hash::make($request->password),
-                    'role'            => $request->role,
+                    'name'     => $request->name,
+                    'email'    => $request->email,
+                    'password' => Hash::make($request->password),
+                    'role'     => $request->role,
+                    'satuan_kerja_id' => $adminSatkerId, // Simpan satker di user juga jika perlu
                 ]);
 
+                // 2. Buat Pegawai (Biodata & NIP)
                 Pegawai::create([
                     'user_id'         => $user->id,
-                    'satuan_kerja_id' => $satuanKerjaId,
-                    'nama_lengkap'    => $user->name,
-                    'nip'             => $request->nip ?? null,
+                    'satuan_kerja_id' => $adminSatkerId,
+                    'nama_lengkap'    => $request->name,
+                    'nip'             => $request->nip, // <--- Simpan NIP
                 ]);
             });
 
-            return back()->with('success', 'Akun dan Data Pegawai berhasil ditambahkan!');
+            return back()->with('success', 'Akun berhasil ditambahkan! Login menggunakan NIP tersebut.');
         } catch (\Exception $e) {
-            // Jika error, kembalikan pesan errornya
-            return back()->with('error', 'Gagal menambahkan akun: ' . $e->getMessage())->withInput();
+            return back()->with('error', 'Gagal: ' . $e->getMessage())->withInput();
         }
-
-        return back()->with('success', 'Akun berhasil ditambahkan!');
     }
 
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
+        // Ambil data pegawai terkait user ini
+        $pegawai = $user->pegawai;
+
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'role'  => 'required|in:admin,user',
-            // Password nullable, jika kosong berarti tidak diubah
+            // Validasi NIP: Unique kecuali punya diri sendiri
+            'nip'      => ['required', 'numeric', 'digits:18', Rule::unique('pegawais')->ignore($pegawai->id ?? 0)],
+            'name'     => 'required|string|max:255',
+            'email'    => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'role'     => 'required|in:admin,user',
             'password' => 'nullable|min:6',
         ]);
 
-        $data = [
-            'name'  => $request->name,
-            'email' => $request->email,
-            'role'  => $request->role,
-        ];
+        try {
+            DB::transaction(function () use ($request, $user, $pegawai) {
+                // 1. Update User
+                $userData = [
+                    'name'  => $request->name,
+                    'email' => $request->email,
+                    'role'  => $request->role,
+                ];
+                if ($request->filled('password')) {
+                    $userData['password'] = Hash::make($request->password);
+                }
+                $user->update($userData);
 
-        // Cek jika password diisi, maka update password
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+                // 2. Update Pegawai (NIP & Nama)
+                if ($pegawai) {
+                    $pegawai->update([
+                        'nama_lengkap' => $request->name,
+                        'nip'          => $request->nip
+                    ]);
+                } else {
+                    // Jaga-jaga jika user lama belum punya data di tabel pegawais
+                    // Buat baru datanya
+                    Pegawai::create([
+                        'user_id' => $user->id,
+                        'satuan_kerja_id' => Auth::user()->pegawai->satuan_kerja_id ?? 1,
+                        'nama_lengkap' => $request->name,
+                        'nip' => $request->nip
+                    ]);
+                }
+            });
+
+            return back()->with('success', 'Data akun & NIP berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Gagal update: ' . $e->getMessage());
         }
-
-        $user->update($data);
-
-        return back()->with('success', 'Data akun berhasil diperbarui!');
     }
 
     public function destroy($id)
