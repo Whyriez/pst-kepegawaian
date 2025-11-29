@@ -15,102 +15,20 @@
         </div>
 
         <div class="row">
-            {{-- 1. Surat Pengantar --}}
             <div class="col-md-4 mb-4">
                 <div class="card border-0 shadow-sm h-100 hover-card">
                     <div class="card-body text-center p-4">
                         <div class="icon-circle bg-primary-soft text-primary mb-3 mx-auto">
                             <i class="fas fa-envelope-open-text fa-2x"></i>
                         </div>
-                        <h5 class="card-title fw-bold">Surat Pengantar</h5>
-                        <p class="text-muted small mb-4">Cetak surat pengantar untuk berbagai keperluan administrasi ke dinas lain.</p>
-                        <button class="btn btn-outline-primary w-100" onclick="cetakSurat('Surat Pengantar')">
+                        <h5 class="card-title fw-bold">SPTJM</h5>
+                        <p class="text-muted small mb-4">Cetak surat pernyataan tanggung jawab mutlak</p>
+                        <button class="btn btn-outline-primary w-100" onclick="cetakSurat('Surat Pernyataan Tanggung Jawab Mutlak')">
                             <i class="fas fa-print me-2"></i>Cetak Surat
                         </button>
                     </div>
                 </div>
             </div>
-
-            {{-- 2. Surat Keterangan --}}
-            <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 hover-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-success-soft text-success mb-3 mx-auto">
-                            <i class="fas fa-file-contract fa-2x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Surat Keterangan</h5>
-                        <p class="text-muted small mb-4">Cetak surat keterangan aktif bekerja, keterangan penghasilan, dll.</p>
-                        <button class="btn btn-outline-success w-100" onclick="cetakSurat('Surat Keterangan')">
-                            <i class="fas fa-print me-2"></i>Cetak Surat
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 3. Surat Cuti --}}
-            <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 hover-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-warning-soft text-warning mb-3 mx-auto">
-                            <i class="fas fa-plane-departure fa-2x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Formulir Cuti</h5>
-                        <p class="text-muted small mb-4">Cetak formulir pengajuan cuti tahunan, sakit, atau alasan penting.</p>
-                        <button class="btn btn-outline-warning w-100" onclick="cetakSurat('Formulir Cuti')">
-                            <i class="fas fa-print me-2"></i>Cetak Surat
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 4. Surat Pernyataan --}}
-            <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 hover-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-info-soft text-info mb-3 mx-auto">
-                            <i class="fas fa-file-signature fa-2x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Surat Pernyataan</h5>
-                        <p class="text-muted small mb-4">Cetak template surat pernyataan melaksanakan tugas, dll.</p>
-                        <button class="btn btn-outline-info w-100" onclick="cetakSurat('Surat Pernyataan')">
-                            <i class="fas fa-print me-2"></i>Cetak Surat
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 5. Riwayat Hidup --}}
-            <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 hover-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-danger-soft text-danger mb-3 mx-auto">
-                            <i class="fas fa-address-card fa-2x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Daftar Riwayat Hidup</h5>
-                        <p class="text-muted small mb-4">Cetak DRH terbaru berdasarkan data profil kepegawaian.</p>
-                        <button class="btn btn-outline-danger w-100" onclick="cetakSurat('Daftar Riwayat Hidup')">
-                            <i class="fas fa-print me-2"></i>Cetak DRH
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- 6. Lainnya --}}
-            <div class="col-md-4 mb-4">
-                <div class="card border-0 shadow-sm h-100 hover-card">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-circle bg-secondary-soft text-secondary mb-3 mx-auto">
-                            <i class="fas fa-folder-open fa-2x"></i>
-                        </div>
-                        <h5 class="card-title fw-bold">Dokumen Lainnya</h5>
-                        <p class="text-muted small mb-4">Cetak dokumen kepegawaian umum lainnya.</p>
-                        <button class="btn btn-outline-secondary w-100" onclick="cetakSurat('Dokumen Lainnya')">
-                            <i class="fas fa-print me-2"></i>Lihat Daftar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <style>

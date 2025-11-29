@@ -1,6 +1,11 @@
 @extends('layouts.user.app')
 @section('title', 'Pensiun Atas Permintaan Sendiri')
 
+{{-- Tambahkan SweetAlert --}}
+@push('styles')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
+
 @section('content')
     {{-- HAPUS CLASS content-template AGAR LANGSUNG MUNCUL --}}
     <div class="container-fluid p-0">
@@ -39,10 +44,12 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                {{-- TAMBAHKAN ACTION, METHOD, CSRF, DAN ENCTYPE --}}
-                <form id="form-pensiun-aps" method="POST" enctype="multipart/form-data">
+                {{-- ACTION FORM KE ROUTE STORE --}}
+                <form id="form-pensiun-aps" action="{{ route('pensiun.aps.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
 
+                    {{-- STEP 1: DATA DIRI --}}
                     <div class="form-step active" id="step-1-aps">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -58,7 +65,8 @@
                                     <div class="col-md-8">
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="nip_pegawai_aps"
-                                                name="nip_pegawai_aps" placeholder="Masukkan NIP Pegawai">
+                                                name="nip_pegawai_aps" placeholder="Masukkan NIP Pegawai"
+                                                value="{{ Auth::user()->pegawai->nip ?? '' }}">
                                             <button class="btn btn-outline-primary" type="button" id="btn-cek-nip-aps">
                                                 <i class="fas fa-search me-2"></i>Cek NIP
                                             </button>
@@ -70,47 +78,31 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nama_pegawai_aps" class="form-label">Nama Pegawai <span class="text-danger">*</span></label>
+                                <label for="nama_pegawai_aps" class="form-label">Nama Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <input type="text" class="form-control" id="nama_pegawai_aps" name="nama_pegawai_aps" required>
+                                    <input type="text" class="form-control" id="nama_pegawai_aps" name="nama_pegawai_aps"
+                                        required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi nama pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="nip_display_aps" class="form-label">NIP Pegawai <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control" id="nip_display_aps" name="nip_display_aps" required>
-                                </div>
-                                <div class="invalid-feedback">Harap isi NIP pegawai</div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="jabatan_aps" class="form-label">Jabatan Pegawai <span class="text-danger">*</span></label>
+                                <label for="jabatan_aps" class="form-label">Jabatan Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
                                     <input type="text" class="form-control" id="jabatan_aps" name="jabatan_aps" required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi jabatan pegawai</div>
                             </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="satuan_kerja_aps" class="form-label">Satuan Kerja <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
-                                    <input type="text" class="form-control" id="satuan_kerja_aps" name="satuan_kerja_aps" required>
-                                </div>
-                                <div class="invalid-feedback">Harap isi satuan kerja</div>
-                            </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="pangkat_aps" class="form-label">Pangkat Pegawai <span class="text-danger">*</span></label>
+                                <label for="pangkat_aps" class="form-label">Pangkat Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-star"></i></span>
                                     <input type="text" class="form-control" id="pangkat_aps" name="pangkat_aps" required>
@@ -119,10 +111,36 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="golongan_aps" class="form-label">Golongan/Ruang <span class="text-danger">*</span></label>
+                                <label for="nip_display_aps" class="form-label">NIP Pegawai <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    <input type="text" class="form-control bg-light" id="nip_display_aps"
+                                        name="nip_display_aps" required readonly>
+                                </div>
+                                <div class="invalid-feedback">Harap isi NIP pegawai</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="satuan_kerja_aps" class="form-label">Satuan Kerja <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                    <input type="text" class="form-control" id="satuan_kerja_aps"
+                                        name="satuan_kerja_aps" required>
+                                </div>
+                                <div class="invalid-feedback">Harap isi satuan kerja</div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="golongan_aps" class="form-label">Golongan/Ruang <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
-                                    <input type="text" class="form-control" id="golongan_aps" name="golongan_aps" required>
+                                    <input type="text" class="form-control" id="golongan_aps" name="golongan_aps"
+                                        required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi golongan/ruang</div>
                             </div>
@@ -130,39 +148,44 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="tmt_pensiun_aps" class="form-label">TMT Pensiun <span class="text-danger">*</span></label>
+                                <label for="tmt_pensiun_aps" class="form-label">TMT Pensiun <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                    <input type="date" class="form-control" id="tmt_pensiun_aps" name="tmt_pensiun_aps" required>
+                                    <input type="date" class="form-control" id="tmt_pensiun_aps"
+                                        name="tmt_pensiun_aps" required>
                                 </div>
                                 <div class="invalid-feedback">Harap pilih TMT pensiun</div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <div></div> <button type="button" class="btn btn-primary btn-next-aps" data-next="2">
+                            <div></div>
+                            <button type="button" class="btn btn-primary btn-next-aps" data-next="2">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
+                    {{-- STEP 2: DOKUMEN (DINAMIS TAPI DESAIN SAMA) --}}
                     <div class="form-step" id="step-2-aps">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-file-upload me-2"></i>Upload Dokumen Persyaratan
                             </h5>
-                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan untuk pengajuan pensiun atas permintaan sendiri</p>
+                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan (Otomatis dari Database)</p>
                         </div>
 
                         <div class="alert alert-info">
                             <div class="d-flex">
                                 <i class="fas fa-info-circle me-3 mt-1"></i>
                                 <div>
-                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF, JPG, JPEG, PNG. Maksimal ukuran file: 2MB per dokumen.
+                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF, JPG, JPEG, PNG. Maksimal
+                                    ukuran file: 2MB per dokumen.
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
-                                            <span id="upload-progress-aps">0/14</span> dokumen terunggah
+                                            <span id="upload-progress-aps">0/{{ count($syarat) }}</span> dokumen terunggah
                                         </small>
                                     </div>
                                 </div>
@@ -170,183 +193,37 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sk_cpns_aps" class="form-label">SK CPNS <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="sk_cpns_aps" name="sk_cpns_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-sk_cpns_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
+                            @forelse($syarat as $dokumen)
+                                <div class="col-md-6 mb-3">
+                                    <div class="file-upload-card h-100">
+                                        <label for="file_{{ $dokumen->id }}" class="form-label fw-bold">
+                                            {{ $dokumen->nama_dokumen }}
+                                            @if ($dokumen->is_required)
+                                                <span class="text-danger">*</span>
+                                            @else
+                                                <span class="text-muted fw-light">(Opsional)</span>
+                                            @endif
+                                        </label>
 
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sk_kenaikan_pangkat_aps" class="form-label">SK Kenaikan Pangkat <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="sk_kenaikan_pangkat_aps"
-                                            name="sk_kenaikan_pangkat_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-sk_kenaikan_pangkat_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
+                                        <div class="file-input-wrapper">
+                                            <input type="file" class="form-control file-input-dynamic"
+                                                id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
+                                                accept=".pdf,.jpg,.jpeg,.png"
+                                                {{ $dokumen->is_required ? 'required' : '' }}>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sk_jabatan_aps" class="form-label">SK Jabatan <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="sk_jabatan_aps" name="sk_jabatan_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-sk_jabatan_aps"></div>
+                                            <div class="file-preview mt-2 small text-success"
+                                                id="preview-file_{{ $dokumen->id }}"></div>
+                                        </div>
+                                        <div class="form-text">Tipe: PDF/Gambar, Max: 2MB</div>
                                     </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="surat_pernyataan_hukuman_aps" class="form-label">Surat Pernyataan Tidak Pernah Dijatuhi Hukuman Disiplin Tingkat Sedang/Berat <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="surat_pernyataan_hukuman_aps"
-                                            name="surat_pernyataan_hukuman_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-surat_pernyataan_hukuman_aps"></div>
+                            @empty
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (pensiun-aps).
                                     </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="surat_pernyataan_pidana_aps" class="form-label">Surat Pernyataan Tidak Sedang Menjalani Proses Pidana atau Dipidana Penjara <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="surat_pernyataan_pidana_aps"
-                                            name="surat_pernyataan_pidana_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-surat_pernyataan_pidana_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="usul_pemberhentian_aps" class="form-label">Usul Pemberhentian Atas Permintaan Sendiri Sebagai ASN <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="usul_pemberhentian_aps"
-                                            name="usul_pemberhentian_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-usul_pemberhentian_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="surat_permohonan_berhenti_aps" class="form-label">Surat Permohonan Berhenti Atas Permohonan Sendiri Sebagai ASN <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="surat_permohonan_berhenti_aps"
-                                            name="surat_permohonan_berhenti_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-surat_permohonan_berhenti_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="scan_ktp_aps" class="form-label">Scan Kartu Tanda Penduduk <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="scan_ktp_aps" name="scan_ktp_aps"
-                                            accept=".pdf" required>
-                                        <div class="file-preview" id="preview-scan_ktp_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="pas_foto_aps" class="form-label">Pas Photo <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="pas_foto_aps" name="pas_foto_aps"
-                                            accept=".jpg,.jpeg,.png" required>
-                                        <div class="file-preview" id="preview-pas_foto_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: JPG, JPEG, PNG, Max size: 2MB</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="skp_2024_aps" class="form-label">SKP Tahun 2024 <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="skp_2024_aps" name="skp_2024_aps"
-                                            accept=".pdf" required>
-                                        <div class="file-preview" id="preview-skp_2024_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="buku_nikah_aps" class="form-label">Buku Nikah</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="buku_nikah_aps" name="buku_nikah_aps"
-                                            accept=".pdf">
-                                        <div class="file-preview" id="preview-buku_nikah_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="akta_lahir_anak_aps" class="form-label">Akta Lahir Anak <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="akta_lahir_anak_aps"
-                                            name="akta_lahir_anak_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-akta_lahir_anak_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="kartu_keluarga_aps" class="form-label">Kartu Keluarga <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="kartu_keluarga_aps"
-                                            name="kartu_keluarga_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-kartu_keluarga_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="data_perorangan_aps" class="form-label">Data Perorangan Calon Penerima Pensiun <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="data_perorangan_aps"
-                                            name="data_perorangan_aps" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-data_perorangan_aps"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
@@ -359,6 +236,7 @@
                         </div>
                     </div>
 
+                    {{-- STEP 3: KONFIRMASI --}}
                     <div class="form-step" id="step-3-aps">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -378,8 +256,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <p><strong>Satuan Kerja:</strong> <span id="review-satuan-kerja-aps">-</span></p>
-                                        <p><strong>Pangkat:</strong> <span id="review-pangkat-aps">-</span></p>
-                                        <p><strong>Golongan:</strong> <span id="review-golongan-aps">-</span></p>
+                                        <p><strong>Pangkat/Gol:</strong> <span id="review-pangkat-aps">-</span> / <span
+                                                id="review-golongan-aps">-</span></p>
                                         <p><strong>TMT Pensiun:</strong> <span id="review-tmt-aps">-</span></p>
                                     </div>
                                 </div>
@@ -389,15 +267,15 @@
                         <div class="card border-0 bg-light mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Dokumen yang Diunggah</h6>
-                                <div id="review-documents-aps" class="small">
-                                    </div>
+                                <div id="review-documents-aps" class="small"></div>
                             </div>
                         </div>
 
                         <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="confirm-data-aps" required>
                             <label class="form-check-label" for="confirm-data-aps">
-                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung konsekuensi hukum jika data tersebut tidak valid.
+                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung konsekuensi
+                                hukum jika data tersebut tidak valid.
                             </label>
                             <div class="invalid-feedback">Anda harus menyetujui pernyataan ini sebelum mengajukan</div>
                         </div>
@@ -417,270 +295,355 @@
     </div>
 
     <style>
-        /* Progress Steps */
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
-        .progress-steps .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 8px; border: 3px solid #e9ecef; transition: all 0.3s ease; }
-        .step.active .step-circle { background-color: #1a73e8; border-color: #1a73e8; color: white; }
-        .step-label { font-size: 0.875rem; font-weight: 500; color: #6c757d; }
-        .step.active .step-label { color: #1a73e8; font-weight: 600; }
+        /* DESIGN & CSS SAMA PERSIS DENGAN FUNGSIONAL */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+
+        .progress-steps .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background-color: #1a73e8;
+            border-color: #1a73e8;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .step.active .step-label {
+            color: #1a73e8;
+            font-weight: 600;
+        }
 
         /* Form Steps */
-        .form-step { display: none; }
-        .form-step.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* File Upload Cards */
-        .file-upload-card { border: 2px dashed #dee2e6; border-radius: 8px; padding: 15px; transition: all 0.3s ease; background: white; }
-        .file-upload-card:hover { border-color: #1a73e8; background-color: #f8f9fa; }
-        .file-input-wrapper { position: relative; }
-        .file-preview { margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 0.875rem; display: none; }
-        .file-preview.has-file { display: block; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 100px; } }
+        .file-upload-card {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .file-upload-card:hover {
+            border-color: #1a73e8;
+            background-color: #f8f9fa;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .file-preview.has-file {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+
+            to {
+                opacity: 1;
+                max-height: 100px;
+            }
+        }
 
         /* Input Groups & Responsive */
-        .input-group-text { background-color: #f8f9fa; border-right: none; }
-        .form-control { border-left: none; }
-        .form-control:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
-        @media (max-width: 768px) { .progress-steps { flex-direction: column; align-items: flex-start; } .progress-steps::before { display: none; } .step { flex-direction: row; margin-bottom: 10px; } .step-circle { margin-right: 10px; margin-bottom: 0; } }
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+        }
+
+        .form-control {
+            border-left: none;
+        }
+
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .progress-steps {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .progress-steps::before {
+                display: none;
+            }
+
+            .step {
+                flex-direction: row;
+                margin-bottom: 10px;
+            }
+
+            .step-circle {
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+        }
     </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
-            console.log('Pensiun APS Form Initialized');
 
-            const form = document.getElementById('form-pensiun-aps');
-            const btnCekNip = document.getElementById('btn-cek-nip-aps');
-            const nipInput = document.getElementById('nip_pegawai_aps');
-            const nipDisplay = document.getElementById('nip_display_aps');
-            
+            // --- NOTIFIKASI SESSION ---
+            @if (session('success'))
+                Swal.fire('Berhasil', "{{ session('success') }}", 'success');
+            @endif
+            @if (session('error'))
+                Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            @endif
+            @if ($errors->any())
+                Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning');
+            @endif
+
+            // --- 1. LOGIKA STEPPER ---
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
-            let currentStep = 1;
 
-            // --- 1. NAVIGATION LOGIC ---
-            function showStep(step) {
-                steps.forEach(s => s.classList.remove('active'));
-                progressSteps.forEach(s => s.classList.remove('active'));
-
-                document.getElementById(`step-${step}-aps`).classList.add('active');
-                
-                progressSteps.forEach(s => {
-                    if(parseInt(s.dataset.step) <= step) {
-                        s.classList.add('active');
-                    }
-                });
-
-                currentStep = step;
-                if(step === 3) updateReviewData();
+            function showStep(idx) {
+                steps.forEach(el => el.classList.remove('active'));
+                progressSteps.forEach(el => el.classList.remove('active'));
+                document.getElementById(`step-${idx}-aps`).classList.add('active');
+                for (let i = 0; i < idx; i++) progressSteps[i].classList.add('active');
+                if (idx == 3) updateReview();
             }
 
-            document.querySelectorAll('.btn-next-aps').forEach(button => {
-                button.addEventListener('click', function() {
-                    const nextStep = parseInt(this.getAttribute('data-next'));
-                    if (validateStep(currentStep)) {
-                        showStep(nextStep);
-                    }
-                });
-            });
+            document.querySelectorAll('.btn-next-aps').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const nextStepIndex = this.dataset.next;
+                    const currentStepIndex = nextStepIndex -
+                    1; // Misal mau ke step 2, berarti sekarang di step 1
+                    const currentStepElement = document.getElementById(
+                        `step-${currentStepIndex}-aps`);
 
-            document.querySelectorAll('.btn-prev-aps').forEach(button => {
-                button.addEventListener('click', function() {
-                    const prevStep = parseInt(this.getAttribute('data-prev'));
-                    showStep(prevStep);
-                });
-            });
-
-            // --- 2. VALIDATION LOGIC ---
-            function validateStep(step) {
-                let isValid = true;
-                
-                if (step === 1) {
-                    const fields = document.querySelectorAll('#step-1-aps [required]');
-                    fields.forEach(field => {
-                        if (!field.value.trim()) {
-                            field.classList.add('is-invalid');
-                            isValid = false;
-                        } else {
-                            field.classList.remove('is-invalid');
-                            field.classList.add('is-valid');
+                    // 1. Validasi Khusus Step 1 (Cek NIP)
+                    if (nextStepIndex == 2) {
+                        const nama = document.getElementById('nama_pegawai_aps').value;
+                        if (!nama) {
+                            Swal.fire('Data Kosong', 'Silakan Cek NIP terlebih dahulu!', 'warning');
+                            return;
                         }
-                    });
-                    if (!isValid) Swal.fire('Perhatian', 'Harap lengkapi semua field yang wajib diisi pada bagian Data Pegawai', 'warning');
-                } 
-                else if (step === 2) {
-                    const fileInputs = document.querySelectorAll('#step-2-aps input[type="file"][required]');
-                    let uploadedCount = 0;
-                    fileInputs.forEach(input => {
-                        if (input.files.length > 0) uploadedCount++;
-                        else input.classList.add('is-invalid');
-                    });
-
-                    if (uploadedCount < fileInputs.length) {
-                        Swal.fire('Perhatian', `Harap unggah semua dokumen wajib. (${uploadedCount}/${fileInputs.length} terunggah)`, 'warning');
-                        isValid = false;
                     }
-                }
 
-                return isValid;
-            }
+                    // 2. Validasi Umum (Cek semua field 'required' di step yang sedang aktif)
+                    // Kita cari input/select/textarea yang punya atribut required DI DALAM step ini saja
+                    const requiredInputs = currentStepElement.querySelectorAll(
+                        'input[required], select[required], textarea[required]');
+                    let isValid = true;
 
-            // Real-time validation removal
-            document.querySelectorAll('input, select').forEach(el => {
-                el.addEventListener('input', function() {
-                    if(this.value.trim()) {
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
+                    for (const input of requiredInputs) {
+                        // Cek apakah input valid (tidak kosong, sesuai format, dll)
+                        if (!input.checkValidity()) {
+                            input
+                        .reportValidity(); // Memunculkan pesan error bawaan browser (bubble tooltip)
+                            isValid = false;
+                            return; // Berhenti di error pertama agar user memperbaikinya
+                        }
+                    }
+
+                    // 3. Jika semua aman, baru pindah step
+                    if (isValid) {
+                        showStep(nextStepIndex);
                     }
                 });
             });
 
-            // --- 3. FILE UPLOAD LOGIC ---
-            document.querySelectorAll('input[type="file"]').forEach(input => {
-                input.addEventListener('change', function() {
-                    handleFileUpload(this);
-                    updateUploadProgress();
+            document.querySelectorAll('.btn-prev-aps').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showStep(this.dataset.prev);
                 });
             });
 
-            function handleFileUpload(input) {
-                const preview = document.getElementById(`preview-${input.id}`);
-                const maxSize = 2 * 1024 * 1024; // 2MB
-
-                if (input.files.length > 0) {
-                    const file = input.files[0];
-                    if (file.size > maxSize) {
-                        input.classList.add('is-invalid');
-                        preview.innerHTML = `<div class="text-danger"><i class="fas fa-exclamation-circle me-2"></i>File > 2MB</div>`;
-                        preview.classList.add('has-file');
-                        input.value = ''; 
-                    } else {
-                        // Validasi tipe file sederhana (bisa diperluas)
-                        input.classList.remove('is-invalid');
-                        input.classList.add('is-valid');
-                        preview.innerHTML = `<div class="text-success"><i class="fas fa-check-circle me-2"></i>${file.name}</div>`;
-                        preview.classList.add('has-file');
-                    }
-                }
-            }
-
-            function updateUploadProgress() {
-                const requiredFiles = document.querySelectorAll('#step-2-aps input[type="file"][required]');
-                let count = 0;
-                requiredFiles.forEach(inp => { if(inp.files.length > 0) count++; });
-                const progressEl = document.getElementById('upload-progress-aps');
-                if(progressEl) progressEl.textContent = `${count}/${requiredFiles.length}`;
-            }
-
-            // --- 4. CEK NIP LOGIC (DUMMY) ---
-            if (btnCekNip) {
-                btnCekNip.addEventListener('click', function() {
-                    const nip = nipInput.value.trim();
+            // --- 2. LOGIKA CEK NIP ---
+            const btnCek = document.getElementById('btn-cek-nip-aps');
+            if (btnCek) {
+                btnCek.addEventListener('click', function() {
+                    const nip = document.getElementById('nip_pegawai_aps').value;
                     if (!nip) {
-                        Swal.fire('Info', 'Masukkan NIP terlebih dahulu', 'info');
+                        Swal.fire('Isi NIP!', '', 'warning');
                         return;
                     }
 
-                    const originalHtml = this.innerHTML;
+                    const oldHtml = this.innerHTML;
                     this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    this.disabled = true;
 
-                    setTimeout(() => {
-                        const data = cariDataPegawai(nip);
-                        if(data) {
-                            document.getElementById('nama_pegawai_aps').value = data.nama;
-                            document.getElementById('jabatan_aps').value = data.jabatan;
-                            document.getElementById('satuan_kerja_aps').value = data.satuan_kerja;
-                            document.getElementById('pangkat_aps').value = data.pangkat;
-                            document.getElementById('golongan_aps').value = data.golongan;
-                            nipDisplay.value = data.nip;
-                            
-                            document.querySelectorAll('#step-1-aps input').forEach(i => i.classList.add('is-valid'));
-                            
-                            Swal.fire('Berhasil', 'Data pegawai ditemukan', 'success');
-                        } else {
-                            Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
-                        }
-                        this.innerHTML = originalHtml;
-                        this.disabled = false;
-                    }, 1000);
+                    fetch(`{{ url('/kenaikan-pangkat/ajax/cek-nip') }}/${nip}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.success) {
+                                const d = res.data;
+                                // Helper set value
+                                const set = (id, val) => {
+                                    const el = document.getElementById(id);
+                                    if (el) el.value = val || '';
+                                }
+
+                                set('nama_pegawai_aps', d.nama);
+                                set('jabatan_aps', d.jabatan);
+                                set('pangkat_aps', d.pangkat);
+                                set('nip_display_aps', d.nip);
+                                set('satuan_kerja_aps', d.unit_kerja);
+                                set('golongan_aps', d.golongan_ruang);
+                                Swal.fire('Ditemukan', 'Data pegawai dimuat', 'success');
+                            } else {
+                                Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
+                            }
+                        })
+                        .catch(() => Swal.fire('Error', 'Gagal koneksi server', 'error'))
+                        .finally(() => this.innerHTML = oldHtml);
                 });
             }
 
-            function cariDataPegawai(nip) {
-                const db = {
-                    '123456789012345678': {
-                        nama: 'Dr. Ahmad Fauzi, M.Kom.', nip: '123456789012345678',
-                        jabatan: 'Kepala Bidang TI', satuan_kerja: 'Dinas Kominfo',
-                        pangkat: 'Pembina Tk. I', golongan: 'IV/b'
-                    },
-                    '198765432109876543': {
-                        nama: 'Siti Aminah, S.E.', nip: '198765432109876543',
-                        jabatan: 'Kasubag Umum', satuan_kerja: 'BKD',
-                        pangkat: 'Penata Tk. I', golongan: 'III/d'
-                    }
-                };
-                return db[nip] || null;
-            }
+            // --- 3. LOGIKA UPLOAD FILE (PREVIEW & STYLE) ---
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const previewId = `preview-${this.id}`; // preview-file_1
+                    const previewEl = document.getElementById(previewId);
 
-            // --- 5. UPDATE REVIEW ---
-            function updateReviewData() {
-                document.getElementById('review-nama-aps').textContent = document.getElementById('nama_pegawai_aps').value || '-';
-                document.getElementById('review-nip-aps').textContent = document.getElementById('nip_display_aps').value || '-';
-                document.getElementById('review-jabatan-aps').textContent = document.getElementById('jabatan_aps').value || '-';
-                document.getElementById('review-satuan-kerja-aps').textContent = document.getElementById('satuan_kerja_aps').value || '-';
-                document.getElementById('review-pangkat-aps').textContent = document.getElementById('pangkat_aps').value || '-';
-                document.getElementById('review-golongan-aps').textContent = document.getElementById('golongan_aps').value || '-';
-                
+                    if (this.files.length > 0) {
+                        const fileName = this.files[0].name;
+                        if (previewEl) {
+                            previewEl.innerHTML =
+                                `<i class="fas fa-check-circle me-1"></i> ${fileName}`;
+                            previewEl.classList.add('has-file');
+                        }
+                    }
+                });
+            });
+
+            // --- 4. LOGIKA REVIEW DATA ---
+            function updateReview() {
+                const get = (id) => document.getElementById(id).value || '-';
+                const setText = (id, val) => document.getElementById(id).textContent = val;
+
+                setText('review-nama-aps', get('nama_pegawai_aps'));
+                setText('review-nip-aps', get('nip_display_aps'));
+                setText('review-jabatan-aps', get('jabatan_aps'));
+                setText('review-satuan-kerja-aps', get('satuan_kerja_aps'));
+                setText('review-pangkat-aps', get('pangkat_aps'));
+                setText('review-golongan-aps', get('golongan_aps'));
+
                 const tmt = document.getElementById('tmt_pensiun_aps').value;
-                document.getElementById('review-tmt-aps').textContent = tmt ? new Date(tmt).toLocaleDateString('id-ID') : '-';
+                setText('review-tmt-aps', tmt ? new Date(tmt).toLocaleDateString('id-ID') : '-');
 
                 const docContainer = document.getElementById('review-documents-aps');
-                let html = '';
+                docContainer.innerHTML = '';
+                let hasFile = false;
+
                 document.querySelectorAll('input[type="file"]').forEach(input => {
-                    if(input.files.length > 0) {
-                        const label = input.closest('.file-upload-card').querySelector('label').textContent.replace('*', '');
-                        html += `<div class="text-success mb-1"><i class="fas fa-check-circle me-2"></i>${label}: ${input.files[0].name}</div>`;
+                    if (input.files.length > 0) {
+                        hasFile = true;
+                        const fileName = input.files[0].name;
+                        // Ambil label dari parent card
+                        const label = input.closest('.file-upload-card').querySelector('label').innerText
+                            .replace('*', '').replace('(Opsional)', '').trim();
+
+                        const item = document.createElement('div');
+                        item.className = 'd-flex align-items-center mb-2 text-success';
+                        item.innerHTML =
+                            `<i class="fas fa-check-circle me-2"></i> <strong>${label}:</strong> <span class="ms-1 text-dark">${fileName}</span>`;
+                        docContainer.appendChild(item);
                     }
                 });
-                docContainer.innerHTML = html || '<div class="text-muted">Belum ada dokumen</div>';
+
+                if (!hasFile) {
+                    docContainer.innerHTML =
+                    '<p class="text-muted fst-italic">Belum ada dokumen yang diunggah.</p>';
+                }
             }
 
-            // FORM SUBMIT
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if(!document.getElementById('confirm-data-aps').checked) {
-                    Swal.fire('Perhatian', 'Anda harus menyetujui konfirmasi data', 'warning');
-                    return;
+            // --- 5. SUBMIT FORM ---
+            document.getElementById('form-pensiun-aps').addEventListener('submit', function(e) {
+                if (!document.getElementById('confirm-data-aps').checked) {
+                    e.preventDefault();
+                    Swal.fire('Konfirmasi', 'Anda harus menyetujui data', 'warning');
+                } else {
+                    Swal.fire({
+                        title: 'Mengirim...',
+                        text: 'Mohon tunggu',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
                 }
-
-                Swal.fire({
-                    title: 'Kirim Pengajuan?',
-                    text: "Pastikan data sudah benar!",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Kirim',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // this.submit(); // Uncomment jika backend siap
-                        Swal.fire('Terkirim!', 'Pengajuan Anda sedang diproses.', 'success').then(() => {
-                            window.location.reload();
-                        });
-                    }
-                });
             });
 
-            // Sync NIP Input
-            nipInput.addEventListener('input', function() {
-                nipDisplay.value = this.value;
-            });
-            
-            // Set Min Date for TMT
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('tmt_pensiun_aps').min = today;
+
+            showStep(1);
         });
     </script>
 @endsection

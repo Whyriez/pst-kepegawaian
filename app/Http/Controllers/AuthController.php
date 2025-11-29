@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pegawai;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,29 +15,42 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        // 1. Ubah validasi dari email ke nip
         $request->validate([
-            'email' => 'required|email',
+            'nip' => 'required|numeric|digits:18',
             'password' => 'required',
         ]);
 
-        $credentials = $request->only('email', 'password');
+        // 2. Cari Pegawai berdasarkan NIP
+        $pegawai = Pegawai::where('nip', $request->nip)->first();
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        // 3. Cek apakah Pegawai ada DAN memiliki akun user aktif
+        if ($pegawai && $pegawai->user) {
 
-            // Cek Role untuk Redirect
-            $role = Auth::user()->role;
+            // 4. Lakukan Auth::attempt menggunakan email dari relasi user tersebut
+            // Trik: Kita login pakai email di belakang layar, tapi user taunya pakai NIP
+            $credentials = [
+                'email' => $pegawai->user->email,
+                'password' => $request->password
+            ];
 
-            if ($role === 'admin') {
-                return redirect()->intended('admin/dashboard'); // Sesuaikan route admin nanti
-            } else {
-                return redirect()->intended('dashboard'); // Route dashboard user yg sudah kita buat
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+
+                $role = Auth::user()->role;
+
+                if ($role === 'admin') {
+                    return redirect()->intended('admin/dashboard');
+                } else {
+                    return redirect()->intended('dashboard');
+                }
             }
         }
 
+        // Jika Pegawai tidak ditemukan atau Password salah
         return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ])->onlyInput('email');
+            'nip' => 'NIP atau password salah.',
+        ])->onlyInput('nip');
     }
 
     public function logout(Request $request)

@@ -28,7 +28,7 @@ class PegawaiSeeder extends Seeder
         
         // Data dummy tambahan tanpa user login (untuk tes cek NIP orang lain)
         Pegawai::create([
-            'user_id' => null,
+            'user_id' => 1,
             'satuan_kerja_id' => 1,
             'nip' => '198765432109876543',
             'nama_lengkap' => 'Siti Aminah, S.E.',

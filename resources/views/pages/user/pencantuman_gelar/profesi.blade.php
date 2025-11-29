@@ -1,6 +1,11 @@
 @extends('layouts.user.app')
 @section('title', 'Pencantuman Gelar Profesi')
 
+{{-- Tambahkan SweetAlert --}}
+@push('styles')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
+
 @section('content')
     {{-- HAPUS CLASS content-template AGAR LANGSUNG MUNCUL --}}
     <div class="container-fluid p-0">
@@ -39,10 +44,11 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                {{-- TAMBAHKAN ACTION, METHOD, CSRF, DAN ENCTYPE --}}
-                <form id="form-gelar-profesi" method="POST" enctype="multipart/form-data">
+                {{-- ACTION FORM KE ROUTE STORE --}}
+                <form id="form-gelar-profesi" action="{{ route('gelar.profesi.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
+                    {{-- STEP 1: DATA DIRI --}}
                     <div class="form-step active" id="step-1-gelar-profesi">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -58,7 +64,8 @@
                                     <div class="col-md-8">
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="nip_pegawai_gelar_profesi"
-                                                name="nip_pegawai_gelar_profesi" placeholder="Masukkan NIP Pegawai">
+                                                name="nip_pegawai_gelar_profesi" placeholder="Masukkan NIP Pegawai"
+                                                value="{{ Auth::user()->pegawai->nip ?? '' }}">
                                             <button class="btn btn-outline-primary" type="button"
                                                 id="btn-cek-nip-gelar-profesi">
                                                 <i class="fas fa-search me-2"></i>Cek NIP
@@ -106,8 +113,8 @@
                                 <label for="nip_display_gelar_profesi" class="form-label">NIP Pegawai <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control" id="nip_display_gelar_profesi"
-                                        name="nip_display_gelar_profesi" required>
+                                    <input type="text" class="form-control bg-light" id="nip_display_gelar_profesi"
+                                        name="nip_display_gelar_profesi" required readonly>
                                 </div>
                                 <div class="invalid-feedback">Harap isi NIP pegawai</div>
                             </div>
@@ -137,8 +144,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="jenjang_pendidikan_gelar_profesi" class="form-label">Jenjang Pendidikan Pegawai
-                                    <span class="text-danger">*</span></label>
+                                <label for="jenjang_pendidikan_gelar_profesi" class="form-label">Jenjang Pendidikan Pegawai <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
                                     <select class="form-control" id="jenjang_pendidikan_gelar_profesi"
@@ -167,12 +173,14 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <div></div> <button type="button" class="btn btn-primary btn-next-gelar-profesi" data-next="2">
+                            <div></div> 
+                            <button type="button" class="btn btn-primary btn-next-gelar-profesi" data-next="2">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
+                    {{-- STEP 2: DOKUMEN (DINAMIS) --}}
                     <div class="form-step" id="step-2-gelar-profesi">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -189,7 +197,7 @@
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
-                                            <span id="upload-progress-gelar-profesi">0/3</span> dokumen terunggah
+                                            <span id="upload-progress-gelar-profesi">0/{{ count($syarat) }}</span> dokumen terunggah
                                         </small>
                                     </div>
                                 </div>
@@ -197,49 +205,41 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="ijazah_gelar_profesi" class="form-label">Ijazah <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="ijazah_gelar_profesi"
-                                            name="ijazah_gelar_profesi" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-ijazah_gelar_profesi"></div>
+                            @forelse($syarat as $dokumen)
+                                <div class="col-md-6 mb-3">
+                                    <div class="file-upload-card h-100">
+                                        <label for="file_{{ $dokumen->id }}" class="form-label fw-bold">
+                                            {{ $dokumen->nama_dokumen }}
+                                            @if($dokumen->is_required)
+                                                <span class="text-danger">*</span>
+                                            @else
+                                                <span class="text-muted fw-light">(Opsional)</span>
+                                            @endif
+                                        </label>
+                                        
+                                        <div class="file-input-wrapper">
+                                            <input type="file" class="form-control file-input-dynamic" 
+                                                id="file_{{ $dokumen->id }}" 
+                                                name="file_{{ $dokumen->id }}" 
+                                                accept=".pdf"
+                                                {{ $dokumen->is_required ? 'required' : '' }}>
+                                            
+                                            <div class="file-preview mt-2 small text-success" id="preview-file_{{ $dokumen->id }}"></div>
+                                        </div>
+                                        <div class="form-text">Type File: PDF, Max: 2MB</div>
                                     </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="transkrip_nilai_gelar_profesi" class="form-label">Transkrip Nilai <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="transkrip_nilai_gelar_profesi"
-                                            name="transkrip_nilai_gelar_profesi" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-transkrip_nilai_gelar_profesi"></div>
+                            @empty
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (gelar-profesi).
                                     </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sertifikat_profesi_gelar_profesi" class="form-label">Sertifikat Profesi (Jika Ada)</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control"
-                                            id="sertifikat_profesi_gelar_profesi"
-                                            name="sertifikat_profesi_gelar_profesi" accept=".pdf">
-                                        <div class="file-preview" id="preview-sertifikat_profesi_gelar_profesi"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-gelar-profesi"
-                                data-prev="1">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-gelar-profesi" data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="button" class="btn btn-primary btn-next-gelar-profesi" data-next="3">
@@ -248,6 +248,7 @@
                         </div>
                     </div>
 
+                    {{-- STEP 3: KONFIRMASI --}}
                     <div class="form-step" id="step-3-gelar-profesi">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -262,9 +263,9 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p><strong>Nama:</strong> <span id="review-nama-gelar-profesi">-</span></p>
+                                        <p><strong>NIP:</strong> <span id="review-nip-gelar-profesi">-</span></p>
                                         <p><strong>Jabatan:</strong> <span id="review-jabatan-gelar-profesi">-</span></p>
                                         <p><strong>Pangkat:</strong> <span id="review-pangkat-gelar-profesi">-</span></p>
-                                        <p><strong>NIP:</strong> <span id="review-nip-gelar-profesi">-</span></p>
                                     </div>
                                     <div class="col-md-6">
                                         <p><strong>Satuan Kerja:</strong> <span id="review-satuan-kerja-gelar-profesi">-</span></p>
@@ -279,8 +280,7 @@
                         <div class="card border-0 bg-light mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Dokumen yang Diunggah</h6>
-                                <div id="review-documents-gelar-profesi" class="small">
-                                    </div>
+                                <div id="review-documents-gelar-profesi" class="small"></div>
                             </div>
                         </div>
 
@@ -293,8 +293,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-gelar-profesi"
-                                data-prev="2">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-gelar-profesi" data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-success">
@@ -308,7 +307,7 @@
     </div>
 
     <style>
-        /* Progress Steps */
+        /* COPY PASTE STYLE AGAR SAMA PERSIS */
         .progress-steps { display: flex; justify-content: space-between; position: relative; }
         .progress-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
         .progress-steps .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
@@ -340,256 +339,138 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            console.log('Gelar Profesi Form Initialized');
+            // --- NOTIFIKASI SESSION ---
+            @if(session('success')) Swal.fire('Berhasil', "{{ session('success') }}", 'success'); @endif
+            @if(session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error'); @endif
+            @if($errors->any()) Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning'); @endif
 
-            const form = document.getElementById('form-gelar-profesi');
-            const btnCekNip = document.getElementById('btn-cek-nip-gelar-profesi');
-            const nipInput = document.getElementById('nip_pegawai_gelar_profesi');
-            const nipDisplay = document.getElementById('nip_display_gelar_profesi');
-            
+            // --- 1. LOGIKA STEPPER ---
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
-            let currentStep = 1;
 
-            // --- 1. NAVIGATION LOGIC ---
-            function showStep(step) {
-                steps.forEach(s => s.classList.remove('active'));
-                progressSteps.forEach(s => s.classList.remove('active'));
-
-                document.getElementById(`step-${step}-gelar-profesi`).classList.add('active');
-                
-                progressSteps.forEach(s => {
-                    if(parseInt(s.dataset.step) <= step) {
-                        s.classList.add('active');
-                    }
-                });
-
-                currentStep = step;
-                if(step === 3) updateReviewData();
+            function showStep(idx) {
+                steps.forEach(el => el.classList.remove('active'));
+                progressSteps.forEach(el => el.classList.remove('active'));
+                document.getElementById(`step-${idx}-gelar-profesi`).classList.add('active');
+                for(let i=0; i<idx; i++) progressSteps[i].classList.add('active');
+                if(idx == 3) updateReview();
             }
 
-            document.querySelectorAll('.btn-next-gelar-profesi').forEach(button => {
-                button.addEventListener('click', function() {
-                    const nextStep = parseInt(this.getAttribute('data-next'));
-                    if (validateStep(currentStep)) {
-                        showStep(nextStep);
+            document.querySelectorAll('.btn-next-gelar-profesi').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const next = this.dataset.next;
+                    if(next == 2 && !document.getElementById('nama_pegawai_gelar_profesi').value) {
+                        Swal.fire('Data Kosong', 'Silakan Cek NIP dulu!', 'warning'); return;
                     }
+                    showStep(next);
                 });
             });
 
-            document.querySelectorAll('.btn-prev-gelar-profesi').forEach(button => {
-                button.addEventListener('click', function() {
-                    const prevStep = parseInt(this.getAttribute('data-prev'));
-                    showStep(prevStep);
-                });
+            document.querySelectorAll('.btn-prev-gelar-profesi').forEach(btn => {
+                btn.addEventListener('click', function() { showStep(this.dataset.prev); });
             });
 
-            // --- 2. VALIDATION LOGIC ---
-            function validateStep(step) {
-                let isValid = true;
-                
-                if (step === 1) {
-                    const fields = document.querySelectorAll('#step-1-gelar-profesi [required]');
-                    fields.forEach(field => {
-                        if (!field.value.trim()) {
-                            field.classList.add('is-invalid');
-                            isValid = false;
-                        } else {
-                            field.classList.remove('is-invalid');
-                            field.classList.add('is-valid');
-                        }
-                    });
-                    if (!isValid) Swal.fire('Perhatian', 'Harap lengkapi semua field yang wajib diisi pada bagian Data Pegawai', 'warning');
-                } 
-                else if (step === 2) {
-                    const fileInputs = document.querySelectorAll('#step-2-gelar-profesi input[type="file"][required]');
-                    let uploadedCount = 0;
-                    let requiredCount = 0;
+            // --- 2. LOGIKA CEK NIP ---
+            const btnCek = document.getElementById('btn-cek-nip-gelar-profesi');
+            if(btnCek) {
+                btnCek.addEventListener('click', function() {
+                    const nip = document.getElementById('nip_pegawai_gelar_profesi').value;
+                    if(!nip) { Swal.fire('Isi NIP!', '', 'warning'); return; }
+
+                    const oldHtml = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                     
-                    fileInputs.forEach(input => {
-                        requiredCount++;
-                        if (input.files.length > 0) {
-                            uploadedCount++;
-                        } else {
-                            isValid = false;
-                            input.classList.add('is-invalid');
-                        }
-                    });
-
-                    if (!isValid) {
-                        Swal.fire('Perhatian', `Harap unggah semua dokumen wajib. (${uploadedCount}/${requiredCount} terunggah)`, 'warning');
-                    }
-                } else if (step === 3) {
-                    const confirmation = document.getElementById('confirm-data-gelar-profesi');
-                    if (!confirmation.checked) {
-                        confirmation.classList.add('is-invalid');
-                        isValid = false;
-                        Swal.fire('Perhatian', 'Harap centang kotak konfirmasi sebelum mengajukan', 'warning');
-                    }
-                }
-                
-                return isValid;
+                    fetch(`{{ url('/kenaikan-pangkat/ajax/cek-nip') }}/${nip}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            if(res.success) {
+                                const d = res.data;
+                                const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; }
+                                
+                                set('nama_pegawai_gelar_profesi', d.nama);
+                                set('jabatan_gelar_profesi', d.jabatan);
+                                set('pangkat_gelar_profesi', d.pangkat);
+                                set('nip_display_gelar_profesi', d.nip);
+                                set('satuan_kerja_gelar_profesi', d.unit_kerja);
+                                set('golongan_ruang_gelar_profesi', d.golongan_ruang);
+                                Swal.fire('Ditemukan', 'Data pegawai dimuat', 'success');
+                            } else {
+                                Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
+                            }
+                        })
+                        .catch(() => Swal.fire('Error', 'Gagal koneksi server', 'error'))
+                        .finally(() => this.innerHTML = oldHtml);
+                });
             }
 
-            // Real-time validation removal
-            document.querySelectorAll('input, select').forEach(el => {
-                el.addEventListener('input', function() {
-                    if(this.value.trim()) {
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
-                    }
-                });
-            });
-
-            // --- 3. FILE UPLOAD LOGIC ---
+            // --- 3. LOGIKA UPLOAD FILE ---
             document.querySelectorAll('input[type="file"]').forEach(input => {
                 input.addEventListener('change', function() {
-                    handleFileUpload(this);
-                    updateUploadProgress();
+                    const previewId = `preview-${this.id}`;
+                    const previewEl = document.getElementById(previewId);
+                    
+                    if (this.files.length > 0) {
+                        const fileName = this.files[0].name;
+                        if (previewEl) {
+                            previewEl.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${fileName}`;
+                            previewEl.classList.add('has-file');
+                        }
+                    }
                 });
             });
 
-            function handleFileUpload(input) {
-                const preview = document.getElementById(`preview-${input.id}`);
-                const maxSize = 2 * 1024 * 1024; // 2MB
+            // --- 4. LOGIKA REVIEW ---
+            function updateReview() {
+                const get = (id) => document.getElementById(id).value || '-';
+                const setText = (id, val) => document.getElementById(id).textContent = val;
 
-                if (input.files.length > 0) {
-                    const file = input.files[0];
-                    if (file.size > maxSize) {
-                        input.classList.add('is-invalid');
-                        preview.innerHTML = `<div class="text-danger"><i class="fas fa-exclamation-circle me-2"></i>File > 2MB</div>`;
-                        preview.classList.add('has-file');
-                        input.value = ''; 
-                    } else if (file.type !== 'application/pdf') {
-                         input.classList.add('is-invalid');
-                        preview.innerHTML = `<div class="text-danger"><i class="fas fa-exclamation-circle me-2"></i>Harus PDF</div>`;
-                        preview.classList.add('has-file');
-                        input.value = ''; 
-                    } else {
-                        input.classList.remove('is-invalid');
-                        input.classList.add('is-valid');
-                        preview.innerHTML = `<div class="text-success"><i class="fas fa-check-circle me-2"></i>${file.name}</div>`;
-                        preview.classList.add('has-file');
-                    }
-                }
-            }
-
-            function updateUploadProgress() {
-                const fileInputs = document.querySelectorAll('#step-2-gelar-profesi input[type="file"]');
-                let uploadedCount = 0;
-                // Note: We count ALL uploads here, but validation only checks required
-                fileInputs.forEach(inp => { if(inp.files.length > 0) uploadedCount++; });
-                
-                const progressEl = document.getElementById('upload-progress-gelar-profesi');
-                if(progressEl) progressEl.textContent = `${uploadedCount}/${fileInputs.length}`;
-            }
-
-            // --- 4. CEK NIP LOGIC (DUMMY) ---
-            if (btnCekNip) {
-                btnCekNip.addEventListener('click', function() {
-                    const nip = nipInput.value.trim();
-                    if (!nip) {
-                        Swal.fire('Info', 'Masukkan NIP terlebih dahulu', 'info');
-                        return;
-                    }
-
-                    const originalHtml = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    this.disabled = true;
-
-                    setTimeout(() => {
-                        const data = cariDataPegawai(nip);
-                        if(data) {
-                            document.getElementById('nama_pegawai_gelar_profesi').value = data.nama;
-                            document.getElementById('jabatan_gelar_profesi').value = data.jabatan;
-                            document.getElementById('pangkat_gelar_profesi').value = data.pangkat;
-                            document.getElementById('satuan_kerja_gelar_profesi').value = data.satuan_kerja;
-                            document.getElementById('golongan_ruang_gelar_profesi').value = data.golongan_ruang;
-                            document.getElementById('jenjang_pendidikan_gelar_profesi').value = data.jenjang_pendidikan;
-                            document.getElementById('usul_profesi_gelar_profesi').value = data.usul_profesi;
-                            nipDisplay.value = data.nip;
-                            
-                            document.querySelectorAll('#step-1-gelar-profesi input').forEach(i => i.classList.add('is-valid'));
-                            
-                            Swal.fire('Berhasil', 'Data pegawai ditemukan', 'success');
-                        } else {
-                            Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
-                        }
-                        this.innerHTML = originalHtml;
-                        this.disabled = false;
-                    }, 1000);
-                });
-            }
-
-            function cariDataPegawai(nip) {
-                const db = {
-                    '123456789012345678': {
-                        nama: 'Dr. Ahmad Fauzi, M.Kom.', nip: '123456789012345678',
-                        jabatan: 'Kepala Bidang TI', pangkat: 'Pembina Tk. I',
-                        satuan_kerja: 'Dinas Kominfo', golongan_ruang: 'IV/b',
-                        jenjang_pendidikan: 'S2', usul_profesi: 'M.Kom.'
-                    },
-                    '198765432109876543': {
-                        nama: 'Drs. Siti Aminah, M.Si.', nip: '198765432109876543',
-                        jabatan: 'Kasubag Umum', pangkat: 'Penata Tk. I',
-                        satuan_kerja: 'BKD', golongan_ruang: 'III/d',
-                        jenjang_pendidikan: 'S2', usul_profesi: 'M.Si.'
-                    }
-                };
-                return db[nip] || null;
-            }
-
-            // --- 5. UPDATE REVIEW ---
-            function updateReviewData() {
-                document.getElementById('review-nama-gelar-profesi').textContent = document.getElementById('nama_pegawai_gelar_profesi').value || '-';
-                document.getElementById('review-nip-gelar-profesi').textContent = document.getElementById('nip_display_gelar_profesi').value || '-';
-                document.getElementById('review-jabatan-gelar-profesi').textContent = document.getElementById('jabatan_gelar_profesi').value || '-';
-                document.getElementById('review-pangkat-gelar-profesi').textContent = document.getElementById('pangkat_gelar_profesi').value || '-';
-                document.getElementById('review-satuan-kerja-gelar-profesi').textContent = document.getElementById('satuan_kerja_gelar_profesi').value || '-';
-                document.getElementById('review-golongan-ruang-gelar-profesi').textContent = document.getElementById('golongan_ruang_gelar_profesi').value || '-';
-                document.getElementById('review-jenjang-pendidikan-gelar-profesi').textContent = document.getElementById('jenjang_pendidikan_gelar_profesi').value || '-';
-                document.getElementById('review-usul-profesi-gelar-profesi').textContent = document.getElementById('usul_profesi_gelar_profesi').value || '-';
+                setText('review-nama-gelar-profesi', get('nama_pegawai_gelar_profesi'));
+                setText('review-nip-gelar-profesi', get('nip_display_gelar_profesi'));
+                setText('review-jabatan-gelar-profesi', get('jabatan_gelar_profesi'));
+                setText('review-pangkat-gelar-profesi', get('pangkat_gelar_profesi'));
+                setText('review-satuan-kerja-gelar-profesi', get('satuan_kerja_gelar_profesi'));
+                setText('review-golongan-ruang-gelar-profesi', get('golongan_ruang_gelar_profesi'));
+                setText('review-jenjang-pendidikan-gelar-profesi', get('jenjang_pendidikan_gelar_profesi'));
+                setText('review-usul-profesi-gelar-profesi', get('usul_profesi_gelar_profesi'));
 
                 const docContainer = document.getElementById('review-documents-gelar-profesi');
-                let html = '';
+                docContainer.innerHTML = '';
+                let hasFile = false;
+
                 document.querySelectorAll('input[type="file"]').forEach(input => {
                     if(input.files.length > 0) {
-                        const label = input.closest('.file-upload-card').querySelector('label').textContent.replace('*', '');
-                        html += `<div class="text-success mb-1"><i class="fas fa-check-circle me-2"></i>${label}: ${input.files[0].name}</div>`;
+                        hasFile = true;
+                        const fileName = input.files[0].name;
+                        const label = input.closest('.file-upload-card').querySelector('label').innerText.replace('*','').replace('(Opsional)','').trim();
+                        
+                        const item = document.createElement('div');
+                        item.className = 'd-flex align-items-center mb-2 text-success';
+                        item.innerHTML = `<i class="fas fa-check-circle me-2"></i> <strong>${label}:</strong> <span class="ms-1 text-dark">${fileName}</span>`;
+                        docContainer.appendChild(item);
                     }
                 });
-                docContainer.innerHTML = html || '<div class="text-muted">Belum ada dokumen</div>';
+
+                if (!hasFile) {
+                    docContainer.innerHTML = '<p class="text-muted fst-italic">Belum ada dokumen yang diunggah.</p>';
+                }
             }
 
-            // FORM SUBMIT
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+            // --- 5. SUBMIT FORM ---
+            document.getElementById('form-gelar-profesi').addEventListener('submit', function(e) {
                 if(!document.getElementById('confirm-data-gelar-profesi').checked) {
-                    Swal.fire('Perhatian', 'Anda harus menyetujui konfirmasi data', 'warning');
-                    return;
+                    e.preventDefault();
+                    Swal.fire('Konfirmasi', 'Anda harus menyetujui data', 'warning');
+                } else {
+                    Swal.fire({
+                        title: 'Mengirim...',
+                        text: 'Mohon tunggu',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
                 }
-
-                Swal.fire({
-                    title: 'Kirim Pengajuan?',
-                    text: "Pastikan data sudah benar!",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Kirim',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // this.submit(); // Uncomment jika backend siap
-                        Swal.fire('Terkirim!', 'Pengajuan Anda sedang diproses.', 'success').then(() => {
-                            window.location.reload();
-                        });
-                    }
-                });
             });
 
-            // Sync NIP Input
-            nipInput.addEventListener('input', function() {
-                nipDisplay.value = this.value;
-            });
+            showStep(1);
         });
     </script>
 @endsection

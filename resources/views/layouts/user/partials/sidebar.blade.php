@@ -1,6 +1,10 @@
 <div class="sidebar">
-    <div class="logo">
-        <h1 class="fs-5 fw-bold text-primary">PTSP Kepegawaian</h1>
+    <div class="logo-desktop">
+        <h1 class="fs-5 fw-bold text-white text-center">PTSP Kepegawaian</h1>
+    </div>
+
+    <div class="logo-mobile">
+        <h2>PTSP Kepegawaian</h2>
     </div>
 
     <ul class="menu">
@@ -12,7 +16,8 @@
         </li>
 
         <li>
-            <a href="" class="menu-item">
+            <a href="{{ route('satuan_kerja') }}"
+                class="menu-item {{ request()->routeIs('satuan_kerja') ? 'active' : '' }}">
                 <i class="fas fa-user"></i>
                 <span>Profil Satuan Kerja</span>
             </a>

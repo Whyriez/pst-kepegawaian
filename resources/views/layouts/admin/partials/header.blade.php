@@ -20,7 +20,7 @@
                     <span class="d-none d-md-inline">Admin PTSP</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profil
+                    <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2"></i>Profil
                             Admin</a></li>
                     <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Pengaturan</a>
                     </li>

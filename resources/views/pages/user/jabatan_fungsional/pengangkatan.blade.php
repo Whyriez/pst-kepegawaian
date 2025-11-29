@@ -1,6 +1,11 @@
 @extends('layouts.user.app')
 @section('title', 'Jabatan Fungsional - Pengangkatan')
 
+{{-- Tambahkan SweetAlert --}}
+@push('styles')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
+
 @section('content')
     {{-- HAPUS CLASS content-template AGAR LANGSUNG MUNCUL --}}
     <div class="container-fluid p-0">
@@ -39,10 +44,11 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                {{-- TAMBAHKAN ACTION, METHOD, CSRF, DAN ENCTYPE --}}
-                <form id="form-jf-pengangkatan" method="POST" enctype="multipart/form-data">
+                {{-- ACTION FORM KE ROUTE STORE --}}
+                <form id="form-jf-pengangkatan" action="{{ route('jf.pengangkatan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
+                    {{-- STEP 1: DATA DIRI --}}
                     <div class="form-step active" id="step-1-jf-pengangkatan">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -58,7 +64,8 @@
                                     <div class="col-md-8">
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="nip_pegawai_jf_pengangkatan"
-                                                name="nip_pegawai_jf_pengangkatan" placeholder="Masukkan NIP Pegawai">
+                                                name="nip_pegawai_jf_pengangkatan" placeholder="Masukkan NIP Pegawai"
+                                                value="{{ Auth::user()->pegawai->nip ?? '' }}">
                                             <button class="btn btn-outline-primary" type="button"
                                                 id="btn-cek-nip-jf-pengangkatan">
                                                 <i class="fas fa-search me-2"></i>Cek NIP
@@ -84,8 +91,8 @@
                                 <label for="nip_display_jf_pengangkatan" class="form-label">NIP Pegawai <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control" id="nip_display_jf_pengangkatan"
-                                        name="nip_display_jf_pengangkatan" required>
+                                    <input type="text" class="form-control bg-light" id="nip_display_jf_pengangkatan"
+                                        name="nip_display_jf_pengangkatan" required readonly>
                                 </div>
                                 <div class="invalid-feedback">Harap isi NIP pegawai</div>
                             </div>
@@ -158,12 +165,14 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <div></div> <button type="button" class="btn btn-primary btn-next-jf-pengangkatan" data-next="2">
+                            <div></div> 
+                            <button type="button" class="btn btn-primary btn-next-jf-pengangkatan" data-next="2">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
+                    {{-- STEP 2: DOKUMEN (DINAMIS DENGAN DESAIN ASLI) --}}
                     <div class="form-step" id="step-2-jf-pengangkatan">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -180,7 +189,7 @@
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
-                                            <span id="upload-progress-jf-pengangkatan">0/9</span> dokumen terunggah
+                                            <span id="upload-progress-jf-pengangkatan">0/{{ count($syarat) }}</span> dokumen terunggah
                                         </small>
                                     </div>
                                 </div>
@@ -188,129 +197,41 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sk_pns_jf_pengangkatan" class="form-label">SK PNS <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="sk_pns_jf_pengangkatan"
-                                            name="sk_pns_jf_pengangkatan" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-sk_pns_jf_pengangkatan"></div>
+                            @forelse($syarat as $dokumen)
+                                <div class="col-md-6 mb-3">
+                                    <div class="file-upload-card h-100">
+                                        <label for="file_{{ $dokumen->id }}" class="form-label fw-bold">
+                                            {{ $dokumen->nama_dokumen }}
+                                            @if($dokumen->is_required)
+                                                <span class="text-danger">*</span>
+                                            @else
+                                                <span class="text-muted fw-light">(Opsional)</span>
+                                            @endif
+                                        </label>
+                                        
+                                        <div class="file-input-wrapper">
+                                            <input type="file" class="form-control file-input-dynamic" 
+                                                id="file_{{ $dokumen->id }}" 
+                                                name="file_{{ $dokumen->id }}" 
+                                                accept=".pdf"
+                                                {{ $dokumen->is_required ? 'required' : '' }}>
+                                            
+                                            <div class="file-preview mt-2 small text-success" id="preview-file_{{ $dokumen->id }}"></div>
+                                        </div>
+                                        <div class="form-text">Type File: PDF, Max: 2MB</div>
                                     </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="surat_keterangan_sehat_jf_pengangkatan" class="form-label">Surat Keterangan Sehat Jasmani dan Rohani</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control"
-                                            id="surat_keterangan_sehat_jf_pengangkatan"
-                                            name="surat_keterangan_sehat_jf_pengangkatan" accept=".pdf">
-                                        <div class="file-preview" id="preview-surat_keterangan_sehat_jf_pengangkatan"></div>
+                            @empty
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (jf-pengangkatan).
                                     </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB (Tidak Wajib)</div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="ijazah_jf_pengangkatan" class="form-label">Ijazah</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="ijazah_jf_pengangkatan"
-                                            name="ijazah_jf_pengangkatan" accept=".pdf">
-                                        <div class="file-preview" id="preview-ijazah_jf_pengangkatan"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB (Tidak Wajib)</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="skp_2024_jf_pengangkatan" class="form-label">SKP Tahun 2024 <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="skp_2024_jf_pengangkatan"
-                                            name="skp_2024_jf_pengangkatan" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-skp_2024_jf_pengangkatan"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="skp_2023_jf_pengangkatan" class="form-label">SKP Tahun 2023</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="skp_2023_jf_pengangkatan"
-                                            name="skp_2023_jf_pengangkatan" accept=".pdf">
-                                        <div class="file-preview" id="preview-skp_2023_jf_pengangkatan"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB (Tidak Wajib untuk Calon PNS)</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sk_pak_jf_pengangkatan" class="form-label">SK PAK</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="sk_pak_jf_pengangkatan"
-                                            name="sk_pak_jf_pengangkatan" accept=".pdf">
-                                        <div class="file-preview" id="preview-sk_pak_jf_pengangkatan"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB (Tidak Wajib untuk Calon PNS)</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="analisis_jabatan_jf_pengangkatan" class="form-label">Analisis Jabatan dan Analisis Beban Kerja <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="analisis_jabatan_jf_pengangkatan"
-                                            name="analisis_jabatan_jf_pengangkatan" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-analisis_jabatan_jf_pengangkatan"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="surat_pengumuman_uji_kompetensi_jf_pengangkatan" class="form-label">Surat Pengumuman Hasil Uji Kompetensi</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control"
-                                            id="surat_pengumuman_uji_kompetensi_jf_pengangkatan"
-                                            name="surat_pengumuman_uji_kompetensi_jf_pengangkatan" accept=".pdf">
-                                        <div class="file-preview" id="preview-surat_pengumuman_uji_kompetensi_jf_pengangkatan"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB (Tidak Wajib untuk Calon PNS)</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="surat_pengalaman_kerja_jf_pengangkatan" class="form-label">Surat Pengalaman Kerja pada Jabatan minimal 1 Tahun</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control"
-                                            id="surat_pengalaman_kerja_jf_pengangkatan"
-                                            name="surat_pengalaman_kerja_jf_pengangkatan" accept=".pdf">
-                                        <div class="file-preview" id="preview-surat_pengalaman_kerja_jf_pengangkatan"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB (Tidak Wajib untuk Calon PNS)</div>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-jf-pengangkatan"
-                                data-prev="1">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-jf-pengangkatan" data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="button" class="btn btn-primary btn-next-jf-pengangkatan" data-next="3">
@@ -319,6 +240,7 @@
                         </div>
                     </div>
 
+                    {{-- STEP 3: KONFIRMASI --}}
                     <div class="form-step" id="step-3-jf-pengangkatan">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -350,8 +272,7 @@
                         <div class="card border-0 bg-light mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Dokumen yang Diunggah</h6>
-                                <div id="review-documents-jf-pengangkatan" class="small">
-                                    </div>
+                                <div id="review-documents-jf-pengangkatan" class="small"></div>
                             </div>
                         </div>
 
@@ -364,8 +285,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-jf-pengangkatan"
-                                data-prev="2">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-jf-pengangkatan" data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-success">
@@ -379,7 +299,7 @@
     </div>
 
     <style>
-        /* Progress Steps */
+        /* COPY PASTE STYLE DARI REFERENSI */
         .progress-steps { display: flex; justify-content: space-between; position: relative; }
         .progress-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
         .progress-steps .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
@@ -411,236 +331,141 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            console.log('JF Pengangkatan Form Initialized');
+            // --- NOTIFIKASI SESSION ---
+            @if(session('success')) Swal.fire('Berhasil', "{{ session('success') }}", 'success'); @endif
+            @if(session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error'); @endif
+            @if($errors->any()) Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning'); @endif
 
-            const form = document.getElementById('form-jf-pengangkatan');
-            const btnCekNip = document.getElementById('btn-cek-nip-jf-pengangkatan');
-            const nipInput = document.getElementById('nip_pegawai_jf_pengangkatan');
-            const nipDisplay = document.getElementById('nip_display_jf_pengangkatan');
-            
+            // --- 1. LOGIKA STEPPER ---
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
-            let currentStep = 1;
 
-            // --- 1. NAVIGATION LOGIC ---
-            function showStep(step) {
-                steps.forEach(s => s.classList.remove('active'));
-                progressSteps.forEach(s => s.classList.remove('active'));
-
-                document.getElementById(`step-${step}-jf-pengangkatan`).classList.add('active');
-                
-                progressSteps.forEach(s => {
-                    if(parseInt(s.dataset.step) <= step) {
-                        s.classList.add('active');
-                    }
-                });
-
-                currentStep = step;
-                if(step === 3) updateReviewData();
+            function showStep(idx) {
+                steps.forEach(el => el.classList.remove('active'));
+                progressSteps.forEach(el => el.classList.remove('active'));
+                document.getElementById(`step-${idx}-jf-pengangkatan`).classList.add('active');
+                for(let i=0; i<idx; i++) progressSteps[i].classList.add('active');
+                if(idx == 3) updateReview();
             }
 
-            document.querySelectorAll('.btn-next-jf-pengangkatan').forEach(button => {
-                button.addEventListener('click', function() {
-                    const nextStep = parseInt(this.getAttribute('data-next'));
-                    if (validateStep(currentStep)) {
-                        showStep(nextStep);
+            document.querySelectorAll('.btn-next-jf-pengangkatan').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const next = this.dataset.next;
+                    if(next == 2 && !document.getElementById('nama_pegawai_jf_pengangkatan').value) {
+                        Swal.fire('Data Kosong', 'Silakan Cek NIP dulu!', 'warning'); return;
                     }
+                    showStep(next);
                 });
             });
 
-            document.querySelectorAll('.btn-prev-jf-pengangkatan').forEach(button => {
-                button.addEventListener('click', function() {
-                    const prevStep = parseInt(this.getAttribute('data-prev'));
-                    showStep(prevStep);
-                });
+            document.querySelectorAll('.btn-prev-jf-pengangkatan').forEach(btn => {
+                btn.addEventListener('click', function() { showStep(this.dataset.prev); });
             });
 
-            // --- 2. VALIDATION LOGIC ---
-            function validateStep(step) {
-                let isValid = true;
-                
-                if (step === 1) {
-                    const fields = document.querySelectorAll('#step-1-jf-pengangkatan [required]');
-                    fields.forEach(field => {
-                        if (!field.value.trim()) {
-                            field.classList.add('is-invalid');
-                            isValid = false;
-                        } else {
-                            field.classList.remove('is-invalid');
-                            field.classList.add('is-valid');
-                        }
-                    });
-                    if (!isValid) Swal.fire('Perhatian', 'Harap lengkapi semua field yang wajib diisi pada bagian Data Pegawai', 'warning');
-                } 
-                else if (step === 2) {
-                    const fileInputs = document.querySelectorAll('#step-2-jf-pengangkatan input[type="file"][required]');
-                    let uploadedCount = 0;
-                    fileInputs.forEach(input => {
-                        if (input.files.length > 0) uploadedCount++;
-                        else input.classList.add('is-invalid');
-                    });
+            // --- 2. LOGIKA CEK NIP ---
+            const btnCek = document.getElementById('btn-cek-nip-jf-pengangkatan');
+            if(btnCek) {
+                btnCek.addEventListener('click', function() {
+                    const nip = document.getElementById('nip_pegawai_jf_pengangkatan').value;
+                    if(!nip) { Swal.fire('Isi NIP!', '', 'warning'); return; }
 
-                    if (uploadedCount < fileInputs.length) {
-                        Swal.fire('Perhatian', `Harap unggah semua dokumen wajib. (${uploadedCount}/${fileInputs.length} terunggah)`, 'warning');
-                        isValid = false;
-                    }
-                }
-
-                return isValid;
+                    const oldHtml = this.innerHTML;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    
+                    fetch(`{{ url('/kenaikan-pangkat/ajax/cek-nip') }}/${nip}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            if(res.success) {
+                                const d = res.data;
+                                const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; }
+                                
+                                set('nama_pegawai_jf_pengangkatan', d.nama);
+                                set('jabatan_jf_pengangkatan', d.jabatan);
+                                set('pangkat_jf_pengangkatan', d.pangkat);
+                                set('usul_jabatan_jf_pengangkatan', d.usul_jabatan);
+                                set('satuan_kerja_jf_pengangkatan', d.unit_kerja);
+                                set('golongan_ruang_jf_pengangkatan', d.golongan_ruang);
+                                set('usul_satuan_kerja_jf_pengangkatan', d.usul_satuan_kerja);
+                                set('nip_display_jf_pengangkatan', d.nip);
+                                
+                                Swal.fire('Ditemukan', 'Data pegawai dimuat', 'success');
+                            } else {
+                                Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
+                            }
+                        })
+                        .catch(() => Swal.fire('Error', 'Gagal koneksi server', 'error'))
+                        .finally(() => this.innerHTML = oldHtml);
+                });
             }
 
-            // Real-time validation removal
-            document.querySelectorAll('input, select').forEach(el => {
-                el.addEventListener('input', function() {
-                    if(this.value.trim()) {
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
-                    }
-                });
-            });
-
-            // --- 3. FILE UPLOAD LOGIC ---
+            // --- 3. LOGIKA UPLOAD FILE ---
             document.querySelectorAll('input[type="file"]').forEach(input => {
                 input.addEventListener('change', function() {
-                    handleFileUpload(this);
-                    updateUploadProgress();
+                    const previewId = `preview-${this.id}`;
+                    const previewEl = document.getElementById(previewId);
+                    
+                    if (this.files.length > 0) {
+                        const fileName = this.files[0].name;
+                        if (previewEl) {
+                            previewEl.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${fileName}`;
+                            previewEl.classList.add('has-file');
+                        }
+                    }
                 });
             });
 
-            function handleFileUpload(input) {
-                const preview = document.getElementById(`preview-${input.id}`);
-                const maxSize = 2 * 1024 * 1024; // 2MB
+            // --- 4. LOGIKA REVIEW ---
+            function updateReview() {
+                const get = (id) => document.getElementById(id).value || '-';
+                const setText = (id, val) => document.getElementById(id).textContent = val;
 
-                if (input.files.length > 0) {
-                    const file = input.files[0];
-                    if (file.size > maxSize) {
-                        input.classList.add('is-invalid');
-                        preview.innerHTML = `<div class="text-danger"><i class="fas fa-exclamation-circle me-2"></i>File > 2MB</div>`;
-                        preview.classList.add('has-file');
-                        input.value = ''; 
-                    } else {
-                        input.classList.remove('is-invalid');
-                        input.classList.add('is-valid');
-                        preview.innerHTML = `<div class="text-success"><i class="fas fa-check-circle me-2"></i>${file.name}</div>`;
-                        preview.classList.add('has-file');
-                    }
-                }
-            }
-
-            function updateUploadProgress() {
-                const requiredFiles = document.querySelectorAll('#step-2-jf-pengangkatan input[type="file"][required]');
-                let count = 0;
-                requiredFiles.forEach(inp => { if(inp.files.length > 0) count++; });
-                const progressEl = document.getElementById('upload-progress-jf-pengangkatan');
-                if(progressEl) progressEl.textContent = `${count}/${requiredFiles.length}`;
-            }
-
-            // --- 4. CEK NIP LOGIC (DUMMY) ---
-            if (btnCekNip) {
-                btnCekNip.addEventListener('click', function() {
-                    const nip = nipInput.value.trim();
-                    if (!nip) {
-                        Swal.fire('Info', 'Masukkan NIP terlebih dahulu', 'info');
-                        return;
-                    }
-
-                    const originalHtml = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    this.disabled = true;
-
-                    setTimeout(() => {
-                        const data = cariDataPegawai(nip);
-                        if(data) {
-                            document.getElementById('nama_pegawai_jf_pengangkatan').value = data.nama;
-                            document.getElementById('jabatan_jf_pengangkatan').value = data.jabatan;
-                            document.getElementById('pangkat_jf_pengangkatan').value = data.pangkat;
-                            document.getElementById('usul_jabatan_jf_pengangkatan').value = data.usul_jabatan;
-                            document.getElementById('satuan_kerja_jf_pengangkatan').value = data.satuan_kerja;
-                            document.getElementById('golongan_ruang_jf_pengangkatan').value = data.golongan_ruang;
-                            document.getElementById('usul_satuan_kerja_jf_pengangkatan').value = data.usul_satuan_kerja;
-                            nipDisplay.value = data.nip;
-                            
-                            document.querySelectorAll('#step-1-jf-pengangkatan input').forEach(i => i.classList.add('is-valid'));
-                            
-                            Swal.fire('Berhasil', 'Data pegawai ditemukan', 'success');
-                        } else {
-                            Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
-                        }
-                        this.innerHTML = originalHtml;
-                        this.disabled = false;
-                    }, 1000);
-                });
-            }
-
-            function cariDataPegawai(nip) {
-                const db = {
-                    '123456789012345678': {
-                        nama: 'Dr. Ahmad Fauzi, M.Kom.', nip: '123456789012345678',
-                        jabatan: 'Kepala Bidang TI', pangkat: 'Pembina Tk. I',
-                        usul_jabatan: 'Pranata Komputer Ahli Madya', satuan_kerja: 'Dinas Kominfo',
-                        golongan_ruang: 'IV/b', usul_satuan_kerja: 'Dinas Kominfo Prov. Gorontalo'
-                    },
-                    '198765432109876543': {
-                        nama: 'Siti Aminah, S.E.', nip: '198765432109876543',
-                        jabatan: 'Kasubag Umum', pangkat: 'Penata Tk. I',
-                        usul_jabatan: 'Analis Kepegawaian Ahli Muda', satuan_kerja: 'BKD',
-                        golongan_ruang: 'III/d', usul_satuan_kerja: 'BKD Prov. Gorontalo'
-                    }
-                };
-                return db[nip] || null;
-            }
-
-            // --- 5. UPDATE REVIEW ---
-            function updateReviewData() {
-                document.getElementById('review-nama-jf-pengangkatan').textContent = document.getElementById('nama_pegawai_jf_pengangkatan').value || '-';
-                document.getElementById('review-nip-jf-pengangkatan').textContent = document.getElementById('nip_display_jf_pengangkatan').value || '-';
-                document.getElementById('review-jabatan-jf-pengangkatan').textContent = document.getElementById('jabatan_jf_pengangkatan').value || '-';
-                document.getElementById('review-pangkat-jf-pengangkatan').textContent = document.getElementById('pangkat_jf_pengangkatan').value || '-';
-                document.getElementById('review-usul-jabatan-jf-pengangkatan').textContent = document.getElementById('usul_jabatan_jf_pengangkatan').value || '-';
-                document.getElementById('review-satuan-kerja-jf-pengangkatan').textContent = document.getElementById('satuan_kerja_jf_pengangkatan').value || '-';
-                document.getElementById('review-golongan-ruang-jf-pengangkatan').textContent = document.getElementById('golongan_ruang_jf_pengangkatan').value || '-';
-                document.getElementById('review-usul-satuan-kerja-jf-pengangkatan').textContent = document.getElementById('usul_satuan_kerja_jf_pengangkatan').value || '-';
+                setText('review-nama-jf-pengangkatan', get('nama_pegawai_jf_pengangkatan'));
+                setText('review-nip-jf-pengangkatan', get('nip_display_jf_pengangkatan'));
+                setText('review-jabatan-jf-pengangkatan', get('jabatan_jf_pengangkatan'));
+                setText('review-pangkat-jf-pengangkatan', get('pangkat_jf_pengangkatan'));
+                setText('review-usul-jabatan-jf-pengangkatan', get('usul_jabatan_jf_pengangkatan'));
+                setText('review-satuan-kerja-jf-pengangkatan', get('satuan_kerja_jf_pengangkatan'));
+                setText('review-golongan-ruang-jf-pengangkatan', get('golongan_ruang_jf_pengangkatan'));
+                setText('review-usul-satuan-kerja-jf-pengangkatan', get('usul_satuan_kerja_jf_pengangkatan'));
 
                 const docContainer = document.getElementById('review-documents-jf-pengangkatan');
-                let html = '';
+                docContainer.innerHTML = '';
+                let hasFile = false;
+
                 document.querySelectorAll('input[type="file"]').forEach(input => {
                     if(input.files.length > 0) {
-                        const label = input.closest('.file-upload-card').querySelector('label').textContent.replace('*', '');
-                        html += `<div class="text-success mb-1"><i class="fas fa-check-circle me-2"></i>${label}: ${input.files[0].name}</div>`;
+                        hasFile = true;
+                        const fileName = input.files[0].name;
+                        const label = input.closest('.file-upload-card').querySelector('label').innerText.replace('*','').replace('(Opsional)','').trim();
+                        
+                        const item = document.createElement('div');
+                        item.className = 'd-flex align-items-center mb-2 text-success';
+                        item.innerHTML = `<i class="fas fa-check-circle me-2"></i> <strong>${label}:</strong> <span class="ms-1 text-dark">${fileName}</span>`;
+                        docContainer.appendChild(item);
                     }
                 });
-                docContainer.innerHTML = html || '<div class="text-muted">Belum ada dokumen</div>';
+
+                if (!hasFile) {
+                    docContainer.innerHTML = '<p class="text-muted fst-italic">Belum ada dokumen yang diunggah.</p>';
+                }
             }
 
-            // FORM SUBMIT
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+            // --- 5. SUBMIT FORM ---
+            document.getElementById('form-jf-pengangkatan').addEventListener('submit', function(e) {
                 if(!document.getElementById('confirm-data-jf-pengangkatan').checked) {
-                    Swal.fire('Perhatian', 'Anda harus menyetujui konfirmasi data', 'warning');
-                    return;
+                    e.preventDefault();
+                    Swal.fire('Konfirmasi', 'Anda harus menyetujui data', 'warning');
+                } else {
+                    Swal.fire({
+                        title: 'Mengirim...',
+                        text: 'Mohon tunggu',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
                 }
-
-                Swal.fire({
-                    title: 'Kirim Pengajuan?',
-                    text: "Pastikan data sudah benar!",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Kirim',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // this.submit(); // Uncomment jika backend siap
-                        Swal.fire('Terkirim!', 'Pengajuan Anda sedang diproses.', 'success').then(() => {
-                            window.location.reload();
-                        });
-                    }
-                });
             });
 
-            // Sync NIP Input
-            nipInput.addEventListener('input', function() {
-                nipDisplay.value = this.value;
-            });
+            showStep(1);
         });
     </script>
 @endsection

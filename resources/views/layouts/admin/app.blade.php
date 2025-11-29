@@ -186,7 +186,7 @@
                                 class="rounded-circle" width="36" height="36">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i> Profil Saya</a>
+                            <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2"></i> Profil Saya</a>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">

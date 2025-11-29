@@ -1,6 +1,11 @@
 @extends('layouts.user.app')
 @section('title', 'Batas Usia Pensiun')
 
+{{-- Tambahkan SweetAlert --}}
+@push('styles')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
+
 @section('content')
     {{-- HAPUS CLASS content-template AGAR LANGSUNG MUNCUL --}}
     <div class="container-fluid p-0">
@@ -39,10 +44,12 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                {{-- TAMBAHKAN ACTION, METHOD, CSRF, DAN ENCTYPE --}}
-                <form id="form-pensiun-bup" method="POST" enctype="multipart/form-data">
+                {{-- ACTION FORM KE ROUTE STORE --}}
+                <form id="form-pensiun-bup" action="{{ route('pensiun.bup.store') }}" method="POST"
+                    enctype="multipart/form-data">
                     @csrf
 
+                    {{-- STEP 1: DATA DIRI PEGAWAI --}}
                     <div class="form-step active" id="step-1">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -58,7 +65,8 @@
                                     <div class="col-md-8">
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="nip_pegawai" name="nip_pegawai"
-                                                placeholder="Masukkan NIP Pegawai">
+                                                placeholder="Masukkan NIP Pegawai"
+                                                value="{{ Auth::user()->pegawai->nip ?? '' }}">
                                             <button class="btn btn-outline-primary" type="button" id="btn-cek-nip">
                                                 <i class="fas fa-search me-2"></i>Cek NIP
                                             </button>
@@ -70,16 +78,19 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nama_pegawai" class="form-label">Nama Pegawai <span class="text-danger">*</span></label>
+                                <label for="nama_pegawai" class="form-label">Nama Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <input type="text" class="form-control" id="nama_pegawai" name="nama_pegawai" required>
+                                    <input type="text" class="form-control" id="nama_pegawai" name="nama_pegawai"
+                                        required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi nama pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="jabatan" class="form-label">Jabatan Pegawai <span class="text-danger">*</span></label>
+                                <label for="jabatan" class="form-label">Jabatan Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
                                     <input type="text" class="form-control" id="jabatan" name="jabatan" required>
@@ -90,7 +101,8 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="pangkat" class="form-label">Pangkat Pegawai <span class="text-danger">*</span></label>
+                                <label for="pangkat" class="form-label">Pangkat Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-star"></i></span>
                                     <input type="text" class="form-control" id="pangkat" name="pangkat" required>
@@ -99,10 +111,12 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="nip_display" class="form-label">NIP Pegawai <span class="text-danger">*</span></label>
+                                <label for="nip_display" class="form-label">NIP Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control" id="nip_display" name="nip_display" required>
+                                    <input type="text" class="form-control bg-light" id="nip_display" name="nip_display"
+                                        required readonly>
                                 </div>
                                 <div class="invalid-feedback">Harap isi NIP pegawai</div>
                             </div>
@@ -110,16 +124,19 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="satuan_kerja" class="form-label">Satuan Kerja Pegawai <span class="text-danger">*</span></label>
+                                <label for="satuan_kerja" class="form-label">Satuan Kerja Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-building"></i></span>
-                                    <input type="text" class="form-control" id="satuan_kerja" name="satuan_kerja" required>
+                                    <input type="text" class="form-control" id="satuan_kerja" name="satuan_kerja"
+                                        required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi satuan kerja</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="golongan" class="form-label">Golongan dan Ruang Pegawai <span class="text-danger">*</span></label>
+                                <label for="golongan" class="form-label">Golongan dan Ruang Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
                                     <input type="text" class="form-control" id="golongan" name="golongan" required>
@@ -130,39 +147,44 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="tmt_pensiun" class="form-label">TMT Pensiun Pegawai <span class="text-danger">*</span></label>
+                                <label for="tmt_pensiun" class="form-label">TMT Pensiun Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                    <input type="date" class="form-control" id="tmt_pensiun" name="tmt_pensiun" required>
+                                    <input type="date" class="form-control" id="tmt_pensiun" name="tmt_pensiun"
+                                        required>
                                 </div>
                                 <div class="invalid-feedback">Harap pilih TMT pensiun</div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <div></div> <button type="button" class="btn btn-primary btn-next" data-next="2">
+                            <div></div>
+                            <button type="button" class="btn btn-primary btn-next" data-next="2">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
+                    {{-- STEP 2: UPLOAD DOKUMEN (DESIGN DISAMAKAN DENGAN FUNGSIONAL) --}}
                     <div class="form-step" id="step-2">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-file-upload me-2"></i>Upload Dokumen Persyaratan
                             </h5>
-                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan untuk pengajuan pensiun</p>
+                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan (Otomatis dari Database)</p>
                         </div>
 
                         <div class="alert alert-info">
                             <div class="d-flex">
                                 <i class="fas fa-info-circle me-3 mt-1"></i>
                                 <div>
-                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF. Maksimal ukuran file: 2MB per dokumen.
+                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF. Maksimal ukuran file: 2MB
+                                    per dokumen.
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
-                                            <span id="upload-progress">0/13</span> dokumen terunggah
+                                            <span id="upload-progress">0/{{ count($syarat) }}</span> dokumen terunggah
                                         </small>
                                     </div>
                                 </div>
@@ -170,154 +192,36 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sk_cpns" class="form-label">SK CPNS <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="sk_cpns" name="sk_cpns" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-sk_cpns"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sk_kenaikan_pangkat" class="form-label">SK Kenaikan Pangkat <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="sk_kenaikan_pangkat" name="sk_kenaikan_pangkat" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-sk_kenaikan_pangkat"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
+                            @forelse($syarat as $dokumen)
+                                <div class="col-md-6 mb-3">
+                                    <div class="file-upload-card h-100">
+                                        <label for="file_{{ $dokumen->id }}" class="form-label fw-bold">
+                                            {{ $dokumen->nama_dokumen }}
+                                            @if ($dokumen->is_required)
+                                                <span class="text-danger">*</span>
+                                            @else
+                                                <span class="text-muted fw-light">(Opsional)</span>
+                                            @endif
+                                        </label>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="sk_jabatan_terakhir" class="form-label">SK Jabatan Terakhir <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="sk_jabatan_terakhir" name="sk_jabatan_terakhir" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-sk_jabatan_terakhir"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="surat_pernyataan_hukuman" class="form-label">Surat Pernyataan Tidak Pernah Dijatuhi Hukuman Disiplin <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="surat_pernyataan_hukuman" name="surat_pernyataan_hukuman" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-surat_pernyataan_hukuman"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
+                                        <div class="file-input-wrapper">
+                                            <input type="file" class="form-control file-input-dynamic"
+                                                id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
+                                                accept=".pdf" {{ $dokumen->is_required ? 'required' : '' }}>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="surat_pernyataan_pidana" class="form-label">Surat Pernyataan Tidak Sedang Menjalani Proses Pidana <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="surat_pernyataan_pidana" name="surat_pernyataan_pidana" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-surat_pernyataan_pidana"></div>
+                                            <div class="file-preview mt-2 small text-success"
+                                                id="preview-file_{{ $dokumen->id }}"></div>
+                                        </div>
+                                        <div class="form-text">Tipe: PDF, Max: 2MB</div>
                                     </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
                                 </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="scan_ktp" class="form-label">Scan KTP <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="scan_ktp" name="scan_ktp" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-scan_ktp"></div>
+                            @empty
+                                <div class="col-12">
+                                    <div class="alert alert-warning">
+                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (pensiun-bup).
                                     </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="pas_foto" class="form-label">Pas Photo <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="pas_foto" name="pas_foto" accept=".jpg,.jpeg,.png" required>
-                                        <div class="file-preview" id="preview-pas_foto"></div>
-                                    </div>
-                                    <div class="form-text">Type File: JPG, PNG, Max: 2MB</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="skp_2024" class="form-label">SKP Tahun 2024 <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="skp_2024" name="skp_2024" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-skp_2024"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="buku_nikah" class="form-label">Buku Nikah</label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="buku_nikah" name="buku_nikah" accept=".pdf">
-                                        <div class="file-preview" id="preview-buku_nikah"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="akta_kematian_cerai" class="form-label">Akta Kematian/Cerai <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="akta_kematian_cerai" name="akta_kematian_cerai" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-akta_kematian_cerai"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="akta_lahir_anak" class="form-label">Akta Lahir Anak <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="akta_lahir_anak" name="akta_lahir_anak" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-akta_lahir_anak"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="scan_kartu_keluarga" class="form-label">Scan Kartu Keluarga <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="scan_kartu_keluarga" name="scan_kartu_keluarga" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-scan_kartu_keluarga"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="file-upload-card">
-                                    <label for="data_perorangan" class="form-label">Data Perorangan Calon Pensiun <span class="text-danger">*</span></label>
-                                    <div class="file-input-wrapper">
-                                        <input type="file" class="form-control" id="data_perorangan" name="data_perorangan" accept=".pdf" required>
-                                        <div class="file-preview" id="preview-data_perorangan"></div>
-                                    </div>
-                                    <div class="form-text">Type File: PDF, Max size: 2MB</div>
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
@@ -330,6 +234,7 @@
                         </div>
                     </div>
 
+                    {{-- STEP 3: KONFIRMASI --}}
                     <div class="form-step" id="step-3">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -349,8 +254,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <p><strong>Satuan Kerja:</strong> <span id="review-satuan-kerja">-</span></p>
-                                        <p><strong>Pangkat:</strong> <span id="review-pangkat">-</span></p>
-                                        <p><strong>Golongan:</strong> <span id="review-golongan">-</span></p>
+                                        <p><strong>Pangkat/Gol:</strong> <span id="review-pangkat">-</span> / <span
+                                                id="review-golongan">-</span></p>
                                         <p><strong>TMT Pensiun:</strong> <span id="review-tmt">-</span></p>
                                     </div>
                                 </div>
@@ -360,15 +265,15 @@
                         <div class="card border-0 bg-light mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Dokumen yang Diunggah</h6>
-                                <div id="review-documents" class="small">
-                                    </div>
+                                <div id="review-documents" class="small"></div>
                             </div>
                         </div>
 
                         <div class="form-check mb-4">
                             <input class="form-check-input" type="checkbox" id="confirm-data" required>
                             <label class="form-check-label" for="confirm-data">
-                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung konsekuensi hukum jika data tersebut tidak valid.
+                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung konsekuensi
+                                hukum jika data tersebut tidak valid.
                             </label>
                             <div class="invalid-feedback">Anda harus menyetujui pernyataan ini sebelum mengajukan</div>
                         </div>
@@ -389,266 +294,356 @@
 
     <style>
         /* Progress Steps */
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
-        .progress-steps .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 8px; border: 3px solid #e9ecef; transition: all 0.3s ease; }
-        .step.active .step-circle { background-color: #1a73e8; border-color: #1a73e8; color: white; }
-        .step-label { font-size: 0.875rem; font-weight: 500; color: #6c757d; }
-        .step.active .step-label { color: #1a73e8; font-weight: 600; }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+
+        .progress-steps .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background-color: #1a73e8;
+            border-color: #1a73e8;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .step.active .step-label {
+            color: #1a73e8;
+            font-weight: 600;
+        }
 
         /* Form Steps */
-        .form-step { display: none; }
-        .form-step.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-step {
+            display: none;
+        }
 
-        /* File Upload Cards */
-        .file-upload-card { border: 2px dashed #dee2e6; border-radius: 8px; padding: 15px; transition: all 0.3s ease; background: white; }
-        .file-upload-card:hover { border-color: #1a73e8; background-color: #f8f9fa; }
-        .file-input-wrapper { position: relative; }
-        .file-preview { margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 0.875rem; display: none; }
-        .file-preview.has-file { display: block; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 100px; } }
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* File Upload Cards (Sama Persis Fungsional) */
+        .file-upload-card {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .file-upload-card:hover {
+            border-color: #1a73e8;
+            background-color: #f8f9fa;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .file-preview.has-file {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+
+            to {
+                opacity: 1;
+                max-height: 100px;
+            }
+        }
 
         /* Input Groups & Responsive */
-        .input-group-text { background-color: #f8f9fa; border-right: none; }
-        .form-control { border-left: none; }
-        .form-control:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
-        @media (max-width: 768px) { .progress-steps { flex-direction: column; align-items: flex-start; } .progress-steps::before { display: none; } .step { flex-direction: row; margin-bottom: 10px; } .step-circle { margin-right: 10px; margin-bottom: 0; } }
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+        }
+
+        .form-control {
+            border-left: none;
+        }
+
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .progress-steps {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .progress-steps::before {
+                display: none;
+            }
+
+            .step {
+                flex-direction: row;
+                margin-bottom: 10px;
+            }
+
+            .step-circle {
+                margin-right: 10px;
+                margin-bottom: 0;
+            }
+        }
     </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
-            console.log('Pensiun BUP Form Initialized');
 
-            const form = document.getElementById('form-pensiun-bup');
-            const btnCekNip = document.getElementById('btn-cek-nip');
-            const nipInput = document.getElementById('nip_pegawai');
-            const nipDisplay = document.getElementById('nip_display');
-            
+            // --- NOTIFIKASI ---
+            @if (session('success'))
+                Swal.fire('Berhasil', "{{ session('success') }}", 'success');
+            @endif
+            @if (session('error'))
+                Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            @endif
+            @if ($errors->any())
+                Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning');
+            @endif
+
+            // --- 1. LOGIKA STEPPER ---
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
-            let currentStep = 1;
 
-            // --- 1. NAVIGATION LOGIC ---
-            function showStep(step) {
-                steps.forEach(s => s.classList.remove('active'));
-                progressSteps.forEach(s => s.classList.remove('active'));
-
-                document.getElementById(`step-${step}`).classList.add('active');
-                
-                progressSteps.forEach(s => {
-                    if(parseInt(s.dataset.step) <= step) {
-                        s.classList.add('active');
-                    }
-                });
-
-                currentStep = step;
-                if(step === 3) updateReviewData();
+            function showStep(idx) {
+                steps.forEach(el => el.classList.remove('active'));
+                progressSteps.forEach(el => el.classList.remove('active'));
+                document.getElementById(`step-${idx}`).classList.add('active');
+                for (let i = 0; i < idx; i++) progressSteps[i].classList.add('active');
+                if (idx == 3) updateReview();
             }
 
-            document.querySelectorAll('.btn-next').forEach(button => {
-                button.addEventListener('click', function() {
-                    const nextStep = parseInt(this.getAttribute('data-next'));
-                    if (validateStep(currentStep)) {
-                        showStep(nextStep);
-                    }
-                });
-            });
+            document.querySelectorAll('.btn-next').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const nextStepIndex = this.dataset.next;
+                    const currentStepIndex = nextStepIndex - 1;
+                    const currentStepElement = document.getElementById(`step-${currentStepIndex}`);
 
-            document.querySelectorAll('.btn-prev').forEach(button => {
-                button.addEventListener('click', function() {
-                    const prevStep = parseInt(this.getAttribute('data-prev'));
-                    showStep(prevStep);
-                });
-            });
-
-            // --- 2. VALIDATION LOGIC ---
-            function validateStep(step) {
-                let isValid = true;
-                
-                if (step === 1) {
-                    const fields = document.querySelectorAll('#step-1 [required]');
-                    fields.forEach(field => {
-                        if (!field.value.trim()) {
-                            field.classList.add('is-invalid');
-                            isValid = false;
-                        } else {
-                            field.classList.remove('is-invalid');
-                            field.classList.add('is-valid');
+                    // 1. Validasi Spesifik: Cek apakah NIP sudah dicek (Step 1 ke 2)
+                    if (nextStepIndex == 2) {
+                        const nama = document.getElementById('nama_pegawai').value;
+                        if (!nama) {
+                            Swal.fire('Data Kosong',
+                                'Silakan Cek NIP terlebih dahulu atau pastikan data terisi!',
+                                'warning');
+                            return;
                         }
-                    });
-                    if (!isValid) Swal.fire('Perhatian', 'Harap lengkapi semua field yang wajib diisi', 'warning');
-                } 
-                else if (step === 2) {
-                    const fileInputs = document.querySelectorAll('#step-2 input[type="file"][required]');
-                    let uploadedCount = 0;
-                    fileInputs.forEach(input => {
-                        if (input.files.length > 0) uploadedCount++;
-                        else input.classList.add('is-invalid');
-                    });
-
-                    if (uploadedCount < fileInputs.length) {
-                        Swal.fire('Perhatian', `Harap unggah semua dokumen wajib. (${uploadedCount}/${fileInputs.length} terunggah)`, 'warning');
-                        isValid = false;
                     }
-                }
 
-                return isValid;
-            }
+                    // 2. Validasi Umum: Cek semua field 'required' di step yang sedang aktif
+                    // Ambil semua input yang wajib diisi di step ini
+                    const requiredInputs = currentStepElement.querySelectorAll(
+                        'input[required], select[required], textarea[required]');
+                    let isValid = true;
 
-            document.querySelectorAll('input, select').forEach(el => {
-                el.addEventListener('input', function() {
-                    if(this.value.trim()) {
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
+                    for (const input of requiredInputs) {
+                        // Jika input tidak valid (kosong tapi required, format salah, dll)
+                        if (!input.checkValidity()) {
+                            input
+                        .reportValidity(); // Memunculkan bubble peringatan browser (seperti "Please fill out this field")
+                            isValid = false;
+                            return; // Stop, jangan lanjut loop, biarkan user isi dulu
+                        }
+                    }
+
+                    // 3. Jika semua aman, baru pindah step
+                    if (isValid) {
+                        showStep(nextStepIndex);
                     }
                 });
             });
 
-            // --- 3. FILE UPLOAD LOGIC ---
-            document.querySelectorAll('input[type="file"]').forEach(input => {
-                input.addEventListener('change', function() {
-                    handleFileUpload(this);
-                    updateUploadProgress();
+            document.querySelectorAll('.btn-prev').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    showStep(this.dataset.prev);
                 });
             });
 
-            function handleFileUpload(input) {
-                const preview = document.getElementById(`preview-${input.id}`);
-                const maxSize = 2 * 1024 * 1024; // 2MB
-
-                if (input.files.length > 0) {
-                    const file = input.files[0];
-                    if (file.size > maxSize) {
-                        input.classList.add('is-invalid');
-                        preview.innerHTML = `<div class="text-danger"><i class="fas fa-exclamation-circle me-2"></i>File > 2MB</div>`;
-                        preview.classList.add('has-file');
-                        input.value = ''; 
-                    } else {
-                        input.classList.remove('is-invalid');
-                        input.classList.add('is-valid');
-                        preview.innerHTML = `<div class="text-success"><i class="fas fa-check-circle me-2"></i>${file.name}</div>`;
-                        preview.classList.add('has-file');
-                    }
-                }
-            }
-
-            function updateUploadProgress() {
-                const requiredFiles = document.querySelectorAll('#step-2 input[type="file"][required]');
-                let count = 0;
-                requiredFiles.forEach(inp => { if(inp.files.length > 0) count++; });
-                const progressEl = document.getElementById('upload-progress');
-                if(progressEl) progressEl.textContent = `${count}/${requiredFiles.length}`;
-            }
-
-            // --- 4. CEK NIP LOGIC (DUMMY) ---
-            if (btnCekNip) {
-                btnCekNip.addEventListener('click', function() {
-                    const nip = nipInput.value.trim();
+            // --- 2. LOGIKA CEK NIP ---
+            const btnCek = document.getElementById('btn-cek-nip');
+            if (btnCek) {
+                btnCek.addEventListener('click', function() {
+                    const nip = document.getElementById('nip_pegawai').value;
                     if (!nip) {
-                        Swal.fire('Info', 'Masukkan NIP terlebih dahulu', 'info');
+                        Swal.fire('Isi NIP!', '', 'warning');
                         return;
                     }
 
-                    const originalHtml = this.innerHTML;
+                    const oldHtml = this.innerHTML;
                     this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    this.disabled = true;
 
-                    setTimeout(() => {
-                        const data = cariDataPegawai(nip);
-                        if(data) {
-                            document.getElementById('nama_pegawai').value = data.nama;
-                            document.getElementById('jabatan').value = data.jabatan;
-                            document.getElementById('satuan_kerja').value = data.satuan_kerja;
-                            document.getElementById('pangkat').value = data.pangkat;
-                            document.getElementById('golongan').value = data.golongan;
-                            nipDisplay.value = data.nip;
-                            
-                            document.querySelectorAll('#step-1 input').forEach(i => i.classList.add('is-valid'));
-                            Swal.fire('Berhasil', 'Data pegawai ditemukan', 'success');
-                        } else {
-                            Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
+                    fetch(`{{ url('/kenaikan-pangkat/ajax/cek-nip') }}/${nip}`)
+                        .then(res => res.json())
+                        .then(res => {
+                            if (res.success) {
+                                const d = res.data;
+                                // Helper set value
+                                const set = (id, val) => {
+                                    const el = document.getElementById(id);
+                                    if (el) el.value = val || '';
+                                }
+
+                                set('nama_pegawai', d.nama);
+                                set('jabatan', d.jabatan);
+                                set('pangkat', d.pangkat);
+                                set('nip_display', d.nip);
+                                set('satuan_kerja', d.unit_kerja);
+                                set('golongan', d.golongan_ruang);
+                                Swal.fire('Ditemukan', 'Data pegawai dimuat', 'success');
+                            } else {
+                                Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
+                            }
+                        })
+                        .catch(() => Swal.fire('Error', 'Gagal koneksi server', 'error'))
+                        .finally(() => this.innerHTML = oldHtml);
+                });
+            }
+
+            // --- 3. LOGIKA UPLOAD FILE (PREVIEW & STYLE) ---
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const previewId = `preview-${this.id}`; // ID preview: preview-file_1
+                    const previewEl = document.getElementById(previewId);
+
+                    if (this.files.length > 0) {
+                        const fileName = this.files[0].name;
+                        if (previewEl) {
+                            previewEl.innerHTML =
+                                `<i class="fas fa-check-circle me-1"></i> ${fileName}`;
+                            previewEl.classList.add('has-file');
                         }
-                        this.innerHTML = originalHtml;
-                        this.disabled = false;
-                    }, 1000);
-                });
-            }
-
-            function cariDataPegawai(nip) {
-                const db = {
-                    '123456789012345678': {
-                        nama: 'Dr. Ahmad Fauzi, M.Kom.', nip: '123456789012345678',
-                        jabatan: 'Kepala Bidang TI', satuan_kerja: 'Dinas Kominfo',
-                        pangkat: 'Pembina Tk. I', golongan: 'IV/b'
-                    },
-                    '198765432109876543': {
-                        nama: 'Siti Aminah, S.E.', nip: '198765432109876543',
-                        jabatan: 'Kasubag Umum', satuan_kerja: 'BKD',
-                        pangkat: 'Penata Tk. I', golongan: 'III/d'
                     }
-                };
-                return db[nip] || null;
-            }
+                });
+            });
 
-            // --- 5. UPDATE REVIEW ---
-            function updateReviewData() {
-                document.getElementById('review-nama').textContent = document.getElementById('nama_pegawai').value || '-';
-                document.getElementById('review-nip').textContent = document.getElementById('nip_display').value || '-';
-                document.getElementById('review-jabatan').textContent = document.getElementById('jabatan').value || '-';
-                document.getElementById('review-satuan-kerja').textContent = document.getElementById('satuan_kerja').value || '-';
-                document.getElementById('review-pangkat').textContent = document.getElementById('pangkat').value || '-';
-                document.getElementById('review-golongan').textContent = document.getElementById('golongan').value || '-';
-                
+            // --- 4. LOGIKA REVIEW DATA ---
+            function updateReview() {
+                const get = (id) => document.getElementById(id).value || '-';
+                const setText = (id, val) => document.getElementById(id).textContent = val;
+
+                setText('review-nama', get('nama_pegawai'));
+                setText('review-nip', get('nip_display'));
+                setText('review-jabatan', get('jabatan'));
+                setText('review-satuan-kerja', get('satuan_kerja'));
+                setText('review-pangkat', get('pangkat'));
+                setText('review-golongan', get('golongan'));
+
                 const tmt = document.getElementById('tmt_pensiun').value;
-                document.getElementById('review-tmt').textContent = tmt ? new Date(tmt).toLocaleDateString('id-ID') : '-';
+                setText('review-tmt', tmt ? new Date(tmt).toLocaleDateString('id-ID') : '-');
 
+                // Review Dokumen Loop
                 const docContainer = document.getElementById('review-documents');
-                let html = '';
+                docContainer.innerHTML = '';
+                let hasFile = false;
+
                 document.querySelectorAll('input[type="file"]').forEach(input => {
-                    if(input.files.length > 0) {
-                        const label = input.closest('.file-upload-card').querySelector('label').textContent.replace('*', '');
-                        html += `<div class="text-success mb-1"><i class="fas fa-check-circle me-2"></i>${label}: ${input.files[0].name}</div>`;
+                    if (input.files.length > 0) {
+                        hasFile = true;
+                        const fileName = input.files[0].name;
+                        // Ambil label dari parent card
+                        const label = input.closest('.file-upload-card').querySelector('label').innerText
+                            .replace('*', '').replace('(Opsional)', '').trim();
+
+                        const item = document.createElement('div');
+                        item.className = 'd-flex align-items-center mb-2 text-success';
+                        item.innerHTML =
+                            `<i class="fas fa-check-circle me-2"></i> <strong>${label}:</strong> <span class="ms-1 text-dark">${fileName}</span>`;
+                        docContainer.appendChild(item);
                     }
                 });
-                docContainer.innerHTML = html || '<div class="text-muted">Belum ada dokumen</div>';
+
+                if (!hasFile) {
+                    docContainer.innerHTML =
+                    '<p class="text-muted fst-italic">Belum ada dokumen yang diunggah.</p>';
+                }
             }
 
-            // FORM SUBMIT
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                if(!document.getElementById('confirm-data').checked) {
-                    Swal.fire('Perhatian', 'Anda harus menyetujui konfirmasi data', 'warning');
-                    return;
+            // --- 5. SUBMIT FORM ---
+            document.getElementById('form-pensiun-bup').addEventListener('submit', function(e) {
+                if (!document.getElementById('confirm-data').checked) {
+                    e.preventDefault();
+                    Swal.fire('Konfirmasi', 'Anda harus menyetujui data', 'warning');
+                } else {
+                    Swal.fire({
+                        title: 'Mengirim...',
+                        text: 'Mohon tunggu',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
                 }
-
-                Swal.fire({
-                    title: 'Kirim Pengajuan?',
-                    text: "Pastikan data sudah benar!",
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ya, Kirim',
-                    cancelButtonText: 'Batal'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // this.submit(); // Uncomment jika backend siap
-                        Swal.fire('Terkirim!', 'Pengajuan Anda sedang diproses.', 'success').then(() => {
-                            window.location.reload();
-                        });
-                    }
-                });
             });
 
-            // Sync NIP Input
-            nipInput.addEventListener('input', function() {
-                nipDisplay.value = this.value;
-            });
-            
-            // Set Min Date for TMT
+            // TMT Min Date (Optional)
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('tmt_pensiun').min = today;
+
+            showStep(1);
         });
     </script>
 @endsection

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,9 +16,11 @@
             height: 100vh;
             overflow: hidden;
         }
+
         .login-container {
             height: 100vh;
         }
+
         /* Bagian Kiri (Branding) */
         .login-left {
             background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
@@ -29,6 +32,7 @@
             position: relative;
             overflow: hidden;
         }
+
         .login-left::before {
             content: '';
             position: absolute;
@@ -39,6 +43,7 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
         }
+
         .login-left::after {
             content: '';
             position: absolute;
@@ -49,15 +54,16 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
         }
+
         .brand-logo {
             width: 80px;
             margin-bottom: 1.5rem;
             background: white;
             padding: 10px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Bagian Kanan (Form) */
         .login-right {
             background: white;
@@ -66,19 +72,23 @@
             justify-content: center;
             padding: 2rem;
         }
+
         .login-form-wrapper {
             width: 100%;
             max-width: 400px;
         }
+
         .form-control {
             padding: 0.75rem 1rem;
             border-radius: 8px;
             border: 1px solid #dee2e6;
         }
+
         .form-control:focus {
             border-color: #1a73e8;
             box-shadow: 0 0 0 0.25rem rgba(26, 115, 232, 0.25);
         }
+
         .btn-login {
             background-color: #1a73e8;
             border: none;
@@ -87,10 +97,12 @@
             border-radius: 8px;
             transition: all 0.3s;
         }
+
         .btn-login:hover {
             background-color: #1557b0;
             transform: translateY(-1px);
         }
+
         .input-group-text {
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -98,19 +110,23 @@
             border-top-left-radius: 8px;
             border-bottom-left-radius: 8px;
         }
+
         .form-control {
             border-left: none;
         }
-        
+
         /* Responsive */
         @media (max-width: 768px) {
             .login-left {
-                display: none; /* Sembunyikan bagian kiri di mobile */
+                display: none;
+                /* Sembunyikan bagian kiri di mobile */
             }
+
             body {
                 background: white;
                 overflow-y: auto;
             }
+
             .login-container {
                 height: auto;
                 min-height: 100vh;
@@ -118,19 +134,21 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="container-fluid login-container">
         <div class="row h-100">
-            
+
             <div class="col-md-6 login-left">
                 <div class="z-1 position-relative">
                     <img src="{{ asset('assets/logo_kantor.png') }}" alt="Logo" class="brand-logo">
                     <h1 class="fw-bold display-6 mb-3">Sistem Informasi Kepegawaian</h1>
                     <h4 class="fw-light mb-4">Kementrian Agama Kota Gorontalo</h4>
                     <p class="lead opacity-75" style="font-size: 1rem; line-height: 1.6;">
-                        Selamat datang di portal layanan kepegawaian terpadu. 
-                        Kelola kenaikan pangkat, pensiun, mutasi, dan administrasi lainnya dengan lebih mudah dan transparan.
+                        Selamat datang di portal layanan kepegawaian terpadu.
+                        Kelola kenaikan pangkat, pensiun, mutasi, dan administrasi lainnya dengan lebih mudah dan
+                        transparan.
                     </p>
                     <div class="mt-5">
                         <small class="d-block opacity-50">&copy; 2025 Kemenag Kota Gorontalo.</small>
@@ -148,7 +166,7 @@
 
                     <div class="mb-4">
                         <h3 class="fw-bold text-dark">Silakan Login</h3>
-                        <p class="text-muted">Masukkan email dan password Anda untuk melanjutkan.</p>
+                        <p class="text-muted">Masukkan nip dan password Anda untuk melanjutkan.</p>
                     </div>
 
                     {{-- Alert Error --}}
@@ -164,13 +182,17 @@
 
                     <form action="{{ route('login.post') }}" method="POST">
                         @csrf
-                        
+
                         <div class="mb-3">
-                            <label for="email" class="form-label fw-bold small text-muted">ALAMAT EMAIL</label>
+                            <label for="nip" class="form-label fw-bold small text-muted">NOMOR INDUK PEGAWAI
+                                (NIP)</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-envelope text-muted"></i></span>
-                                <input type="email" class="form-control" id="email" name="email" 
-                                    placeholder="nama@kemenag.go.id" value="{{ old('email') }}" required autofocus>
+                                <span class="input-group-text"><i class="fas fa-id-card text-muted"></i></span>
+                                <input type="text" class="form-control @error('nip') is-invalid @enderror"
+                                    id="nip" name="nip" placeholder="Masukkan 18 digit NIP"
+                                    value="{{ old('nip') }}" maxlength="18" minlength="18"
+                                    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    required autofocus>
                             </div>
                         </div>
 
@@ -181,10 +203,10 @@
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
-                                <input type="password" class="form-control" id="password" name="password" 
+                                <input type="password" class="form-control" id="password" name="password"
                                     placeholder="Masukkan password" required>
-                                <button class="btn btn-outline-secondary border-start-0 border-top-0 border-bottom-0" 
-                                        type="button" id="togglePassword" style="border-color: #dee2e6;">
+                                <button class="btn btn-outline-secondary border-start-0 border-top-0 border-bottom-0"
+                                    type="button" id="togglePassword" style="border-color: #dee2e6;">
                                     <i class="fas fa-eye-slash text-muted small"></i>
                                 </button>
                             </div>
@@ -203,7 +225,8 @@
                     </form>
 
                     <div class="mt-4 text-center">
-                        <p class="small text-muted">Belum punya akun? <a href="#" class="text-decoration-none fw-bold">Hubungi Admin</a></p>
+                        <p class="small text-muted">Belum punya akun? <a href="#"
+                                class="text-decoration-none fw-bold">Hubungi Admin</a></p>
                     </div>
                 </div>
             </div>
@@ -215,11 +238,11 @@
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#password');
 
-        togglePassword.addEventListener('click', function (e) {
+        togglePassword.addEventListener('click', function(e) {
             // toggle the type attribute
             const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
             password.setAttribute('type', type);
-            
+
             // toggle the icon
             const icon = this.querySelector('i');
             icon.classList.toggle('fa-eye');
@@ -227,4 +250,5 @@
         });
     </script>
 </body>
+
 </html>

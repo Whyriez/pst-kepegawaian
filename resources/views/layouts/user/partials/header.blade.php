@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <!-- Logo Kantor -->
         <div class="navbar-brand d-flex align-items-center">
-            <img src="assets/logo_kantor.png" alt="Logo Kantor" class="logo-kantor me-2" style="max-height: 40px;">
+            <img src="{{ asset('assets/logo_kantor.png') }}" alt="Logo Kantor" class="logo-kantor me-2" style="max-height: 40px;">
             <span class="d-none d-md-inline fw-bold">Kementrian Agama Kota Gorontalo</span>
         </div>
 
