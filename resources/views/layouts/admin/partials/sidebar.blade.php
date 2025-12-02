@@ -303,13 +303,13 @@
         <li class="">
             <a href="{{ route('admin.satyalancana') }}"
                 class="menu-item {{ request()->routeIs('admin.satyalancana') ? 'active' : '' }} d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-grow-1">
                     <i class="fas fa-medal"></i>
                     <span>Satyalancana</span>
                 </div>
                 {{-- Hanya cek Kategori saja --}}
-                @if (isset($badgeKategori['Satyalancana']) && $badgeKategori['Satyalancana'] > 0)
-                    <span class="badge bg-danger rounded-pill">{{ $badgeKategori['Satyalancana'] }}</span>
+                @if (isset($badgeSlug['satyalancana']) && $$badgeSlug['satyalancana'] > 0)
+                    <span class="badge bg-danger rounded-pill flex-shrink-0">{{ $$badgeSlug['satyalancana'] }}</span>
                 @endif
             </a>
         </li>
@@ -362,8 +362,8 @@
                     <i class="fas fa-calculator"></i>
                     <span>Konversi AK Pendidikan</span>
                 </div>
-                @if (isset($badgeKategori['Konversi AK Pendidikan']) && $badgeKategori['Konversi AK Pendidikan'] > 0)
-                    <span class="badge bg-danger rounded-pill">{{ $badgeKategori['Konversi AK Pendidikan'] }}</span>
+                @if (isset($badgeSlug['konversi-ak-pendidikan']) && $badgeSlug['konversi-ak-pendidikan'] > 0)
+                    <span class="badge bg-danger rounded-pill">{{ $badgeSlug['konversi-ak-pendidikan'] }}</span>
                 @endif
             </a>
         </li>
@@ -372,12 +372,12 @@
         <li class="">
             <a href="{{ route('admin.penugasan') }}"
                 class="menu-item {{ request()->routeIs('admin.penugasan') ? 'active' : '' }} d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-grow-1">
                     <i class="fas fa-tasks"></i>
                     <span>Penugasan</span>
                 </div>
-                @if (isset($badgeKategori['Penugasan']) && $badgeKategori['Penugasan'] > 0)
-                    <span class="badge bg-danger rounded-pill">{{ $badgeKategori['Penugasan'] }}</span>
+                @if (isset($badgeSlug['penugasan']) && $badgeSlug['penugasan'] > 0)
+                    <span class="badge bg-danger rounded-pill flex-shrink-0">{{ $badgeSlug['penugasan'] }}</span>
                 @endif
             </a>
         </li>
@@ -386,12 +386,12 @@
         <li class="">
             <a href="{{ route('admin.perbaikan_data') }}"
                 class="menu-item {{ request()->routeIs('admin.perbaikan_data') ? 'active' : '' }} d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-grow-1">
                     <i class="fas fa-database"></i>
                     <span>Perbaikan Data ASN</span>
                 </div>
-                @if (isset($badgeKategori['Perbaikan Data ASN']) && $badgeKategori['Perbaikan Data ASN'] > 0)
-                    <span class="badge bg-danger rounded-pill">{{ $badgeKategori['Perbaikan Data ASN'] }}</span>
+                @if (isset($badgeSlug['perbaikan-data-asn']) && $badgeSlug['perbaikan-data-asn'] > 0)
+                    <span class="badge bg-danger rounded-pill flex-shrink-0">{{ $badgeSlug['perbaikan-data-asn'] }}</span>
                 @endif
             </a>
         </li>
@@ -400,12 +400,12 @@
         <li class="">
             <a href="{{ route('admin.tugas_belajar') }}"
                 class="menu-item {{ request()->routeIs('admin.tugas_belajar') ? 'active' : '' }} d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-grow-1">
                     <i class="fas fa-book-reader"></i>
                     <span>Tugas Belajar</span>
                 </div>
-                @if (isset($badgeKategori['Tugas Belajar']) && $badgeKategori['Tugas Belajar'] > 0)
-                    <span class="badge bg-danger rounded-pill">{{ $badgeKategori['Tugas Belajar'] }}</span>
+                @if (isset($badgeSlug['tugas-belajar']) && $badgeSlug['tugas-belajar'] > 0)
+                    <span class="badge bg-danger rounded-pill flex-shrink-0">{{ $badgeSlug['tugas-belajar'] }}</span>
                 @endif
             </a>
         </li>

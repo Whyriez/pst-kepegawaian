@@ -18,7 +18,7 @@
                 <li><a class="dropdown-item" href="{{ route('admin.penugasan', ['status' => 'pending']) }}">Menunggu
                         Verifikasi</a></li>
                 <li><a class="dropdown-item"
-                        href="{{ route('admin.penugasan', ['status' => 'disetujui']) }}">Disetujui</a></li>
+                       href="{{ route('admin.penugasan', ['status' => 'disetujui']) }}">Disetujui</a></li>
                 <li><a class="dropdown-item" href="{{ route('admin.penugasan', ['status' => 'ditunda']) }}">Ditunda</a>
                 </li>
                 <li><a class="dropdown-item" href="{{ route('admin.penugasan', ['status' => 'ditolak']) }}">Ditolak</a>
@@ -91,7 +91,7 @@
                 <div class="input-group input-group-sm">
                     <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
                     <input type="text" name="search" class="form-control border-start-0 bg-light"
-                        placeholder="Cari Nama/NIP..." value="{{ request('search') }}">
+                           placeholder="Cari Nama/NIP..." value="{{ request('search') }}">
                 </div>
             </form>
         </div>
@@ -99,105 +99,106 @@
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
-                        <tr>
-                            <th class="ps-4 py-3">Tanggal</th>
-                            <th class="py-3">Pegawai</th>
-                            <th class="py-3">Jabatan</th>
-                            <th class="py-3">Unit Kerja</th>
-                            <th class="py-3">Status</th>
-                            <th class="py-3 text-center">Dokumen</th>
-                            <th class="py-3 text-end pe-4">Aksi</th>
-                        </tr>
+                    <tr>
+                        <th class="ps-4 py-3">Tanggal</th>
+                        <th class="py-3">Pegawai</th>
+                        <th class="py-3">Jabatan</th>
+                        <th class="py-3">Unit Kerja</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3 text-center">Dokumen</th>
+                        <th class="py-3 text-end pe-4">Aksi</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        @forelse($pengajuan as $item)
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold">{{ $item->tanggal_pengajuan->format('d M Y') }}</div>
-                                    <small class="text-muted">{{ $item->created_at->format('H:i') }} WIB</small>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($item->pegawai->nama_lengkap) }}&background=random"
-                                            class="rounded-circle me-2" width="32" height="32">
-                                        <div>
-                                            <div class="fw-bold text-dark">{{ $item->pegawai->nama_lengkap }}</div>
-                                            <small class="text-muted">NIP. {{ $item->pegawai->nip }}</small>
-                                        </div>
+                    @forelse($pengajuan as $item)
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold">{{ $item->tanggal_pengajuan->format('d M Y') }}</div>
+                                <small class="text-muted">{{ $item->created_at->format('H:i') }} WIB</small>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img
+                                        src="https://ui-avatars.com/api/?name={{ urlencode($item->pegawai->nama_lengkap) }}&background=random"
+                                        class="rounded-circle me-2" width="32" height="32">
+                                    <div>
+                                        <div class="fw-bold text-dark">{{ $item->pegawai->nama_lengkap }}</div>
+                                        <small class="text-muted">NIP. {{ $item->pegawai->nip }}</small>
                                     </div>
-                                </td>
-                                <td>
-                                    <div class="small fw-bold">{{ $item->data_tambahan['jabatan'] ?? '-' }}</div>
-                                    <small class="text-muted">{{ $item->data_tambahan['golongan_ruang'] ?? '-' }}</small>
-                                </td>
-                                <td>
-                                    <div class="small text-muted">
-                                        {{ $item->data_tambahan['unit_kerja'] ?? '-' }}
-                                    </div>
-                                </td>
-                                <td>
-                                    @if ($item->status == 'pending')
-                                        <span class="badge bg-warning text-dark">Menunggu</span>
-                                    @elseif($item->status == 'disetujui')
-                                        <span class="badge bg-success">Disetujui</span>
-                                    @elseif($item->status == 'ditolak')
-                                        <span class="badge bg-danger">Ditolak</span>
-                                    @elseif($item->status == 'ditunda')
-                                        <span class="badge bg-secondary">Ditunda</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    @php
-                                        $berkasList = $item->dokumenPengajuans->map(function ($doc) {
-                                            $cleanPath = str_replace('public/', '', $doc->path_file);
-                                            $isPdf = str_ends_with(strtolower($cleanPath), '.pdf');
-                                            return [
-                                                'nama_dokumen' => $doc->syaratDokumen->nama_dokumen ?? 'Dokumen',
-                                                'url' => asset('storage/' . $cleanPath),
-                                                'is_pdf' => $isPdf,
-                                            ];
-                                        });
-                                    @endphp
-                                    <button class="btn btn-sm btn-light border btn-preview"
+                                </div>
+                            </td>
+                            <td>
+                                <div class="small fw-bold">{{ $item->data_tambahan['jabatan'] ?? '-' }}</div>
+                                <small class="text-muted">{{ $item->data_tambahan['golongan_ruang'] ?? '-' }}</small>
+                            </td>
+                            <td>
+                                <div class="small text-muted">
+                                    {{ $item->data_tambahan['unit_kerja'] ?? '-' }}
+                                </div>
+                            </td>
+                            <td>
+                                @if ($item->status == 'pending')
+                                    <span class="badge bg-warning text-dark">Menunggu</span>
+                                @elseif($item->status == 'disetujui')
+                                    <span class="badge bg-success">Disetujui</span>
+                                @elseif($item->status == 'ditolak')
+                                    <span class="badge bg-danger">Ditolak</span>
+                                @elseif($item->status == 'ditunda')
+                                    <span class="badge bg-secondary">Ditunda</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @php
+                                    $berkasList = $item->dokumenPengajuans->map(function ($doc) {
+                                        $cleanPath = str_replace('public/', '', $doc->path_file);
+                                        $isPdf = str_ends_with(strtolower($cleanPath), '.pdf');
+                                        return [
+                                            'nama_dokumen' => $doc->syaratDokumen->nama_dokumen ?? 'Dokumen',
+                                            'url' => asset('storage/' . $cleanPath),
+                                            'is_pdf' => $isPdf,
+                                        ];
+                                    });
+                                @endphp
+                                <button class="btn btn-sm btn-light border btn-preview"
                                         data-nama="{{ $item->pegawai->nama_lengkap }}"
                                         data-files="{{ $berkasList->toJson() }}" onclick="loadPreview(this)">
-                                        <i class="fas fa-paperclip me-1 text-primary"></i>
-                                        {{ $item->dokumenPengajuans->count() }}
-                                    </button>
-                                </td>
-                                <td class="text-end pe-4">
-                                    @if ($item->status == 'pending' || $item->status == 'ditunda')
-                                        <div class="btn-group">
-                                            <button class="btn btn-sm btn-outline-success" title="Setujui"
+                                    <i class="fas fa-paperclip me-1 text-primary"></i>
+                                    {{ $item->dokumenPengajuans->count() }}
+                                </button>
+                            </td>
+                            <td class="text-end pe-4">
+                                @if ($item->status == 'pending' || $item->status == 'ditunda')
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-success" title="Setujui"
                                                 onclick="confirmApprove({{ $item->id }})">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-warning" title="Tunda"
-                                                onclick="showPostponeModal({{ $item->id }})">
-                                                <i class="fas fa-pause"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-danger" title="Tolak"
-                                                onclick="showRejectModal({{ $item->id }})">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        </div>
-                                    @elseif($item->status == 'disetujui')
-                                        <button class="btn btn-sm btn-light text-muted" disabled>
-                                            <i class="fas fa-check-double"></i> Selesai
+                                            <i class="fas fa-check"></i>
                                         </button>
-                                    @else
-                                        <button class="btn btn-sm btn-light text-danger" disabled>Ditolak</button>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
-                                    <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
-                                    <p>Belum ada pengajuan Penugasan.</p>
-                                </td>
-                            </tr>
-                        @endforelse
+                                        <button class="btn btn-sm btn-outline-warning" title="Tunda"
+                                                onclick="showPostponeModal({{ $item->id }})">
+                                            <i class="fas fa-pause"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" title="Tolak"
+                                                onclick="showRejectModal({{ $item->id }})">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                @elseif($item->status == 'disetujui')
+                                    <button class="btn btn-sm btn-light text-muted" disabled>
+                                        <i class="fas fa-check-double"></i> Selesai
+                                    </button>
+                                @else
+                                    <button class="btn btn-sm btn-light text-danger" disabled>Ditolak</button>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
+                                <p>Belum ada pengajuan Penugasan.</p>
+                            </td>
+                        </tr>
+                    @endforelse
                     </tbody>
                 </table>
             </div>
@@ -231,7 +232,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Detail Alasan</label>
-                            <textarea class="form-control" name="alasan" rows="4" required placeholder="Jelaskan alasan penolakan..."></textarea>
+                            <textarea class="form-control" name="alasan" rows="4" required
+                                      placeholder="Jelaskan alasan penolakan..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -265,12 +267,12 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tindak Lanjut</label>
                             <input type="date" class="form-control" name="tanggal_tindak_lanjut" required
-                                value="{{ date('Y-m-d', strtotime('+3 days')) }}">
+                                   value="{{ date('Y-m-d', strtotime('+3 days')) }}">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-bold">Alasan</label>
                             <textarea class="form-control" name="alasan" rows="3" required
-                                placeholder="Menunggu persetujuan pimpinan..."></textarea>
+                                      placeholder="Menunggu persetujuan pimpinan..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -284,7 +286,7 @@
 
     {{-- HIDDEN APPROVE --}}
     <form id="formApproveHidden" action="{{ route('admin.penugasan.approve') }}" method="POST"
-        style="display: none;">
+          style="display: none;">
         @csrf
         <input type="hidden" name="id" id="approveId">
     </form>
@@ -365,10 +367,15 @@
         function showFileInViewer(file) {
             const pdfViewer = document.getElementById('pdfViewer');
             const imgViewer = document.getElementById('imageViewer');
+            const placeholder = document.getElementById('pdfPlaceholder');
+            const unsupported = document.getElementById('unsupportedFormat');
             const btnDownload = document.getElementById('btnDownloadFile');
 
             if (pdfViewer) pdfViewer.style.display = 'none';
             if (imgViewer) imgViewer.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'none';
+            if (unsupported) unsupported.style.display = 'none';
+
             if (btnDownload) btnDownload.href = file.url;
 
             if (file.is_pdf) {
@@ -384,6 +391,7 @@
                     imgViewer.style.display = 'block';
                 }
             }
+
         }
     </script>
 @endpush

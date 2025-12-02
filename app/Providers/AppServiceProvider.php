@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
             $badgeKategori = $rawCounts->groupBy('kategori')->map(function ($row) {
                 return $row->sum('total');
             })->toArray();
-
+            
             // 2. Data untuk Badge Sub-Menu (Total per slug spesifik)
             // Contoh: ['kp-fungsional' => 2, 'kp-struktural' => 3]
             // PENTING: Key array ini adalah 'slug' yang ada di database table jenis_layanans
