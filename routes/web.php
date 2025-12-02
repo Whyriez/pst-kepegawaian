@@ -47,18 +47,30 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('kenaikan-pangkat')->name('kp.')->group(function () {
 
             Route::get('/fungsional', [KenaikanPangkatController::class, 'fungsional'])->name('fungsional');
+            Route::get('/fungsional/create', [KenaikanPangkatController::class, 'createFungsional'])->name('fungsional.create');
             Route::post('/fungsional/store', [KenaikanPangkatController::class, 'storeFungsional'])->name('fungsional.store');
+            Route::get('/fungsional/edit', [KenaikanPangkatController::class, 'editFungsional'])->name('fungsional.edit');
+            Route::put('/fungsional/update/{id}', [KenaikanPangkatController::class, 'updateFungsional'])->name('fungsional.update');
 
 
             Route::get('/penyesuaian-ijazah', [KenaikanPangkatController::class, 'penyesuaianIjazah'])->name('penyesuaian_ijazah');
+            Route::get('/penyesuaian-ijazah/create', [KenaikanPangkatController::class, 'createPenyesuaianIjazah'])->name('penyesuaian_ijazah.create');
             Route::post('/penyesuaian-ijazah/store', [KenaikanPangkatController::class, 'storePenyesuaianIjazah'])->name('penyesuaian_ijazah.store');
+            Route::get('/penyesuaian-ijazah/edit', [KenaikanPangkatController::class, 'editPenyesuaianIjazah'])->name('penyesuaian_ijazah.edit');
+            Route::put('/penyesuaian-ijazah/update/{id}', [KenaikanPangkatController::class, 'updatePenyesuaianIjazah'])->name('penyesuaian_ijazah.update');
 
             Route::get('/reguler', [KenaikanPangkatController::class, 'reguler'])->name('reguler');
+            Route::get('/reguler/create', [KenaikanPangkatController::class, 'createReguler'])->name('reguler.create');
             Route::post('/reguler/store', [KenaikanPangkatController::class, 'storeReguler'])->name('reguler.store');
+            Route::get('/reguler/edit', [KenaikanPangkatController::class, 'editReguler'])->name('reguler.edit');
+            Route::put('/reguler/update/{id}', [KenaikanPangkatController::class, 'updateReguler'])->name('reguler.update');
 
             // URL: /kenaikan-pangkat/struktural
             Route::get('/struktural', [KenaikanPangkatController::class, 'struktural'])->name('struktural');
+            Route::get('/struktural/create', [KenaikanPangkatController::class, 'createStruktural'])->name('struktural.create');
             Route::post('/struktural/store', [KenaikanPangkatController::class, 'storeStruktural'])->name('struktural.store');
+            Route::get('/struktural/edit', [KenaikanPangkatController::class, 'editStruktural'])->name('struktural.edit');
+            Route::put('/struktural/update/{id}', [KenaikanPangkatController::class, 'updateStruktural'])->name('struktural.update');
 
             Route::get('/ajax/cek-nip/{nip}', [KenaikanPangkatController::class, 'cekNip'])->name('ajax.cek-nip');
         });
@@ -67,87 +79,144 @@ Route::middleware(['auth'])->group(function () {
 
             // URL: /pensiun/bup
             Route::get('/bup', [PensiunController::class, 'bup'])->name('bup');
+            Route::get('/bup/create', [PensiunController::class, 'createBup'])->name('bup.create');
             Route::post('/bup/store', [PensiunController::class, 'storeBup'])->name('bup.store');
+            Route::get('/bup/edit', [PensiunController::class, 'editBup'])->name('bup.edit');
+            Route::put('/bup/update/{id}', [PensiunController::class, 'updateBup'])->name('bup.update');
 
             // URL: /pensiun/janda-duda-yatim
             Route::get('/janda-duda-yatim', [PensiunController::class, 'jandaDudaYatim'])->name('janda_duda_yatim');
+            Route::get('/janda-duda-yatim/create', [PensiunController::class, 'createJandaDudaYatim'])->name('janda_duda_yatim.create');
             Route::post('/janda-duda-yatim/store', [PensiunController::class, 'storeJandaDudaYatim'])->name('janda_duda_yatim.store');
+            Route::get('/janda-duda-yatim/edit', [PensiunController::class, 'editJandaDudaYatim'])->name('janda_duda_yatim.edit');
+            Route::put('/janda-duda-yatim/update/{id}', [PensiunController::class, 'updateJandaDudaYatim'])->name('janda_duda_yatim.update');
 
             // URL: /pensiun/aps
             Route::get('/aps', [PensiunController::class, 'aps'])->name('aps');
+            Route::get('/aps/create', [PensiunController::class, 'createAps'])->name('aps.create');
             Route::post('/aps/store', [PensiunController::class, 'storeAps'])->name('aps.store');
+            Route::get('/aps/edit', [PensiunController::class, 'editAps'])->name('aps.edit');
+            Route::put('/aps/update/{id}', [PensiunController::class, 'updateAps'])->name('aps.update');
 
             // URL: /pensiun/meninggal
             Route::get('/meninggal', [PensiunController::class, 'meninggal'])->name('meninggal');
+            Route::get('/meninggal/create', [PensiunController::class, 'createMeninggal'])->name('meninggal.create');
             Route::post('/meninggal/store', [PensiunController::class, 'storeMeninggal'])->name('meninggal.store');
+            Route::get('/meninggal/edit', [PensiunController::class, 'editMeninggal'])->name('meninggal.edit');
+            Route::put('/meninggal/update/{id}', [PensiunController::class, 'updateMeninggal'])->name('meninggal.update');
 
             // URL: /pensiun/uzur
             Route::get('/uzur', [PensiunController::class, 'uzur'])->name('uzur');
+            Route::get('/uzur/create', [PensiunController::class, 'createUzur'])->name('uzur.create');
             Route::post('/uzur/store', [PensiunController::class, 'storeUzur'])->name('uzur.store');
+            Route::get('/uzur/edit', [PensiunController::class, 'editUzur'])->name('uzur.edit');
+            Route::put('/uzur/update/{id}', [PensiunController::class, 'updateUzur'])->name('uzur.update');
 
             // URL: /pensiun/hilang
             Route::get('/hilang', [PensiunController::class, 'hilang'])->name('hilang');
+            Route::get('/hilang/create', [PensiunController::class, 'createHilang'])->name('hilang.create');
             Route::post('/hilang/store', [PensiunController::class, 'storeHilang'])->name('hilang.store');
+            Route::get('/hilang/edit', [PensiunController::class, 'editHilang'])->name('hilang.edit');
+            Route::put('/hilang/update/{id}', [PensiunController::class, 'updateHilang'])->name('hilang.update');
 
             // URL: /pensiun/tanpa-ahli-waris
             Route::get('/tanpa-ahli-waris', [PensiunController::class, 'tanpaAhliWaris'])->name('taw');
+            Route::get('/tanpa-ahli-waris/create', [PensiunController::class, 'createTanpaAhliWaris'])->name('taw.create');
             Route::post('/tanpa-ahli-waris/store', [PensiunController::class, 'storeTanpaAhliWaris'])->name('taw.store');
+            Route::get('/tanpa-ahli-waris/edit', [PensiunController::class, 'editTanpaAhliWaris'])->name('taw.edit');
+            Route::put('/tanpa-ahli-waris/update/{id}', [PensiunController::class, 'updateTanpaAhliWaris'])->name('taw.update');
         });
 
         Route::prefix('pindah-instansi')->name('pindah.')->group(function () {
 
             // URL: /pindah-instansi/masuk
             Route::get('/masuk', [PindahInstansiController::class, 'masuk'])->name('masuk');
+            Route::get('/masuk/create', [PindahInstansiController::class, 'createMasuk'])->name('masuk.create');
             Route::post('/masuk/store', [PindahInstansiController::class, 'storeMasuk'])->name('masuk.store');
+            Route::get('/masuk/edit', [PindahInstansiController::class, 'editMasuk'])->name('masuk.edit');
+            Route::put('/masuk/update/{id}', [PindahInstansiController::class, 'updateMasuk'])->name('masuk.update');
 
             // URL: /pindah-instansi/keluar
             Route::get('/keluar', [PindahInstansiController::class, 'keluar'])->name('keluar');
+            Route::get('/keluar/create', [PindahInstansiController::class, 'createKeluar'])->name('keluar.create');
             Route::post('/keluar/store', [PindahInstansiController::class, 'storeKeluar'])->name('keluar.store');
+            Route::get('/keluar/edit', [PindahInstansiController::class, 'editKeluar'])->name('keluar.edit');
+            Route::put('/keluar/update/{id}', [PindahInstansiController::class, 'updateKeluar'])->name('keluar.update');
         });
 
         Route::prefix('jabatan-fungsional')->name('jf.')->group(function () {
 
             // URL: /jabatan-fungsional/pengangkatan
             Route::get('/pengangkatan', [JabatanFungsionalController::class, 'pengangkatan'])->name('pengangkatan');
+            Route::get('/pengangkatan/create', [JabatanFungsionalController::class, 'createPengangkatan'])->name('pengangkatan.create');
             Route::post('/pengangkatan/store', [JabatanFungsionalController::class, 'storePengangkatan'])->name('pengangkatan.store');
+            Route::get('/pengangkatan/edit', [JabatanFungsionalController::class, 'editPengangkatan'])->name('pengangkatan.edit');
+            Route::put('/pengangkatan/update/{id}', [JabatanFungsionalController::class, 'updatePengangkatan'])->name('pengangkatan.update');
 
             // URL: /jabatan-fungsional/pemberhentian
             Route::get('/pemberhentian', [JabatanFungsionalController::class, 'pemberhentian'])->name('pemberhentian');
+            Route::get('/pemberhentian/create', [JabatanFungsionalController::class, 'createPemberhentian'])->name('pemberhentian.create');
             Route::post('/pemberhentian/store', [JabatanFungsionalController::class, 'storePemberhentian'])->name('pemberhentian.store');
+            Route::get('/pemberhentian/edit', [JabatanFungsionalController::class, 'editPemberhentian'])->name('pemberhentian.edit');
+            Route::put('/pemberhentian/update/{id}', [JabatanFungsionalController::class, 'updatePemberhentian'])->name('pemberhentian.update');
 
             // URL: /jabatan-fungsional/naik-jenjang
             Route::get('/naik-jenjang', [JabatanFungsionalController::class, 'naikJenjang'])->name('naik_jenjang');
+            Route::get('/naik-jenjang/create', [JabatanFungsionalController::class, 'createNaikJenjang'])->name('naik_jenjang.create');
             Route::post('/naik-jenjang/store', [JabatanFungsionalController::class, 'storeNaikJenjang'])->name('naik_jenjang.store');
+            Route::get('/naik-jenjang/edit', [JabatanFungsionalController::class, 'editNaikJenjang'])->name('naik_jenjang.edit');
+            Route::put('/naik-jenjang/update/{id}', [JabatanFungsionalController::class, 'updateNaikJenjang'])->name('naik_jenjang.update');
         });
 
         Route::prefix('pencantuman-gelar')->name('gelar.')->group(function () {
             // URL: /pencantuman-gelar/akademik
             Route::get('/akademik', [PencantumanGelarController::class, 'akademik'])->name('akademik');
+            Route::get('/akademik/create', [PencantumanGelarController::class, 'createAkademik'])->name('akademik.create');
             Route::post('/akademik/store', [PencantumanGelarController::class, 'storeAkademik'])->name('akademik.store');
+            Route::get('/akademik/edit', [PencantumanGelarController::class, 'editAkademik'])->name('akademik.edit');
+            Route::put('/akademik/update/{id}', [PencantumanGelarController::class, 'updateAkademik'])->name('akademik.update');
 
             // URL: /pencantuman-gelar/profesi
             Route::get('/profesi', [PencantumanGelarController::class, 'profesi'])->name('profesi');
+            Route::get('/profesi/create', [PencantumanGelarController::class, 'createProfesi'])->name('profesi.create');
             Route::post('/profesi/store', [PencantumanGelarController::class, 'storeProfesi'])->name('profesi.store');
+            Route::get('/profesi/edit', [PencantumanGelarController::class, 'editProfesi'])->name('profesi.edit');
+            Route::put('/profesi/update/{id}', [PencantumanGelarController::class, 'updateProfesi'])->name('profesi.update');
         });
 
         Route::get('/satyalancana', [SatyalancanaController::class, 'index'])->name('satyalancana');
+        Route::get('/satyalancana/create', [SatyalancanaController::class, 'create'])->name('satyalancana.create');
         Route::post('/satyalancana/store', [SatyalancanaController::class, 'store'])->name('satyalancana.store');
+        Route::get('/satyalancana/edit', [SatyalancanaController::class, 'edit'])->name('satyalancana.edit');
+        Route::put('/satyalancana/update/{id}', [SatyalancanaController::class, 'update'])->name('satyalancana.update');
 
         // 1. Penugasan
         Route::get('/penugasan', [PenugasanController::class, 'index'])->name('penugasan');
+        Route::get('/penugasan/create', [PenugasanController::class, 'create'])->name('penugasan.create');
         Route::post('/penugasan/store', [PenugasanController::class, 'store'])->name('penugasan.store');
+        Route::get('/penugasan/edit', [PenugasanController::class, 'edit'])->name('penugasan.edit');
+        Route::put('/penugasan/update/{id}', [PenugasanController::class, 'update'])->name('penugasan.update');
 
         // 2. Perbaikan Data ASN
         Route::get('/perbaikan-data-asn', [PerbaikanDataController::class, 'index'])->name('perbaikan_data');
+        Route::get('/perbaikan-data-asn/create', [PerbaikanDataController::class, 'create'])->name('perbaikan_data.create');
         Route::post('/perbaikan-data-asn/store', [PerbaikanDataController::class, 'store'])->name('perbaikan_data.store');
+        Route::get('/perbaikan-data-asn/edit', [PerbaikanDataController::class, 'edit'])->name('perbaikan_data.edit');
+        Route::put('/perbaikan-data-asn/update/{id}', [PerbaikanDataController::class, 'update'])->name('perbaikan_data.update');
 
         // 3. Tugas Belajar
         Route::get('/tugas-belajar', [TugasBelajarController::class, 'index'])->name('tugas_belajar');
+        Route::get('/tugas-belajar/create', [TugasBelajarController::class, 'create'])->name('tugas_belajar.create');
         Route::post('/tugas-belajar/store', [TugasBelajarController::class, 'store'])->name('tugas_belajar.store');
+        Route::get('/tugas-belajar/edit', [TugasBelajarController::class, 'edit'])->name('tugas_belajar.edit');
+        Route::put('/tugas-belajar/update/{id}', [TugasBelajarController::class, 'update'])->name('tugas_belajar.update');
 
         // 3. Konversi AK Pendidikan
         Route::get('/konversi-ak-pendidikan', [\App\Http\Controllers\User\KonversiAKPendidikanController::class, 'index'])->name('konversi_ak_pendidikan');
+        Route::get('/konversi-ak-pendidikan/create', [\App\Http\Controllers\User\KonversiAKPendidikanController::class, 'create'])->name('konversi_ak_pendidikan.create');
         Route::post('/konversi-ak-pendidikan/store', [\App\Http\Controllers\User\KonversiAKPendidikanController::class, 'store'])->name('konversi_ak_pendidikan.store');
+        Route::get('/konversi-ak-pendidikan/edit', [\App\Http\Controllers\User\KonversiAKPendidikanController::class, 'edit'])->name('konversi_ak_pendidikan.edit');
+        Route::put('/konversi-ak-pendidikan/update/{id}', [\App\Http\Controllers\User\KonversiAKPendidikanController::class, 'update'])->name('konversi_ak_pendidikan.update');
 
         // 4. Cetak Surat
         Route::get('/cetak-surat', [CetakSuratController::class, 'index'])->name('cetak_surat');
