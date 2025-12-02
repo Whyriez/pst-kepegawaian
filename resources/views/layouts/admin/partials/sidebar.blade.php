@@ -354,6 +354,20 @@
             </ul>
         </li>
 
+        {{-- Konversi AK Pendidikan --}}
+        <li class="">
+            <a href="{{ route('admin.konversi_ak_pendidikan') }}"
+               class="menu-item {{ request()->routeIs('admin.konversi_ak_pendidikan') ? 'active' : '' }} d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-calculator"></i>
+                    <span>Konversi AK Pendidikan</span>
+                </div>
+                @if (isset($badgeKategori['Konversi AK Pendidikan']) && $badgeKategori['Konversi AK Pendidikan'] > 0)
+                    <span class="badge bg-danger rounded-pill">{{ $badgeKategori['Konversi AK Pendidikan'] }}</span>
+                @endif
+            </a>
+        </li>
+
         {{-- Penugasan --}}
         <li class="">
             <a href="{{ route('admin.penugasan') }}"

@@ -1,8 +1,12 @@
 @extends('layouts.user.app')
 @section('title', 'Kenaikan Pangkat Fungsional')
 
+{{-- Tambahkan SweetAlert --}}
+@push('styles')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
+
 @section('content')
-    {{-- HAPUS CLASS content-template AGAR LANGSUNG MUNCUL --}}
     <div class="container-fluid p-0">
 
         <div class="page-header mb-4">
@@ -11,13 +15,13 @@
                     <h2 class="h3 fw-bold text-dark mb-1">Form KP Fungsional</h2>
                     <p class="text-muted mb-0">Formulir untuk kenaikan pangkat fungsional</p>
                 </div>
-                {{-- UBAH BUTTON JADI LINK KE DASHBOARD --}}
                 <a href="{{ route('dashboard') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
                 </a>
             </div>
         </div>
 
+        {{-- Progress Bar --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body py-3">
                 <div class="progress-steps">
@@ -39,11 +43,12 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                {{-- TAMBAHKAN FORM ACTION DAN ENCTYPE --}}
+                {{-- ACTION FORM --}}
                 <form id="form-kp-fungsional" action="{{ route('kp.fungsional.store') }}" method="POST"
-                    enctype="multipart/form-data">
+                      enctype="multipart/form-data">
                     @csrf
 
+                    {{-- STEP 1: DATA DIRI --}}
                     <div class="form-step active" id="step-1-kp-fungsional">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -59,13 +64,14 @@
                                     <div class="col-md-8">
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="nip_pegawai_kp_fungsional"
-                                                name="nip_pegawai_kp_fungsional" placeholder="Masukkan NIP Pegawai"
-                                                value="{{ Auth::user()->pegawai->nip ?? '' }}">
+                                                   name="nip_pegawai_kp_fungsional" placeholder="Masukkan NIP Pegawai"
+                                                   value="{{ Auth::user()->pegawai->nip ?? '' }}">
                                             <button class="btn btn-outline-primary" type="button"
-                                                id="btn-cek-nip-kp-fungsional">
+                                                    id="btn-cek-nip-kp-fungsional">
                                                 <i class="fas fa-search me-2"></i>Cek NIP
                                             </button>
                                         </div>
+                                        <small class="text-muted fst-italic">*Klik Cek NIP untuk mengisi data otomatis</small>
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +84,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                                     <input type="text" class="form-control" id="nama_pegawai_kp_fungsional"
-                                        name="nama_pegawai_kp_fungsional" required>
+                                           name="nama_pegawai_kp_fungsional" required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi nama pegawai</div>
                             </div>
@@ -89,7 +95,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
                                     <input type="text" class="form-control" id="jabatan_kp_fungsional"
-                                        name="jabatan_kp_fungsional" required>
+                                           name="jabatan_kp_fungsional" required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi jabatan pegawai</div>
                             </div>
@@ -102,7 +108,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-star"></i></span>
                                     <input type="text" class="form-control" id="pangkat_kp_fungsional"
-                                        name="pangkat_kp_fungsional" required>
+                                           name="pangkat_kp_fungsional" required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi pangkat pegawai</div>
                             </div>
@@ -112,8 +118,8 @@
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control" id="nip_display_kp_fungsional"
-                                        name="nip_display_kp_fungsional" required>
+                                    <input type="text" class="form-control bg-light" id="nip_display_kp_fungsional"
+                                           name="nip_display_kp_fungsional" required readonly>
                                 </div>
                                 <div class="invalid-feedback">Harap isi NIP pegawai</div>
                             </div>
@@ -126,7 +132,7 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-building"></i></span>
                                     <input type="text" class="form-control" id="unit_kerja_kp_fungsional"
-                                        name="unit_kerja_kp_fungsional" required>
+                                           name="unit_kerja_kp_fungsional" required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi unit kerja pegawai</div>
                             </div>
@@ -137,20 +143,22 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
                                     <input type="text" class="form-control" id="golongan_ruang_kp_fungsional"
-                                        name="golongan_ruang_kp_fungsional" required>
+                                           name="golongan_ruang_kp_fungsional" required>
                                 </div>
                                 <div class="invalid-feedback">Harap isi golongan ruang pegawai</div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <div></div> <button type="button" class="btn btn-primary btn-next-kp-fungsional"
-                                data-next="2">
+                            <div></div>
+                            <button type="button" class="btn btn-primary btn-next-kp-fungsional"
+                                    data-next="2">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
+                    {{-- STEP 2: DOKUMEN --}}
                     <div class="form-step" id="step-2-kp-fungsional">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -163,7 +171,8 @@
                             <div class="d-flex">
                                 <i class="fas fa-info-circle me-3 mt-1"></i>
                                 <div>
-                                    <strong>Informasi:</strong> Format file PDF. Maksimal 2MB.
+                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF, JPG, JPEG, PNG.
+                                    Maksimal ukuran file: 2MB per dokumen.
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
@@ -175,7 +184,6 @@
                             </div>
                         </div>
 
-                        {{-- PERBAIKAN: Menggunakan Loop agar 'name' sesuai dengan Controller (file_1, file_2, dst) --}}
                         <div class="row">
                             @forelse($syarat as $dokumen)
                                 <div class="col-md-6 mb-3">
@@ -190,16 +198,15 @@
                                         </label>
 
                                         <div class="file-input-wrapper">
-                                            {{-- PENTING: name="file_{id}" agar terbaca oleh Controller --}}
                                             <input type="file" class="form-control file-input-dynamic"
-                                                id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
-                                                accept=".pdf" {{ $dokumen->is_required ? 'required' : '' }}>
+                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
+                                                   accept=".pdf,.jpg,.jpeg,.png"
+                                                {{ $dokumen->is_required ? 'required' : '' }}>
 
-                                            {{-- Div untuk preview nama file setelah upload --}}
                                             <div class="file-preview mt-2 small text-success"
-                                                id="preview-file_{{ $dokumen->id }}"></div>
+                                                 id="preview-file_{{ $dokumen->id }}"></div>
                                         </div>
-                                        <div class="form-text">Tipe: PDF, Max: 2MB</div>
+                                        <div class="form-text">Tipe: PDF/Gambar, Max: 2MB</div>
                                     </div>
                                 </div>
                             @empty
@@ -218,18 +225,19 @@
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
                                     <select class="form-control" id="periode_kenaikan_pangkat_kp_fungsional"
-                                        name="periode_kenaikan_pangkat_kp_fungsional" required>
+                                            name="periode_kenaikan_pangkat_kp_fungsional" required>
                                         <option value="">Pilih Periode</option>
                                         <option value="April">April</option>
                                         <option value="Oktober">Oktober</option>
                                     </select>
                                 </div>
+                                <div class="invalid-feedback">Harap pilih periode</div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
                             <button type="button" class="btn btn-outline-secondary btn-prev-kp-fungsional"
-                                data-prev="1">
+                                    data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="button" class="btn btn-primary btn-next-kp-fungsional" data-next="3">
@@ -238,6 +246,7 @@
                         </div>
                     </div>
 
+                    {{-- STEP 3: KONFIRMASI --}}
                     <div class="form-step" id="step-3-kp-fungsional">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
@@ -261,7 +270,10 @@
                                         <p><strong>Pangkat:</strong> <span id="review-pangkat-kp-fungsional">-</span></p>
                                         <p><strong>Golongan Ruang:</strong> <span
                                                 id="review-golongan-ruang-kp-fungsional">-</span></p>
-                                        <p><strong>Periode:</strong> <span id="review-periode-kp-fungsional">-</span></p>
+                                        <div class="border-top pt-2 mt-2">
+                                            <p class="text-primary fw-bold mb-1">Periode:</p>
+                                            <p><strong>Bulan:</strong> <span id="review-periode-kp-fungsional">-</span></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -286,7 +298,7 @@
 
                         <div class="d-flex justify-content-between mt-5">
                             <button type="button" class="btn btn-outline-secondary btn-prev-kp-fungsional"
-                                data-prev="2">
+                                    data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-success">
@@ -299,8 +311,8 @@
         </div>
     </div>
 
+    {{-- CSS Styles --}}
     <style>
-        /* Progress Steps */
         .progress-steps {
             display: flex;
             justify-content: space-between;
@@ -357,7 +369,6 @@
             font-weight: 600;
         }
 
-        /* Form Steps */
         .form-step {
             display: none;
         }
@@ -368,18 +379,10 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* File Upload Cards */
         .file-upload-card {
             border: 2px dashed #dee2e6;
             border-radius: 8px;
@@ -412,18 +415,10 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-            }
-
-            to {
-                opacity: 1;
-                max-height: 100px;
-            }
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 100px; }
         }
 
-        /* Input Groups & Responsive */
         .input-group-text {
             background-color: #f8f9fa;
             border-right: none;
@@ -443,219 +438,230 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-
-            .progress-steps::before {
-                display: none;
-            }
-
-            .step {
-                flex-direction: row;
-                margin-bottom: 10px;
-            }
-
-            .step-circle {
-                margin-right: 10px;
-                margin-bottom: 0;
-            }
+            .progress-steps::before { display: none; }
+            .step { flex-direction: row; margin-bottom: 10px; }
+            .step-circle { margin-right: 10px; margin-bottom: 0; }
         }
     </style>
 
+    {{-- Javascript Logic --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
-            // --- NOTIFIKASI ---
+            // --- NOTIFIKASI SYSTEM ---
             @if (session('success'))
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: "{{ session('success') }}", confirmButtonText: 'OK' });
+            Swal.fire('Berhasil', "{{ session('success') }}", 'success');
             @endif
             @if (session('error'))
-                Swal.fire({ icon: 'error', title: 'Gagal!', text: "{{ session('error') }}", confirmButtonText: 'Tutup' });
+            Swal.fire('Gagal', "{{ session('error') }}", 'error');
             @endif
             @if ($errors->any())
-                Swal.fire({ icon: 'warning', title: 'Perhatian!', html: '<ul style="text-align: left;">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>' });
+            Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning');
             @endif
 
-            // --- 1. STEPPER LOGIC ---
+            // --- VARIABLES ---
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
-            let currentStep = 1;
 
-            function showStep(stepIndex) {
-                steps.forEach(el => el.classList.remove('active'));
-                progressSteps.forEach(el => el.classList.remove('active'));
+            // --- FUNGSI NAVIGASI STEP ---
+            function showStep(idx) {
+                // Update UI Step
+                steps.forEach(s => s.classList.remove('active'));
+                progressSteps.forEach(s => s.classList.remove('active'));
 
-                document.getElementById(`step-${stepIndex}-kp-fungsional`).classList.add('active');
-
-                for (let i = 0; i < stepIndex; i++) {
-                    if (progressSteps[i]) progressSteps[i].classList.add('active');
+                document.getElementById(`step-${idx}-kp-fungsional`).classList.add('active');
+                for (let i = 0; i < idx; i++) {
+                    progressSteps[i].classList.add('active');
                 }
-                currentStep = parseInt(stepIndex);
-                if (stepIndex == 3) updateReviewData();
+
+                if (idx == 3) updateReview();
             }
 
-            // --- 2. FILE UPLOAD & PROGRESS (BAGIAN YANG DIREVISI) ---
-            
-            // Fungsi Update Counter (0/8)
-            function updateUploadProgress() {
-                // Ambil SEMUA input file di step 2 (baik required maupun tidak)
-                const allFileInputs = document.querySelectorAll('#step-2-kp-fungsional input[type="file"]');
-                let filledCount = 0;
+            // --- VALIDASI MANUAL SEBELUM NEXT ---
+            function validateStep(currentStep) {
+                let isValid = true;
+                let errorMsg = '';
 
-                allFileInputs.forEach(input => {
-                    if (input.files.length > 0) {
-                        filledCount++;
-                    }
-                });
-
-                // Update teks HTML
-                const progressEl = document.getElementById('upload-progress-kp-fungsional');
-                if (progressEl) {
-                    progressEl.textContent = `${filledCount}/${allFileInputs.length}`;
-                }
-            }
-
-            // Fungsi Preview File
-            function handleFileUpload(input) {
-                const previewId = `preview-${input.id}`;
-                const previewEl = document.getElementById(previewId);
-                
-                // Definisi Max Size 2MB (2 * 1024 * 1024 bytes)
-                const maxSize = 2 * 1024 * 1024; 
-
-                if (input.files.length > 0) {
-                    const file = input.files[0];
-
-                    // --- VALIDASI UKURAN FILE ---
-                    if (file.size > maxSize) {
-                        // 1. Reset input (hapus file yang dipilih)
-                        input.value = ''; 
-                        
-                        // 2. Beri tanda error pada input
-                        input.classList.add('is-invalid');
-                        input.classList.remove('is-valid');
-
-                        // 3. Tampilkan pesan error di bawah input
-                        if (previewEl) {
-                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: Ukuran file melebihi 2MB!</div>`;
-                            previewEl.style.display = 'block';
-                        }
-                        
-                        // Opsional: Tampilkan SweetAlert
-                        Swal.fire('File Terlalu Besar', 'Maksimal ukuran file adalah 2MB.', 'warning');
-                        
-                        return; // Stop, jangan lanjut ke preview sukses
-                    }
-                    // ----------------------------
-
-                    // Jika lolos validasi, tampilkan preview sukses
-                    input.classList.remove('is-invalid');
-                    input.classList.add('is-valid');
-                    
-                    if (previewEl) {
-                        previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> ${file.name}</div>`;
-                        previewEl.style.display = 'block';
+                // VALIDASI STEP 1: Data Diri
+                if (currentStep == 1) {
+                    const nama = document.getElementById('nama_pegawai_kp_fungsional').value.trim();
+                    if (!nama) {
+                        isValid = false;
+                        errorMsg = 'Silakan lakukan "Cek NIP" dan lengkapi data pegawai terlebih dahulu!';
                     }
                 }
-            }
 
-            // Pasang Event Listener ke Semua Input File
-            document.querySelectorAll('input[type="file"]').forEach(input => {
-                input.addEventListener('change', function() {
-                    handleFileUpload(this);     // Tampilkan nama file
-                    updateUploadProgress();     // Update angka 0/8
-                });
-            });
+                // VALIDASI STEP 2: Dokumen Required & Periode
+                if (currentStep == 2) {
+                    // Cek Periode
+                    const periode = document.getElementById('periode_kenaikan_pangkat_kp_fungsional').value;
+                    if (!periode) {
+                        isValid = false;
+                        errorMsg = 'Silakan pilih Periode Kenaikan Pangkat!';
+                    } else {
+                        // Cek File Required
+                        const requiredInputs = document.querySelectorAll('#step-2-kp-fungsional input[type="file"][required]');
+                        let emptyCount = 0;
 
-
-            // --- 3. TOMBOL NEXT & VALIDASI ---
-            document.querySelectorAll('.btn-next-kp-fungsional').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const nextStep = this.getAttribute('data-next');
-                    
-                    // Validasi Step 1 (Data Diri)
-                    if (currentStep == 1) {
-                        const nama = document.getElementById('nama_pegawai_kp_fungsional').value;
-                        if (!nama) {
-                            Swal.fire('Data Kosong', 'Silakan klik tombol "Cek NIP" dulu!', 'warning');
-                            return;
-                        }
-                    }
-                    
-                    // Validasi Step 2 (Dokumen Wajib)
-                    if (currentStep == 2) {
-                        // Cek Periode
-                        const periode = document.getElementById('periode_kenaikan_pangkat_kp_fungsional');
-                        if (!periode.value) {
-                            periode.classList.add('is-invalid');
-                            Swal.fire('Peringatan', 'Silakan pilih Periode Kenaikan Pangkat!', 'warning');
-                            return;
-                        } else {
-                            periode.classList.remove('is-invalid');
-                        }
-
-                        // Cek Dokumen Wajib
-                        const requiredFiles = document.querySelectorAll('#step-2-kp-fungsional input[type="file"][required]');
-                        let emptyFiles = 0;
-                        requiredFiles.forEach(input => {
+                        requiredInputs.forEach(input => {
                             if (input.files.length === 0) {
+                                emptyCount++;
                                 input.classList.add('is-invalid');
-                                emptyFiles++;
                             } else {
                                 input.classList.remove('is-invalid');
                             }
                         });
 
-                        if (emptyFiles > 0) {
-                            Swal.fire('Dokumen Kurang', 'Harap lengkapi semua dokumen bertanda bintang (*)!', 'warning');
-                            return; // Stop jangan lanjut
+                        if (emptyCount > 0) {
+                            isValid = false;
+                            errorMsg = `Masih ada ${emptyCount} dokumen wajib yang belum diunggah!`;
                         }
                     }
+                }
 
-                    showStep(nextStep);
+                if (!isValid) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian',
+                        text: errorMsg
+                    });
+                }
+
+                return isValid;
+            }
+
+            // --- EVENT LISTENER TOMBOL NEXT ---
+            document.querySelectorAll('.btn-next-kp-fungsional').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const nextStepIndex = parseInt(this.dataset.next);
+                    const currentStepIndex = nextStepIndex - 1;
+
+                    // Cek validasi strict
+                    if (validateStep(currentStepIndex)) {
+                        showStep(nextStepIndex);
+                    }
                 });
             });
 
+            // --- EVENT LISTENER TOMBOL PREV ---
             document.querySelectorAll('.btn-prev-kp-fungsional').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    showStep(this.getAttribute('data-prev'));
+                btn.addEventListener('click', function () {
+                    showStep(this.dataset.prev);
                 });
             });
 
-            // --- 4. CEK NIP ---
+            // --- FILE UPLOAD HANDLER ---
+            function handleFileUpload(input) {
+                const previewId = `preview-${input.id}`;
+                const previewEl = document.getElementById(previewId);
+                const maxSize = 2 * 1024 * 1024; // 2MB
+
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+
+                    // Validasi Size
+                    if (file.size > maxSize) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                        if (previewEl) {
+                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: Ukuran file > 2MB!</div>`;
+                            previewEl.style.display = 'block';
+                        }
+                        Swal.fire('File Terlalu Besar', 'Maksimal ukuran file adalah 2MB.', 'warning');
+                        return;
+                    }
+
+                    // Sukses
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+
+                    if (previewEl) {
+                        previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> ${file.name}</div>`;
+                        previewEl.classList.add('has-file');
+                        previewEl.style.display = 'block';
+                    }
+                } else {
+                    input.classList.remove('is-valid');
+                    if (previewEl) previewEl.style.display = 'none';
+                }
+            }
+
+            function updateUploadProgress() {
+                const allFileInputs = document.querySelectorAll('#step-2-kp-fungsional input[type="file"]');
+                let filledCount = 0;
+                allFileInputs.forEach(input => {
+                    if (input.files.length > 0) filledCount++;
+                });
+                const progressEl = document.getElementById('upload-progress-kp-fungsional');
+                if (progressEl) progressEl.textContent = `${filledCount}/${allFileInputs.length}`;
+            }
+
+            // Attach Event ke Input File
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function () {
+                    handleFileUpload(this);
+                    updateUploadProgress();
+                });
+            });
+
+            // --- LOGIKA CEK NIP ---
             const btnCek = document.getElementById('btn-cek-nip-kp-fungsional');
             if (btnCek) {
-                btnCek.addEventListener('click', function() {
+                btnCek.addEventListener('click', function () {
                     const nip = document.getElementById('nip_pegawai_kp_fungsional').value;
-                    if (!nip) { Swal.fire('Error', 'Masukkan NIP!', 'warning'); return; }
+                    if (!nip) {
+                        Swal.fire('Isi NIP!', 'Mohon masukkan NIP terlebih dahulu', 'warning');
+                        return;
+                    }
 
                     const oldHtml = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                    this.disabled = true;
+
                     fetch(`{{ url('/kenaikan-pangkat/ajax/cek-nip') }}/${nip}`)
                         .then(res => res.json())
                         .then(res => {
-                            if(res.success) {
+                            if (res.success) {
                                 const d = res.data;
-                                const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; }
+                                const set = (id, val) => {
+                                    const el = document.getElementById(id);
+                                    if (el) el.value = val || '';
+                                }
+
                                 set('nama_pegawai_kp_fungsional', d.nama);
-                                set('nip_display_kp_fungsional', d.nip);
                                 set('jabatan_kp_fungsional', d.jabatan);
                                 set('pangkat_kp_fungsional', d.pangkat);
+                                set('nip_display_kp_fungsional', d.nip);
                                 set('unit_kerja_kp_fungsional', d.unit_kerja);
                                 set('golongan_ruang_kp_fungsional', d.golongan_ruang);
-                                Swal.fire('Berhasil', 'Data ditemukan', 'success');
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Data Ditemukan',
+                                    text: 'Data pegawai berhasil dimuat.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             } else {
-                                Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
+                                Swal.fire('Gagal', 'NIP tidak ditemukan dalam database kepegawaian.', 'error');
                             }
                         })
-                        .catch(() => Swal.fire('Error', 'Gagal koneksi', 'error'))
-                        .finally(() => this.innerHTML = oldHtml);
+                        .catch(() => Swal.fire('Error', 'Gagal koneksi ke server', 'error'))
+                        .finally(() => {
+                            this.innerHTML = oldHtml;
+                            this.disabled = false;
+                        });
                 });
             }
 
-            // --- 5. REVIEW DATA (STEP 3) ---
-            function updateReviewData() {
-                const get = (id) => document.getElementById(id).value || '-';
-                const setText = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; }
+            // --- LOGIKA REVIEW (STEP 3) - SMART ICON ---
+            function updateReview() {
+                const get = (id) => document.getElementById(id)?.value || '-';
+                const setText = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = val;
+                };
 
                 setText('review-nama-kp-fungsional', get('nama_pegawai_kp_fungsional'));
                 setText('review-nip-kp-fungsional', get('nip_display_kp_fungsional'));
@@ -663,30 +669,74 @@
                 setText('review-unit-kerja-kp-fungsional', get('unit_kerja_kp_fungsional'));
                 setText('review-pangkat-kp-fungsional', get('pangkat_kp_fungsional'));
                 setText('review-golongan-ruang-kp-fungsional', get('golongan_ruang_kp_fungsional'));
-                
-                const periode = document.getElementById('periode_kenaikan_pangkat_kp_fungsional');
-                setText('review-periode-kp-fungsional', periode.options[periode.selectedIndex]?.text || '-');
 
+                // Ambil text dari select periode
+                const periodeSelect = document.getElementById('periode_kenaikan_pangkat_kp_fungsional');
+                const periodeText = periodeSelect.options[periodeSelect.selectedIndex]?.text || '-';
+                setText('review-periode-kp-fungsional', periodeText);
+
+                // Smart Icon Logic
                 const docContainer = document.getElementById('review-documents-kp-fungsional');
                 docContainer.innerHTML = '';
                 let hasFile = false;
-                document.querySelectorAll('#step-2-kp-fungsional input[type="file"]').forEach(input => {
-                    if(input.files.length > 0) {
+
+                document.querySelectorAll('input[type="file"]').forEach(input => {
+                    if (input.files.length > 0) {
                         hasFile = true;
-                        const label = input.closest('.file-upload-card').querySelector('label').textContent.replace('*','').replace('(Opsional)','').trim();
-                        docContainer.innerHTML += `<div class="text-success"><i class="fas fa-check"></i> ${label}</div>`;
+                        const fileName = input.files[0].name;
+                        const fileSize = (input.files[0].size / 1024).toFixed(1) + ' KB';
+
+                        const labelEl = input.closest('.file-upload-card').querySelector('label');
+                        let labelText = labelEl.innerText.replace('*', '').replace('(Opsional)', '').trim();
+
+                        // Detect Extension
+                        const ext = fileName.split('.').pop().toLowerCase();
+                        let iconClass = 'fa-file';
+                        let iconColor = 'text-secondary';
+
+                        if (ext === 'pdf') {
+                            iconClass = 'fa-file-pdf';
+                            iconColor = 'text-danger';
+                        } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
+                            iconClass = 'fa-file-image';
+                            iconColor = 'text-primary';
+                        }
+
+                        const item = document.createElement('div');
+                        item.className = 'd-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm';
+                        item.innerHTML = `
+                            <div class="me-3">
+                                <i class="fas ${iconClass} ${iconColor} fa-2x"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark" style="font-size: 0.9rem;">${labelText}</div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <span class="text-success small"><i class="fas fa-check-circle me-1"></i>${fileName}</span>
+                                    <span class="text-muted small" style="font-size: 0.75rem;">${fileSize}</span>
+                                </div>
+                            </div>
+                        `;
+                        docContainer.appendChild(item);
                     }
                 });
-                if(!hasFile) docContainer.innerHTML = '<span class="text-muted">Belum ada file</span>';
+
+                if (!hasFile) {
+                    docContainer.innerHTML = '<div class="alert alert-warning py-2 small"><i class="fas fa-exclamation-triangle me-1"></i>Belum ada dokumen yang diunggah.</div>';
+                }
             }
 
-            // --- 6. SUBMIT FORM ---
-            document.getElementById('form-kp-fungsional').addEventListener('submit', function(e) {
-                if(!document.getElementById('confirm-data-kp-fungsional').checked) {
+            // --- SUBMIT FORM ---
+            document.getElementById('form-kp-fungsional').addEventListener('submit', function (e) {
+                if (!document.getElementById('confirm-data-kp-fungsional').checked) {
                     e.preventDefault();
-                    Swal.fire('Peringatan', 'Anda harus menyetujui kebenaran data!', 'warning');
+                    Swal.fire('Konfirmasi Diperlukan', 'Anda harus mencentang pernyataan kebenaran data sebelum mengajukan.', 'warning');
                 } else {
-                    Swal.fire({ title: 'Mengirim...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    Swal.fire({
+                        title: 'Sedang Mengirim...',
+                        text: 'Mohon tunggu sebentar',
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
                 }
             });
 

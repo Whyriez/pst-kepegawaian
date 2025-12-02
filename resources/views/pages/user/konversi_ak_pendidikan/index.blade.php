@@ -1,5 +1,5 @@
 @extends('layouts.user.app')
-@section('title', 'Kenaikan Pangkat Penyesuaian Ijazah')
+@section('title', 'Konversi AK Pendidikan')
 
 {{-- Tambahkan SweetAlert --}}
 @push('styles')
@@ -7,13 +7,12 @@
 @endpush
 
 @section('content')
-    <div class="container-fluid p-0">
-
+    <div class="content-template" id="konversi_ak_pendidikan-content">
         <div class="page-header mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="h3 fw-bold text-dark mb-1">Form KP Penyesuaian Ijazah</h2>
-                    <p class="text-muted mb-0">Formulir untuk kenaikan pangkat penyesuaian ijazah</p>
+                    <h2 class="h3 fw-bold text-dark mb-1">Form Konversi AK Pendidikan</h2>
+                    <p class="text-muted mb-0">Formulir untuk konversi angka kredit pendidikan</p>
                 </div>
                 <a href="{{ route('dashboard') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
@@ -21,7 +20,6 @@
             </div>
         </div>
 
-        {{-- Progress Bar --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body py-3">
                 <div class="progress-steps">
@@ -43,18 +41,16 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                {{-- ACTION FORM --}}
-                <form id="form-kp-penyesuaian-ijazah" action="{{ route('kp.penyesuaian_ijazah.store') }}" method="POST"
-                      enctype="multipart/form-data">
+                <form id="form-konversi-ak-pendidikan" action="{{ route('konversi_ak_pendidikan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     {{-- STEP 1: DATA DIRI --}}
-                    <div class="form-step active" id="step-1-kp-penyesuaian-ijazah">
+                    <div class="form-step active" id="step-1-konversi-ak-pendidikan">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-user me-2"></i>Data Diri Pegawai
                             </h5>
-                            <p class="text-muted">Isi data diri pegawai yang mengajukan</p>
+                            <p class="text-muted">Isi data diri pegawai yang mengajukan konversi AK pendidikan</p>
                         </div>
 
                         <div class="card bg-light border-0 mb-4">
@@ -63,11 +59,11 @@
                                 <div class="row">
                                     <div class="col-md-8">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="nip_pegawai_kp_penyesuaian_ijazah"
-                                                   name="nip_pegawai_kp_penyesuaian_ijazah" placeholder="Masukkan NIP Pegawai"
+                                            <input type="text" class="form-control" id="nip_pegawai_konversi_ak_pendidikan"
+                                                   name="nip_pegawai_konversi_ak_pendidikan"
+                                                   placeholder="Masukkan NIP Pegawai"
                                                    value="{{ Auth::user()->pegawai->nip ?? '' }}">
-                                            <button class="btn btn-outline-primary" type="button"
-                                                    id="btn-cek-nip-kp-penyesuaian-ijazah">
+                                            <button class="btn btn-outline-primary" type="button" id="btn-cek-nip-konversi-ak-pendidikan">
                                                 <i class="fas fa-search me-2"></i>Cek NIP
                                             </button>
                                         </div>
@@ -79,104 +75,84 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nama_pegawai_kp_penyesuaian_ijazah" class="form-label">Nama Pegawai <span
-                                        class="text-danger">*</span></label>
+                                <label for="nama_pegawai_konversi_ak_pendidikan" class="form-label">Nama Pegawai <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <input type="text" class="form-control" id="nama_pegawai_kp_penyesuaian_ijazah"
-                                           name="nama_pegawai_kp_penyesuaian_ijazah" required>
+                                    <input type="text" class="form-control" id="nama_pegawai_konversi_ak_pendidikan" name="nama_pegawai_konversi_ak_pendidikan" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi nama pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="jabatan_kp_penyesuaian_ijazah" class="form-label">Jabatan Pegawai <span
-                                        class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
-                                    <input type="text" class="form-control" id="jabatan_kp_penyesuaian_ijazah"
-                                           name="jabatan_kp_penyesuaian_ijazah" required>
-                                </div>
-                                <div class="invalid-feedback">Harap isi jabatan pegawai</div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="pangkat_kp_penyesuaian_ijazah" class="form-label">Pangkat Pegawai <span
-                                        class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-star"></i></span>
-                                    <input type="text" class="form-control" id="pangkat_kp_penyesuaian_ijazah"
-                                           name="pangkat_kp_penyesuaian_ijazah" required>
-                                </div>
-                                <div class="invalid-feedback">Harap isi pangkat pegawai</div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="nip_display_kp_penyesuaian_ijazah" class="form-label">NIP Pegawai <span
-                                        class="text-danger">*</span></label>
+                                <label for="nip_display_konversi_ak_pendidikan" class="form-label">NIP Pegawai <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control bg-light" id="nip_display_kp_penyesuaian_ijazah"
-                                           name="nip_display_kp_penyesuaian_ijazah" required readonly>
+                                    <input type="text" class="form-control bg-light" id="nip_display_konversi_ak_pendidikan" name="nip_display_konversi_ak_pendidikan" required readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi NIP pegawai</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="unit_kerja_kp_penyesuaian_ijazah" class="form-label">Unit Kerja <span
-                                        class="text-danger">*</span></label>
+                                <label for="jabatan_konversi_ak_pendidikan" class="form-label">Jabatan Pegawai <span class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
-                                    <input type="text" class="form-control" id="unit_kerja_kp_penyesuaian_ijazah"
-                                           name="unit_kerja_kp_penyesuaian_ijazah" required>
+                                    <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                                    <input type="text" class="form-control" id="jabatan_konversi_ak_pendidikan" name="jabatan_konversi_ak_pendidikan" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi unit kerja</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="golongan_ruang_kp_penyesuaian_ijazah" class="form-label">Golongan Ruang <span
-                                        class="text-danger">*</span></label>
+                                <label for="pangkat_konversi_ak_pendidikan" class="form-label">Pangkat Pegawai <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-star"></i></span>
+                                    <input type="text" class="form-control" id="pangkat_konversi_ak_pendidikan" name="pangkat_konversi_ak_pendidikan" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="satuan_kerja_konversi_ak_pendidikan" class="form-label">Satuan Kerja <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                    <input type="text" class="form-control" id="satuan_kerja_konversi_ak_pendidikan" name="satuan_kerja_konversi_ak_pendidikan" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="golongan_ruang_konversi_ak_pendidikan" class="form-label">Golongan/Ruang <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
-                                    <input type="text" class="form-control" id="golongan_ruang_kp_penyesuaian_ijazah"
-                                           name="golongan_ruang_kp_penyesuaian_ijazah" required>
+                                    <input type="text" class="form-control" id="golongan_ruang_konversi_ak_pendidikan" name="golongan_ruang_konversi_ak_pendidikan" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi golongan ruang</div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <div></div>
-                            <button type="button" class="btn btn-primary btn-next-kp-penyesuaian-ijazah" data-next="2">
+                            <div></div> <button type="button" class="btn btn-primary btn-next-konversi-ak-pendidikan" data-next="2">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
                     {{-- STEP 2: DOKUMEN --}}
-                    <div class="form-step" id="step-2-kp-penyesuaian-ijazah">
+                    <div class="form-step" id="step-2-konversi-ak-pendidikan">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-file-upload me-2"></i>Upload Dokumen Persyaratan
                             </h5>
-                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan (Otomatis dari Database)</p>
+                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan untuk konversi AK pendidikan</p>
                         </div>
 
+                        {{-- ALERT UPDATE: Format File --}}
                         <div class="alert alert-info">
                             <div class="d-flex">
                                 <i class="fas fa-info-circle me-3 mt-1"></i>
                                 <div>
-                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF, JPG, JPEG, PNG.
-                                    Maksimal ukuran file: 2MB per dokumen.
+                                    <strong>Informasi:</strong> Format file yang diizinkan: <strong>PDF, JPG, JPEG, PNG</strong>. Maksimal ukuran file: 2MB per dokumen.
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
-                                            <span id="upload-progress-kp-penyesuaian-ijazah">0/{{ count($syarat) }}</span>
-                                            dokumen terunggah
+                                            <span id="upload-progress-konversi-ak-pendidikan">0/{{ count($syarat) }}</span> dokumen terunggah
                                         </small>
                                     </div>
                                 </div>
@@ -197,57 +173,40 @@
                                         </label>
 
                                         <div class="file-input-wrapper">
+                                            {{-- INPUT UPDATE: Accept Image --}}
                                             <input type="file" class="form-control file-input-dynamic"
-                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
+                                                   id="file_{{ $dokumen->id }}"
+                                                   name="file_{{ $dokumen->id }}"
                                                    accept=".pdf,.jpg,.jpeg,.png"
                                                 {{ $dokumen->is_required ? 'required' : '' }}>
 
                                             <div class="file-preview mt-2 small text-success"
                                                  id="preview-file_{{ $dokumen->id }}"></div>
                                         </div>
-                                        <div class="form-text">Tipe: PDF/Gambar, Max: 2MB</div>
+                                        <div class="form-text">Type File: PDF/Gambar, Max size: 2MB</div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="col-12">
                                     <div class="alert alert-warning">
-                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini
-                                        (kp-penyesuaian-ijazah).
+                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (konversi-ak-pendidikan).
                                     </div>
                                 </div>
                             @endforelse
                         </div>
 
-                        <div class="row mt-3">
-                            <div class="col-md-6 mb-3">
-                                <label for="periode_kenaikan_pangkat_kp_penyesuaian_ijazah" class="form-label">Periode
-                                    Kenaikan Pangkat <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                    <select class="form-control" id="periode_kenaikan_pangkat_kp_penyesuaian_ijazah"
-                                            name="periode_kenaikan_pangkat_kp_penyesuaian_ijazah" required>
-                                        <option value="">Pilih Periode</option>
-                                        <option value="April">April</option>
-                                        <option value="Oktober">Oktober</option>
-                                    </select>
-                                </div>
-                                <div class="invalid-feedback">Harap pilih periode</div>
-                            </div>
-                        </div>
-
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-penyesuaian-ijazah"
-                                    data-prev="1">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-konversi-ak-pendidikan" data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
-                            <button type="button" class="btn btn-primary btn-next-kp-penyesuaian-ijazah" data-next="3">
+                            <button type="button" class="btn btn-primary btn-next-konversi-ak-pendidikan" data-next="3">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
                     {{-- STEP 3: KONFIRMASI --}}
-                    <div class="form-step" id="step-3-kp-penyesuaian-ijazah">
+                    <div class="form-step" id="step-3-konversi-ak-pendidikan">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-check-circle me-2"></i>Konfirmasi Pengajuan
@@ -260,23 +219,14 @@
                                 <h6 class="fw-bold mb-3">Ringkasan Data Pegawai</h6>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <p><strong>Nama:</strong> <span id="review-nama-kp-penyesuaian-ijazah">-</span></p>
-                                        <p><strong>NIP:</strong> <span id="review-nip-kp-penyesuaian-ijazah">-</span></p>
-                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-kp-penyesuaian-ijazah">-</span>
-                                        </p>
-                                        <p><strong>Pangkat:</strong> <span id="review-pangkat-kp-penyesuaian-ijazah">-</span>
-                                        </p>
+                                        <p><strong>Nama:</strong> <span id="review-nama-konversi-ak-pendidikan">-</span></p>
+                                        <p><strong>NIP:</strong> <span id="review-nip-konversi-ak-pendidikan">-</span></p>
+                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-konversi-ak-pendidikan">-</span></p>
+                                        <p><strong>Satuan Kerja:</strong> <span id="review-satuan-kerja-konversi-ak-pendidikan">-</span></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Unit Kerja:</strong> <span
-                                                id="review-unit-kerja-kp-penyesuaian-ijazah">-</span></p>
-                                        <p><strong>Golongan/Ruang:</strong> <span
-                                                id="review-golongan-ruang-kp-penyesuaian-ijazah">-</span></p>
-                                        <div class="border-top pt-2 mt-2">
-                                            <p class="text-primary fw-bold mb-1">Periode:</p>
-                                            <p><strong>Bulan:</strong> <span
-                                                    id="review-periode-kp-penyesuaian-ijazah">-</span></p>
-                                        </div>
+                                        <p><strong>Pangkat:</strong> <span id="review-pangkat-konversi-ak-pendidikan">-</span></p>
+                                        <p><strong>Golongan/Ruang:</strong> <span id="review-golongan-ruang-konversi-ak-pendidikan">-</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -285,28 +235,25 @@
                         <div class="card border-0 bg-light mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Dokumen yang Diunggah</h6>
-                                <div id="review-documents-kp-penyesuaian-ijazah" class="small"></div>
+                                <div id="review-documents-konversi-ak-pendidikan" class="small">
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="confirm-data-kp-penyesuaian-ijazah"
-                                   required>
-                            <label class="form-check-label" for="confirm-data-kp-penyesuaian-ijazah">
-                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung
-                                konsekuensi
-                                hukum jika data tersebut tidak valid.
+                            <input class="form-check-input" type="checkbox" id="confirm-data-konversi-ak-pendidikan" required>
+                            <label class="form-check-label" for="confirm-data-konversi-ak-pendidikan">
+                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung konsekuensi hukum jika data tersebut tidak valid.
                             </label>
                             <div class="invalid-feedback">Anda harus menyetujui pernyataan ini sebelum mengajukan</div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-penyesuaian-ijazah"
-                                    data-prev="2">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-konversi-ak-pendidikan" data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-paper-plane me-2"></i>Ajukan KP Penyesuaian Ijazah
+                                <i class="fas fa-paper-plane me-2"></i>Ajukan Konversi AK Pendidikan
                             </button>
                         </div>
                     </div>
@@ -315,7 +262,7 @@
         </div>
     </div>
 
-    {{-- CSS Styles --}}
+    {{-- Style CSS --}}
     <style>
         .progress-steps {
             display: flex;
@@ -469,11 +416,10 @@
 
             // --- FUNGSI NAVIGASI STEP ---
             function showStep(idx) {
-                // Update UI Step
                 steps.forEach(s => s.classList.remove('active'));
                 progressSteps.forEach(s => s.classList.remove('active'));
 
-                document.getElementById(`step-${idx}-kp-penyesuaian-ijazah`).classList.add('active');
+                document.getElementById(`step-${idx}-konversi-ak-pendidikan`).classList.add('active');
                 for (let i = 0; i < idx; i++) {
                     progressSteps[i].classList.add('active');
                 }
@@ -488,38 +434,30 @@
 
                 // VALIDASI STEP 1: Data Diri
                 if (currentStep == 1) {
-                    const nama = document.getElementById('nama_pegawai_kp_penyesuaian_ijazah').value.trim();
+                    const nama = document.getElementById('nama_pegawai_konversi_ak_pendidikan').value.trim();
                     if (!nama) {
                         isValid = false;
                         errorMsg = 'Silakan lakukan "Cek NIP" dan lengkapi data pegawai terlebih dahulu!';
                     }
                 }
 
-                // VALIDASI STEP 2: Dokumen Required & Periode
+                // VALIDASI STEP 2: Dokumen Required
                 if (currentStep == 2) {
-                    // Cek Periode
-                    const periode = document.getElementById('periode_kenaikan_pangkat_kp_penyesuaian_ijazah').value;
-                    if (!periode) {
-                        isValid = false;
-                        errorMsg = 'Silakan pilih Periode Kenaikan Pangkat!';
-                    } else {
-                        // Cek File Required
-                        const requiredInputs = document.querySelectorAll('#step-2-kp-penyesuaian-ijazah input[type="file"][required]');
-                        let emptyCount = 0;
+                    const requiredInputs = document.querySelectorAll('#step-2-konversi-ak-pendidikan input[type="file"][required]');
+                    let emptyCount = 0;
 
-                        requiredInputs.forEach(input => {
-                            if (input.files.length === 0) {
-                                emptyCount++;
-                                input.classList.add('is-invalid');
-                            } else {
-                                input.classList.remove('is-invalid');
-                            }
-                        });
-
-                        if (emptyCount > 0) {
-                            isValid = false;
-                            errorMsg = `Masih ada ${emptyCount} dokumen wajib yang belum diunggah!`;
+                    requiredInputs.forEach(input => {
+                        if (input.files.length === 0) {
+                            emptyCount++;
+                            input.classList.add('is-invalid');
+                        } else {
+                            input.classList.remove('is-invalid');
                         }
+                    });
+
+                    if (emptyCount > 0) {
+                        isValid = false;
+                        errorMsg = `Masih ada ${emptyCount} dokumen wajib yang belum diunggah!`;
                     }
                 }
 
@@ -535,12 +473,11 @@
             }
 
             // --- EVENT LISTENER TOMBOL NEXT ---
-            document.querySelectorAll('.btn-next-kp-penyesuaian-ijazah').forEach(btn => {
+            document.querySelectorAll('.btn-next-konversi-ak-pendidikan').forEach(btn => {
                 btn.addEventListener('click', function () {
                     const nextStepIndex = parseInt(this.dataset.next);
                     const currentStepIndex = nextStepIndex - 1;
 
-                    // Cek validasi strict
                     if (validateStep(currentStepIndex)) {
                         showStep(nextStepIndex);
                     }
@@ -548,13 +485,13 @@
             });
 
             // --- EVENT LISTENER TOMBOL PREV ---
-            document.querySelectorAll('.btn-prev-kp-penyesuaian-ijazah').forEach(btn => {
+            document.querySelectorAll('.btn-prev-konversi-ak-pendidikan').forEach(btn => {
                 btn.addEventListener('click', function () {
                     showStep(this.dataset.prev);
                 });
             });
 
-            // --- FILE UPLOAD HANDLER ---
+            // --- FILE UPLOAD HANDLER (UPDATED: Support PDF & Image) ---
             function handleFileUpload(input) {
                 const previewId = `preview-${input.id}`;
                 const previewEl = document.getElementById(previewId);
@@ -565,9 +502,8 @@
 
                     // Validasi Size
                     if (file.size > maxSize) {
-                        input.value = ''; // Reset
+                        input.value = '';
                         input.classList.add('is-invalid');
-                        input.classList.remove('is-valid');
                         if (previewEl) {
                             previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: Ukuran file > 2MB!</div>`;
                             previewEl.style.display = 'block';
@@ -576,7 +512,8 @@
                         return;
                     }
 
-                    // Sukses
+                    // Hapus validasi PDF strict, karena sekarang bisa PDF & Gambar
+                    // Browser sudah filter via attribute 'accept'
                     input.classList.remove('is-invalid');
                     input.classList.add('is-valid');
 
@@ -592,16 +529,15 @@
             }
 
             function updateUploadProgress() {
-                const allFileInputs = document.querySelectorAll('#step-2-kp-penyesuaian-ijazah input[type="file"]');
+                const allFileInputs = document.querySelectorAll('#step-2-konversi-ak-pendidikan input[type="file"]');
                 let filledCount = 0;
                 allFileInputs.forEach(input => {
                     if (input.files.length > 0) filledCount++;
                 });
-                const progressEl = document.getElementById('upload-progress-kp-penyesuaian-ijazah');
+                const progressEl = document.getElementById('upload-progress-konversi-ak-pendidikan');
                 if (progressEl) progressEl.textContent = `${filledCount}/${allFileInputs.length}`;
             }
 
-            // Attach Event ke Input File
             document.querySelectorAll('input[type="file"]').forEach(input => {
                 input.addEventListener('change', function () {
                     handleFileUpload(this);
@@ -609,20 +545,21 @@
                 });
             });
 
-            // --- LOGIKA CEK NIP ---
-            const btnCek = document.getElementById('btn-cek-nip-kp-penyesuaian-ijazah');
+            // --- LOGIKA CEK NIP (AJAX REAL) ---
+            const btnCek = document.getElementById('btn-cek-nip-konversi-ak-pendidikan');
             if (btnCek) {
                 btnCek.addEventListener('click', function () {
-                    const nip = document.getElementById('nip_pegawai_kp_penyesuaian_ijazah').value;
+                    const nip = document.getElementById('nip_pegawai_konversi_ak_pendidikan').value;
                     if (!nip) {
                         Swal.fire('Isi NIP!', 'Mohon masukkan NIP terlebih dahulu', 'warning');
                         return;
                     }
 
                     const oldHtml = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari...';
                     this.disabled = true;
 
+                    // Gunakan endpoint yang sama dengan tugas belajar
                     fetch(`{{ url('/kenaikan-pangkat/ajax/cek-nip') }}/${nip}`)
                         .then(res => res.json())
                         .then(res => {
@@ -633,12 +570,12 @@
                                     if (el) el.value = val || '';
                                 }
 
-                                set('nama_pegawai_kp_penyesuaian_ijazah', d.nama);
-                                set('jabatan_kp_penyesuaian_ijazah', d.jabatan);
-                                set('pangkat_kp_penyesuaian_ijazah', d.pangkat);
-                                set('nip_display_kp_penyesuaian_ijazah', d.nip);
-                                set('unit_kerja_kp_penyesuaian_ijazah', d.unit_kerja);
-                                set('golongan_ruang_kp_penyesuaian_ijazah', d.golongan_ruang);
+                                set('nama_pegawai_konversi_ak_pendidikan', d.nama);
+                                set('jabatan_konversi_ak_pendidikan', d.jabatan);
+                                set('pangkat_konversi_ak_pendidikan', d.pangkat);
+                                set('nip_display_konversi_ak_pendidikan', d.nip);
+                                set('satuan_kerja_konversi_ak_pendidikan', d.unit_kerja);
+                                set('golongan_ruang_konversi_ak_pendidikan', d.golongan_ruang);
 
                                 Swal.fire({
                                     icon: 'success',
@@ -659,7 +596,7 @@
                 });
             }
 
-            // --- LOGIKA REVIEW (STEP 3) - SMART ICON ---
+            // --- LOGIKA REVIEW (STEP 3) - UPDATED SMART ICON ---
             function updateReview() {
                 const get = (id) => document.getElementById(id)?.value || '-';
                 const setText = (id, val) => {
@@ -667,19 +604,15 @@
                     if (el) el.textContent = val;
                 };
 
-                setText('review-nama-kp-penyesuaian-ijazah', get('nama_pegawai_kp_penyesuaian_ijazah'));
-                setText('review-nip-kp-penyesuaian-ijazah', get('nip_display_kp_penyesuaian_ijazah'));
-                setText('review-jabatan-kp-penyesuaian-ijazah', get('jabatan_kp_penyesuaian_ijazah'));
-                setText('review-pangkat-kp-penyesuaian-ijazah', get('pangkat_kp_penyesuaian_ijazah'));
-                setText('review-unit-kerja-kp-penyesuaian-ijazah', get('unit_kerja_kp_penyesuaian_ijazah'));
-                setText('review-golongan-ruang-kp-penyesuaian-ijazah', get('golongan_ruang_kp_penyesuaian_ijazah'));
+                setText('review-nama-konversi-ak-pendidikan', get('nama_pegawai_konversi_ak_pendidikan'));
+                setText('review-nip-konversi-ak-pendidikan', get('nip_display_konversi_ak_pendidikan'));
+                setText('review-jabatan-konversi-ak-pendidikan', get('jabatan_konversi_ak_pendidikan'));
+                setText('review-satuan-kerja-konversi-ak-pendidikan', get('satuan_kerja_konversi_ak_pendidikan'));
+                setText('review-pangkat-konversi-ak-pendidikan', get('pangkat_konversi_ak_pendidikan'));
+                setText('review-golongan-ruang-konversi-ak-pendidikan', get('golongan_ruang_konversi_ak_pendidikan'));
 
-                const periodeSelect = document.getElementById('periode_kenaikan_pangkat_kp_penyesuaian_ijazah');
-                const periodeText = periodeSelect.options[periodeSelect.selectedIndex]?.text || '-';
-                setText('review-periode-kp-penyesuaian-ijazah', periodeText);
-
-                // Smart Icon Logic
-                const docContainer = document.getElementById('review-documents-kp-penyesuaian-ijazah');
+                // File Review (Smart Icon Style Update)
+                const docContainer = document.getElementById('review-documents-konversi-ak-pendidikan');
                 docContainer.innerHTML = '';
                 let hasFile = false;
 
@@ -692,7 +625,7 @@
                         const labelEl = input.closest('.file-upload-card').querySelector('label');
                         let labelText = labelEl.innerText.replace('*', '').replace('(Opsional)', '').trim();
 
-                        // Detect Extension
+                        // Detect Extension Logic
                         const ext = fileName.split('.').pop().toLowerCase();
                         let iconClass = 'fa-file';
                         let iconColor = 'text-secondary';
@@ -708,17 +641,17 @@
                         const item = document.createElement('div');
                         item.className = 'd-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm';
                         item.innerHTML = `
-                            <div class="me-3">
-                                <i class="fas ${iconClass} ${iconColor} fa-2x"></i>
+                        <div class="me-3">
+                            <i class="fas ${iconClass} ${iconColor} fa-2x"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold text-dark" style="font-size: 0.9rem;">${labelText}</div>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="text-success small"><i class="fas fa-check-circle me-1"></i>${fileName}</span>
+                                <span class="text-muted small" style="font-size: 0.75rem;">${fileSize}</span>
                             </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-bold text-dark" style="font-size: 0.9rem;">${labelText}</div>
-                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                    <span class="text-success small"><i class="fas fa-check-circle me-1"></i>${fileName}</span>
-                                    <span class="text-muted small" style="font-size: 0.75rem;">${fileSize}</span>
-                                </div>
-                            </div>
-                        `;
+                        </div>
+                    `;
                         docContainer.appendChild(item);
                     }
                 });
@@ -729,8 +662,8 @@
             }
 
             // --- SUBMIT FORM ---
-            document.getElementById('form-kp-penyesuaian-ijazah').addEventListener('submit', function (e) {
-                if (!document.getElementById('confirm-data-kp-penyesuaian-ijazah').checked) {
+            document.getElementById('form-konversi-ak-pendidikan').addEventListener('submit', function (e) {
+                if (!document.getElementById('confirm-data-konversi-ak-pendidikan').checked) {
                     e.preventDefault();
                     Swal.fire('Konfirmasi Diperlukan', 'Anda harus mencentang pernyataan kebenaran data sebelum mengajukan.', 'warning');
                 } else {

@@ -143,7 +143,11 @@ Route::middleware(['auth'])->group(function () {
 
         // 3. Tugas Belajar
         Route::get('/tugas-belajar', [TugasBelajarController::class, 'index'])->name('tugas_belajar');
-        Route::post('/perbaikan-data-asn/store', [PerbaikanDataController::class, 'store'])->name('perbaikan_data.store');
+        Route::post('/tugas-belajar/store', [TugasBelajarController::class, 'store'])->name('tugas_belajar.store');
+
+        // 3. Konversi AK Pendidikan
+        Route::get('/konversi-ak-pendidikan', [\App\Http\Controllers\User\KonversiAKPendidikanController::class, 'index'])->name('konversi_ak_pendidikan');
+        Route::post('/konversi-ak-pendidikan/store', [\App\Http\Controllers\User\KonversiAKPendidikanController::class, 'store'])->name('konversi_ak_pendidikan.store');
 
         // 4. Cetak Surat
         Route::get('/cetak-surat', [CetakSuratController::class, 'index'])->name('cetak_surat');
@@ -271,6 +275,11 @@ Route::middleware(['auth'])->group(function () {
         });
 
         // Menu Lainnya
+        Route::get('/konversi-ak-pendidikan', [\App\Http\Controllers\Admin\KonversiAKPendidikanController::class, 'index'])->name('konversi_ak_pendidikan');
+        Route::post('/konversi-ak-pendidikan/approve', [\App\Http\Controllers\Admin\KonversiAKPendidikanController::class, 'approve'])->name('konversi_ak_pendidikan.approve');
+        Route::post('/konversi-ak-pendidikan/postpone', [\App\Http\Controllers\Admin\KonversiAKPendidikanController::class, 'postpone'])->name('konversi_ak_pendidikan.postpone');
+        Route::post('/konversi-ak-pendidikan/reject', [\App\Http\Controllers\Admin\KonversiAKPendidikanController::class, 'reject'])->name('konversi_ak_pendidikan.reject');
+
         Route::get('/penugasan', [AdminPenugasanController::class, 'index'])->name('penugasan');
         Route::post('/penugasan/approve', [AdminPenugasanController::class, 'approve'])->name('penugasan.approve');
         Route::post('/penugasan/postpone', [AdminPenugasanController::class, 'postpone'])->name('penugasan.postpone');

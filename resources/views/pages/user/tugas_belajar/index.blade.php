@@ -1,28 +1,27 @@
 @extends('layouts.user.app')
-@section('title', 'Perbaikan Data ASN')
+@section('title', 'Tugas Belajar')
 
 {{-- Tambahkan SweetAlert --}}
 @push('styles')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endpush
 
 @section('content')
-    {{-- HAPUS CLASS content-template AGAR LANGSUNG MUNCUL --}}
     <div class="container-fluid p-0">
 
         <div class="page-header mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h2 class="h3 fw-bold text-dark mb-1">Form Perbaikan Data ASN</h2>
-                    <p class="text-muted mb-0">Formulir untuk perbaikan data Aparatur Sipil Negara</p>
+                    <h2 class="h3 fw-bold text-dark mb-1">Form Pengajuan Tugas Belajar</h2>
+                    <p class="text-muted mb-0">Formulir untuk pengajuan tugas belajar bagi pegawai</p>
                 </div>
-                {{-- UBAH BUTTON JADI LINK KE DASHBOARD --}}
                 <a href="{{ route('dashboard') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
                 </a>
             </div>
         </div>
 
+        {{-- Progress Bar --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body py-3">
                 <div class="progress-steps">
@@ -44,130 +43,164 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                {{-- ACTION FORM KE ROUTE STORE --}}
-                <form id="form-perbaikan-data-asn" action="{{ route('perbaikan_data.store') }}" method="POST" enctype="multipart/form-data">
+                {{-- ACTION FORM --}}
+                <form id="form-tugas-belajar" action="{{ route('tugas_belajar.store') }}" method="POST"
+                      enctype="multipart/form-data">
                     @csrf
 
                     {{-- STEP 1: DATA DIRI --}}
-                    <div class="form-step active" id="step-1-perbaikan-data-asn">
+                    <div class="form-step active" id="step-1-tugas-belajar">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
-                                <i class="fas fa-user me-2"></i>Data Diri Pegawai
+                                <i class="fas fa-user me-2"></i>Data Diri
                             </h5>
-                            <p class="text-muted">Isi data diri pegawai yang mengajukan perbaikan data ASN</p>
+                            <p class="text-muted">Isi data diri pegawai dan jenis tugas belajar</p>
                         </div>
 
+                        {{-- Cek NIP --}}
                         <div class="card bg-light border-0 mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Cek Data dengan NIP</h6>
                                 <div class="row">
                                     <div class="col-md-8">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="nip_pegawai_perbaikan_data_asn"
-                                                name="nip_pegawai_perbaikan_data_asn" placeholder="Masukkan NIP Pegawai"
-                                                value="{{ Auth::user()->pegawai->nip ?? '' }}">
+                                            <input type="text" class="form-control" id="nip_pegawai_tugas_belajar"
+                                                   name="nip_pegawai_tugas_belajar" placeholder="Masukkan NIP Pegawai"
+                                                   value="{{ Auth::user()->pegawai->nip ?? '' }}">
                                             <button class="btn btn-outline-primary" type="button"
-                                                id="btn-cek-nip-perbaikan-data-asn">
+                                                    id="btn-cek-nip-tugas-belajar">
                                                 <i class="fas fa-search me-2"></i>Cek NIP
                                             </button>
                                         </div>
+                                        <small class="text-muted fst-italic">*Klik Cek NIP untuk mengisi data otomatis</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        {{-- Data Pegawai Readonly --}}
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nama_pegawai_perbaikan_data_asn" class="form-label">Nama Pegawai <span class="text-danger">*</span></label>
+                                <label for="nama_pegawai_tugas_belajar" class="form-label">Nama Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <input type="text" class="form-control" id="nama_pegawai_perbaikan_data_asn"
-                                        name="nama_pegawai_perbaikan_data_asn" required>
+                                    <input type="text" class="form-control" id="nama_pegawai_tugas_belajar"
+                                           name="nama_pegawai_tugas_belajar" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi nama pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="jabatan_pegawai_perbaikan_data_asn" class="form-label">Jabatan Pegawai <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
-                                    <input type="text" class="form-control" id="jabatan_pegawai_perbaikan_data_asn"
-                                        name="jabatan_pegawai_perbaikan_data_asn" required>
-                                </div>
-                                <div class="invalid-feedback">Harap isi jabatan pegawai</div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="pangkat_pegawai_perbaikan_data_asn" class="form-label">Pangkat Pegawai <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-star"></i></span>
-                                    <input type="text" class="form-control" id="pangkat_pegawai_perbaikan_data_asn"
-                                        name="pangkat_pegawai_perbaikan_data_asn" required>
-                                </div>
-                                <div class="invalid-feedback">Harap isi pangkat pegawai</div>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label for="nip_display_perbaikan_data_asn" class="form-label">NIP Pegawai <span class="text-danger">*</span></label>
+                                <label for="nip_display_tugas_belajar" class="form-label">NIP Pegawai <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control bg-light" id="nip_display_perbaikan_data_asn"
-                                        name="nip_display_perbaikan_data_asn" required readonly>
+                                    <input type="text" class="form-control bg-light" id="nip_display_tugas_belajar"
+                                           name="nip_display_tugas_belajar" required readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi NIP pegawai</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="unit_kerja_pegawai_perbaikan_data_asn" class="form-label">Unit Kerja Pegawai <span class="text-danger">*</span></label>
+                                <label for="jabatan_tugas_belajar" class="form-label">Jabatan <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
-                                    <input type="text" class="form-control" id="unit_kerja_pegawai_perbaikan_data_asn"
-                                        name="unit_kerja_pegawai_perbaikan_data_asn" required>
+                                    <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                                    <input type="text" class="form-control" id="jabatan_tugas_belajar"
+                                           name="jabatan_tugas_belajar" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi unit kerja pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="golongan_ruang_pegawai_perbaikan_data_asn" class="form-label">Golongan Ruang Pegawai <span class="text-danger">*</span></label>
+                                <label for="pangkat_tugas_belajar" class="form-label">Pangkat <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-star"></i></span>
+                                    <input type="text" class="form-control" id="pangkat_tugas_belajar"
+                                           name="pangkat_tugas_belajar" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="satuan_kerja_tugas_belajar" class="form-label">Satuan Kerja <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                    <input type="text" class="form-control" id="satuan_kerja_tugas_belajar"
+                                           name="satuan_kerja_tugas_belajar" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="golongan_ruang_tugas_belajar" class="form-label">Golongan/Ruang <span
+                                        class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
-                                    <input type="text" class="form-control" id="golongan_ruang_pegawai_perbaikan_data_asn"
-                                        name="golongan_ruang_pegawai_perbaikan_data_asn" required>
+                                    <input type="text" class="form-control" id="golongan_ruang_tugas_belajar"
+                                           name="golongan_ruang_tugas_belajar" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi golongan ruang pegawai</div>
+                            </div>
+                        </div>
+
+                        {{-- Data Rencana Studi (UPDATED SECTION) --}}
+                        <div class="step-header mb-4 mt-4 border-top pt-4">
+                            <h5 class="fw-bold text-primary mb-2">
+                                <i class="fas fa-university me-2"></i>Rencana Pendidikan
+                            </h5>
+                            <p class="text-muted">Isi detail jenis tugas belajar</p>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="jenis_tugas_belajar" class="form-label">Jenis Tugas Belajar <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                                    <select class="form-control" id="jenis_tugas_belajar" name="jenis_tugas_belajar"
+                                            required>
+                                        <option value="">- Pilih Jenis -</option>
+                                        <option value="Dalam Negeri">Dalam Negeri</option>
+                                        <option value="Luar Negeri">Luar Negeri</option>
+                                        <option value="Program Kemitraan">Program Kemitraan</option>
+                                        <option value="Beasiswa Pemerintah">Beasiswa Pemerintah</option>
+                                        <option value="Beasiswa Swasta">Beasiswa Swasta</option>
+                                    </select>
+                                </div>
+                                <div class="invalid-feedback">Harap pilih jenis tugas belajar</div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <div></div> 
-                            <button type="button" class="btn btn-primary btn-next-perbaikan-data-asn" data-next="2">
+                            <div></div>
+                            <button type="button" class="btn btn-primary btn-next-tugas-belajar" data-next="2">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
-                    {{-- STEP 2: DOKUMEN (DINAMIS) --}}
-                    <div class="form-step" id="step-2-perbaikan-data-asn">
+                    {{-- STEP 2: DOKUMEN --}}
+                    <div class="form-step" id="step-2-tugas-belajar">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-file-upload me-2"></i>Upload Dokumen Persyaratan
                             </h5>
-                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan untuk perbaikan data ASN</p>
+                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan untuk tugas belajar</p>
                         </div>
 
                         <div class="alert alert-info">
                             <div class="d-flex">
                                 <i class="fas fa-info-circle me-3 mt-1"></i>
                                 <div>
-                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF. Maksimal ukuran file: 2MB per dokumen.
+                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF, JPG, JPEG, PNG.
+                                    Maksimal ukuran file: 2MB per dokumen.
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
-                                            <span id="upload-progress-perbaikan-data-asn">0/{{ count($syarat) }}</span> dokumen terunggah
+                                            <span id="upload-progress-tugas-belajar">0/{{ count($syarat) }}</span> dokumen
+                                            terunggah
                                         </small>
                                     </div>
                                 </div>
@@ -180,46 +213,47 @@
                                     <div class="file-upload-card h-100">
                                         <label for="file_{{ $dokumen->id }}" class="form-label fw-bold">
                                             {{ $dokumen->nama_dokumen }}
-                                            @if($dokumen->is_required)
+                                            @if ($dokumen->is_required)
                                                 <span class="text-danger">*</span>
                                             @else
                                                 <span class="text-muted fw-light">(Opsional)</span>
                                             @endif
                                         </label>
-                                        
+
                                         <div class="file-input-wrapper">
-                                            <input type="file" class="form-control file-input-dynamic" 
-                                                id="file_{{ $dokumen->id }}" 
-                                                name="file_{{ $dokumen->id }}" 
-                                                accept=".pdf"
+                                            <input type="file" class="form-control file-input-dynamic"
+                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
+                                                   accept=".pdf,.jpg,.jpeg,.png"
                                                 {{ $dokumen->is_required ? 'required' : '' }}>
-                                            
-                                            <div class="file-preview mt-2 small text-success" id="preview-file_{{ $dokumen->id }}"></div>
+
+                                            <div class="file-preview mt-2 small text-success"
+                                                 id="preview-file_{{ $dokumen->id }}"></div>
                                         </div>
-                                        <div class="form-text">Type File: PDF, Max: 2MB</div>
+                                        <div class="form-text">Tipe: PDF/Gambar, Max: 2MB</div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="col-12">
                                     <div class="alert alert-warning">
-                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (perbaikan-data-asn).
+                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (tugas-belajar).
                                     </div>
                                 </div>
                             @endforelse
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-perbaikan-data-asn" data-prev="1">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-tugas-belajar"
+                                    data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
-                            <button type="button" class="btn btn-primary btn-next-perbaikan-data-asn" data-next="3">
+                            <button type="button" class="btn btn-primary btn-next-tugas-belajar" data-next="3">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
                     {{-- STEP 3: KONFIRMASI --}}
-                    <div class="form-step" id="step-3-perbaikan-data-asn">
+                    <div class="form-step" id="step-3-tugas-belajar">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-check-circle me-2"></i>Konfirmasi Pengajuan
@@ -232,14 +266,22 @@
                                 <h6 class="fw-bold mb-3">Ringkasan Data Pegawai</h6>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <p><strong>Nama:</strong> <span id="review-nama-perbaikan-data-asn">-</span></p>
-                                        <p><strong>NIP:</strong> <span id="review-nip-perbaikan-data-asn">-</span></p>
-                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-perbaikan-data-asn">-</span></p>
+                                        <p><strong>Nama:</strong> <span id="review-nama-tugas-belajar">-</span></p>
+                                        <p><strong>NIP:</strong> <span id="review-nip-tugas-belajar">-</span></p>
+                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-tugas-belajar">-</span></p>
+                                        <p><strong>Pangkat:</strong> <span id="review-pangkat-tugas-belajar">-</span></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Pangkat:</strong> <span id="review-pangkat-perbaikan-data-asn">-</span></p>
-                                        <p><strong>Unit Kerja:</strong> <span id="review-unit-kerja-perbaikan-data-asn">-</span></p>
-                                        <p><strong>Golongan Ruang:</strong> <span id="review-golongan-ruang-perbaikan-data-asn">-</span></p>
+                                        <p><strong>Satuan Kerja:</strong> <span id="review-satuan-kerja-tugas-belajar">-</span>
+                                        </p>
+                                        <p><strong>Golongan/Ruang:</strong> <span
+                                                id="review-golongan-ruang-tugas-belajar">-</span></p>
+                                        {{-- REVIEW UPDATE --}}
+                                        <div class="border-top pt-2 mt-2">
+                                            <p class="text-primary fw-bold mb-1">Rencana Studi:</p>
+                                            <p><strong>Jenis Tugas Belajar:</strong> <span
+                                                    id="review-jenis-tugas-belajar">-</span></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -248,24 +290,27 @@
                         <div class="card border-0 bg-light mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Dokumen yang Diunggah</h6>
-                                <div id="review-documents-perbaikan-data-asn" class="small"></div>
+                                <div id="review-documents-tugas-belajar" class="small"></div>
                             </div>
                         </div>
 
                         <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="confirm-data-perbaikan-data-asn" required>
-                            <label class="form-check-label" for="confirm-data-perbaikan-data-asn">
-                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung konsekuensi hukum jika data tersebut tidak valid.
+                            <input class="form-check-input" type="checkbox" id="confirm-data-tugas-belajar" required>
+                            <label class="form-check-label" for="confirm-data-tugas-belajar">
+                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung
+                                konsekuensi
+                                hukum jika data tersebut tidak valid.
                             </label>
                             <div class="invalid-feedback">Anda harus menyetujui pernyataan ini sebelum mengajukan</div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-perbaikan-data-asn" data-prev="2">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-tugas-belajar"
+                                    data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-paper-plane me-2"></i>Ajukan Perbaikan Data
+                                <i class="fas fa-paper-plane me-2"></i>Ajukan Tugas Belajar
                             </button>
                         </div>
                     </div>
@@ -274,162 +319,425 @@
         </div>
     </div>
 
+    {{-- CSS Styles --}}
     <style>
-        /* COPY PASTE STYLE AGAR SAMA PERSIS */
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
-        .progress-steps .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 8px; border: 3px solid #e9ecef; transition: all 0.3s ease; }
-        .step.active .step-circle { background-color: #1a73e8; border-color: #1a73e8; color: white; }
-        .step-label { font-size: 0.875rem; font-weight: 500; color: #6c757d; }
-        .step.active .step-label { color: #1a73e8; font-weight: 600; }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
 
-        /* Form Steps */
-        .form-step { display: none; }
-        .form-step.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
 
-        /* File Upload Cards */
-        .file-upload-card { border: 2px dashed #dee2e6; border-radius: 8px; padding: 15px; transition: all 0.3s ease; background: white; }
-        .file-upload-card:hover { border-color: #1a73e8; background-color: #f8f9fa; }
-        .file-input-wrapper { position: relative; }
-        .file-preview { margin-top: 10px; padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 0.875rem; display: none; }
-        .file-preview.has-file { display: block; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 100px; } }
+        .progress-steps .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
 
-        /* Input Groups & Responsive */
-        .input-group-text { background-color: #f8f9fa; border-right: none; }
-        .form-control { border-left: none; }
-        .form-control:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); }
-        @media (max-width: 768px) { .progress-steps { flex-direction: column; align-items: flex-start; } .progress-steps::before { display: none; } .step { flex-direction: row; margin-bottom: 10px; } .step-circle { margin-right: 10px; margin-bottom: 0; } }
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background-color: #1a73e8;
+            border-color: #1a73e8;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .step.active .step-label {
+            color: #1a73e8;
+            font-weight: 600;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .file-upload-card {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .file-upload-card:hover {
+            border-color: #1a73e8;
+            background-color: #f8f9fa;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-preview {
+            margin-top: 10px;
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .file-preview.has-file {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 100px; }
+        }
+
+        .input-group-text {
+            background-color: #f8f9fa;
+            border-right: none;
+        }
+
+        .form-control {
+            border-left: none;
+        }
+
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        @media (max-width: 768px) {
+            .progress-steps {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .progress-steps::before { display: none; }
+            .step { flex-direction: row; margin-bottom: 10px; }
+            .step-circle { margin-right: 10px; margin-bottom: 0; }
+        }
     </style>
 
+    {{-- Javascript Logic --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            
-            // --- NOTIFIKASI SESSION ---
-            @if(session('success')) Swal.fire('Berhasil', "{{ session('success') }}", 'success'); @endif
-            @if(session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error'); @endif
-            @if($errors->any()) Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning'); @endif
+        document.addEventListener('DOMContentLoaded', function () {
 
-            // --- 1. LOGIKA STEPPER ---
+            // --- NOTIFIKASI SYSTEM ---
+            @if (session('success'))
+            Swal.fire('Berhasil', "{{ session('success') }}", 'success');
+            @endif
+            @if (session('error'))
+            Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            @endif
+            @if ($errors->any())
+            Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning');
+            @endif
+
+            // --- VARIABLES ---
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
 
+            // --- FUNGSI NAVIGASI STEP ---
             function showStep(idx) {
-                steps.forEach(el => el.classList.remove('active'));
-                progressSteps.forEach(el => el.classList.remove('active'));
-                document.getElementById(`step-${idx}-perbaikan-data-asn`).classList.add('active');
-                for(let i=0; i<idx; i++) progressSteps[i].classList.add('active');
-                if(idx == 3) updateReview();
+                // Update UI Step
+                steps.forEach(s => s.classList.remove('active'));
+                progressSteps.forEach(s => s.classList.remove('active'));
+
+                document.getElementById(`step-${idx}-tugas-belajar`).classList.add('active');
+                for (let i = 0; i < idx; i++) {
+                    progressSteps[i].classList.add('active');
+                }
+
+                if (idx == 3) updateReview();
             }
 
-            document.querySelectorAll('.btn-next-perbaikan-data-asn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const next = this.dataset.next;
-                    if(next == 2 && !document.getElementById('nama_pegawai_perbaikan_data_asn').value) {
-                        Swal.fire('Data Kosong', 'Silakan Cek NIP dulu!', 'warning'); return;
+            // --- VALIDASI MANUAL SEBELUM NEXT ---
+            function validateStep(currentStep) {
+                let isValid = true;
+                let errorMsg = '';
+
+                // VALIDASI STEP 1: Data Diri & Rencana Studi (UPDATED)
+                if (currentStep == 1) {
+                    const nama = document.getElementById('nama_pegawai_tugas_belajar').value.trim();
+                    const jenis = document.getElementById('jenis_tugas_belajar').value.trim();
+
+                    if (!nama) {
+                        isValid = false;
+                        errorMsg = 'Silakan lakukan "Cek NIP" dan lengkapi data pegawai terlebih dahulu!';
+                    } else if (!jenis) {
+                        isValid = false;
+                        errorMsg = 'Harap pilih Jenis Tugas Belajar!';
                     }
-                    showStep(next);
+                }
+
+                // VALIDASI STEP 2: Dokumen Required
+                if (currentStep == 2) {
+                    const requiredInputs = document.querySelectorAll('#step-2-tugas-belajar input[type="file"][required]');
+                    let emptyCount = 0;
+
+                    requiredInputs.forEach(input => {
+                        if (input.files.length === 0) {
+                            emptyCount++;
+                            input.classList.add('is-invalid');
+                        } else {
+                            input.classList.remove('is-invalid');
+                        }
+                    });
+
+                    if (emptyCount > 0) {
+                        isValid = false;
+                        errorMsg = `Masih ada ${emptyCount} dokumen wajib yang belum diunggah!`;
+                    }
+                }
+
+                if (!isValid) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian',
+                        text: errorMsg
+                    });
+                }
+
+                return isValid;
+            }
+
+            // --- EVENT LISTENER TOMBOL NEXT ---
+            document.querySelectorAll('.btn-next-tugas-belajar').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const nextStepIndex = parseInt(this.dataset.next);
+                    const currentStepIndex = nextStepIndex - 1;
+
+                    // Cek validasi strict
+                    if (validateStep(currentStepIndex)) {
+                        showStep(nextStepIndex);
+                    }
                 });
             });
 
-            document.querySelectorAll('.btn-prev-perbaikan-data-asn').forEach(btn => {
-                btn.addEventListener('click', function() { showStep(this.dataset.prev); });
+            // --- EVENT LISTENER TOMBOL PREV ---
+            document.querySelectorAll('.btn-prev-tugas-belajar').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    showStep(this.dataset.prev);
+                });
             });
 
-            // --- 2. LOGIKA CEK NIP ---
-            const btnCek = document.getElementById('btn-cek-nip-perbaikan-data-asn');
-            if(btnCek) {
-                btnCek.addEventListener('click', function() {
-                    const nip = document.getElementById('nip_pegawai_perbaikan_data_asn').value;
-                    if(!nip) { Swal.fire('Isi NIP!', '', 'warning'); return; }
+            // --- FILE UPLOAD HANDLER ---
+            function handleFileUpload(input) {
+                const previewId = `preview-${input.id}`;
+                const previewEl = document.getElementById(previewId);
+                const maxSize = 2 * 1024 * 1024; // 2MB
+
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+
+                    // Validasi Size
+                    if (file.size > maxSize) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                        if (previewEl) {
+                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: Ukuran file > 2MB!</div>`;
+                            previewEl.style.display = 'block';
+                        }
+                        Swal.fire('File Terlalu Besar', 'Maksimal ukuran file adalah 2MB.', 'warning');
+                        return;
+                    }
+
+                    // Sukses
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+
+                    if (previewEl) {
+                        previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> ${file.name}</div>`;
+                        previewEl.classList.add('has-file');
+                        previewEl.style.display = 'block';
+                    }
+                } else {
+                    input.classList.remove('is-valid');
+                    if (previewEl) previewEl.style.display = 'none';
+                }
+            }
+
+            function updateUploadProgress() {
+                const allFileInputs = document.querySelectorAll('#step-2-tugas-belajar input[type="file"]');
+                let filledCount = 0;
+                allFileInputs.forEach(input => {
+                    if (input.files.length > 0) filledCount++;
+                });
+                const progressEl = document.getElementById('upload-progress-tugas-belajar');
+                if (progressEl) progressEl.textContent = `${filledCount}/${allFileInputs.length}`;
+            }
+
+            // Attach Event ke Input File
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function () {
+                    handleFileUpload(this);
+                    updateUploadProgress();
+                });
+            });
+
+            // --- LOGIKA CEK NIP ---
+            const btnCek = document.getElementById('btn-cek-nip-tugas-belajar');
+            if (btnCek) {
+                btnCek.addEventListener('click', function () {
+                    const nip = document.getElementById('nip_pegawai_tugas_belajar').value;
+                    if (!nip) {
+                        Swal.fire('Isi NIP!', 'Mohon masukkan NIP terlebih dahulu', 'warning');
+                        return;
+                    }
 
                     const oldHtml = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                    this.disabled = true;
+
                     fetch(`{{ url('/kenaikan-pangkat/ajax/cek-nip') }}/${nip}`)
                         .then(res => res.json())
                         .then(res => {
-                            if(res.success) {
+                            if (res.success) {
                                 const d = res.data;
-                                const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; }
-                                
-                                set('nama_pegawai_perbaikan_data_asn', d.nama);
-                                set('jabatan_pegawai_perbaikan_data_asn', d.jabatan);
-                                set('pangkat_pegawai_perbaikan_data_asn', d.pangkat);
-                                set('nip_display_perbaikan_data_asn', d.nip);
-                                set('unit_kerja_pegawai_perbaikan_data_asn', d.unit_kerja);
-                                set('golongan_ruang_pegawai_perbaikan_data_asn', d.golongan_ruang);
-                                Swal.fire('Ditemukan', 'Data pegawai dimuat', 'success');
+                                const set = (id, val) => {
+                                    const el = document.getElementById(id);
+                                    if (el) el.value = val || '';
+                                }
+
+                                set('nama_pegawai_tugas_belajar', d.nama);
+                                set('jabatan_tugas_belajar', d.jabatan);
+                                set('pangkat_tugas_belajar', d.pangkat);
+                                set('nip_display_tugas_belajar', d.nip);
+                                set('satuan_kerja_tugas_belajar', d.unit_kerja);
+                                set('golongan_ruang_tugas_belajar', d.golongan_ruang);
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Data Ditemukan',
+                                    text: 'Data pegawai berhasil dimuat.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             } else {
-                                Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
+                                Swal.fire('Gagal', 'NIP tidak ditemukan dalam database kepegawaian.', 'error');
                             }
                         })
-                        .catch(() => Swal.fire('Error', 'Gagal koneksi server', 'error'))
-                        .finally(() => this.innerHTML = oldHtml);
+                        .catch(() => Swal.fire('Error', 'Gagal koneksi ke server', 'error'))
+                        .finally(() => {
+                            this.innerHTML = oldHtml;
+                            this.disabled = false;
+                        });
                 });
             }
 
-            // --- 3. LOGIKA UPLOAD FILE ---
-            document.querySelectorAll('input[type="file"]').forEach(input => {
-                input.addEventListener('change', function() {
-                    const previewId = `preview-${this.id}`;
-                    const previewEl = document.getElementById(previewId);
-                    
-                    if (this.files.length > 0) {
-                        const fileName = this.files[0].name;
-                        if (previewEl) {
-                            previewEl.innerHTML = `<i class="fas fa-check-circle me-1"></i> ${fileName}`;
-                            previewEl.classList.add('has-file');
-                        }
-                    }
-                });
-            });
-
-            // --- 4. LOGIKA REVIEW ---
+            // --- LOGIKA REVIEW (STEP 3) - UPDATED ---
             function updateReview() {
-                const get = (id) => document.getElementById(id).value || '-';
-                const setText = (id, val) => document.getElementById(id).textContent = val;
+                const get = (id) => document.getElementById(id)?.value || '-';
+                const setText = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.textContent = val;
+                };
 
-                setText('review-nama-perbaikan-data-asn', get('nama_pegawai_perbaikan_data_asn'));
-                setText('review-nip-perbaikan-data-asn', get('nip_display_perbaikan_data_asn'));
-                setText('review-jabatan-perbaikan-data-asn', get('jabatan_pegawai_perbaikan_data_asn'));
-                setText('review-pangkat-perbaikan-data-asn', get('pangkat_pegawai_perbaikan_data_asn'));
-                setText('review-unit-kerja-perbaikan-data-asn', get('unit_kerja_pegawai_perbaikan_data_asn'));
-                setText('review-golongan-ruang-perbaikan-data-asn', get('golongan_ruang_pegawai_perbaikan_data_asn'));
-                
-                const docContainer = document.getElementById('review-documents-perbaikan-data-asn');
+                // Set Data Diri
+                setText('review-nama-tugas-belajar', get('nama_pegawai_tugas_belajar'));
+                setText('review-nip-tugas-belajar', get('nip_display_tugas_belajar'));
+                setText('review-jabatan-tugas-belajar', get('jabatan_tugas_belajar'));
+                setText('review-pangkat-tugas-belajar', get('pangkat_tugas_belajar'));
+                setText('review-satuan-kerja-tugas-belajar', get('satuan_kerja_tugas_belajar'));
+                setText('review-golongan-ruang-tugas-belajar', get('golongan_ruang_tugas_belajar'));
+
+                // Set Data Studi (UPDATED)
+                setText('review-jenis-tugas-belajar', get('jenis_tugas_belajar'));
+
+                // Smart Icon Logic
+                const docContainer = document.getElementById('review-documents-tugas-belajar');
                 docContainer.innerHTML = '';
                 let hasFile = false;
 
                 document.querySelectorAll('input[type="file"]').forEach(input => {
-                    if(input.files.length > 0) {
+                    if (input.files.length > 0) {
                         hasFile = true;
                         const fileName = input.files[0].name;
-                        const label = input.closest('.file-upload-card').querySelector('label').innerText.replace('*','').replace('(Opsional)','').trim();
-                        
+                        const fileSize = (input.files[0].size / 1024).toFixed(1) + ' KB';
+
+                        const labelEl = input.closest('.file-upload-card').querySelector('label');
+                        let labelText = labelEl.innerText.replace('*', '').replace('(Opsional)', '').trim();
+
+                        // Detect Extension
+                        const ext = fileName.split('.').pop().toLowerCase();
+                        let iconClass = 'fa-file';
+                        let iconColor = 'text-secondary';
+
+                        if (ext === 'pdf') {
+                            iconClass = 'fa-file-pdf';
+                            iconColor = 'text-danger';
+                        } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
+                            iconClass = 'fa-file-image';
+                            iconColor = 'text-primary';
+                        }
+
                         const item = document.createElement('div');
-                        item.className = 'd-flex align-items-center mb-2 text-success';
-                        item.innerHTML = `<i class="fas fa-check-circle me-2"></i> <strong>${label}:</strong> <span class="ms-1 text-dark">${fileName}</span>`;
+                        item.className = 'd-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm';
+                        item.innerHTML = `
+                            <div class="me-3">
+                                <i class="fas ${iconClass} ${iconColor} fa-2x"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark" style="font-size: 0.9rem;">${labelText}</div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <span class="text-success small"><i class="fas fa-check-circle me-1"></i>${fileName}</span>
+                                    <span class="text-muted small" style="font-size: 0.75rem;">${fileSize}</span>
+                                </div>
+                            </div>
+                        `;
                         docContainer.appendChild(item);
                     }
                 });
 
                 if (!hasFile) {
-                    docContainer.innerHTML = '<p class="text-muted fst-italic">Belum ada dokumen yang diunggah.</p>';
+                    docContainer.innerHTML = '<div class="alert alert-warning py-2 small"><i class="fas fa-exclamation-triangle me-1"></i>Belum ada dokumen yang diunggah.</div>';
                 }
             }
 
-            // --- 5. SUBMIT FORM ---
-            document.getElementById('form-perbaikan-data-asn').addEventListener('submit', function(e) {
-                if(!document.getElementById('confirm-data-perbaikan-data-asn').checked) {
+            // --- SUBMIT FORM ---
+            document.getElementById('form-tugas-belajar').addEventListener('submit', function (e) {
+                if (!document.getElementById('confirm-data-tugas-belajar').checked) {
                     e.preventDefault();
-                    Swal.fire('Konfirmasi', 'Anda harus menyetujui data', 'warning');
+                    Swal.fire('Konfirmasi Diperlukan', 'Anda harus mencentang pernyataan kebenaran data sebelum mengajukan.', 'warning');
                 } else {
                     Swal.fire({
-                        title: 'Mengirim...',
-                        text: 'Mohon tunggu',
+                        title: 'Sedang Mengirim...',
+                        text: 'Mohon tunggu sebentar',
                         allowOutsideClick: false,
                         didOpen: () => Swal.showLoading()
                     });

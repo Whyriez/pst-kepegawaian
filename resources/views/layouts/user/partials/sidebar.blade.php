@@ -207,6 +207,14 @@
         </li>
 
         <li>
+            <a href="{{ route('konversi_ak_pendidikan') }}"
+               class="menu-item {{ request()->routeIs('konversi_ak_pendidikan') ? 'active' : '' }}">
+                <i class="fas fa-calculator"></i>
+                <span>Konversi AK Pendidikan</span>
+            </a>
+        </li>
+
+        <li>
             <a href="{{ route('penugasan') }}"
                 class="menu-item {{ request()->routeIs('penugasan') ? 'active' : '' }}">
                 <i class="fas fa-briefcase"></i>

@@ -7,7 +7,6 @@
 @endpush
 
 @section('content')
-    {{-- HAPUS CLASS content-template AGAR LANGSUNG MUNCUL --}}
     <div class="container-fluid p-0">
 
         <div class="page-header mb-4">
@@ -16,13 +15,13 @@
                     <h2 class="h3 fw-bold text-dark mb-1">Form Pengajuan Pensiun BUP</h2>
                     <p class="text-muted mb-0">Formulir untuk pengajuan pensiun karena mencapai batas usia pensiun</p>
                 </div>
-                {{-- UBAH BUTTON JADI LINK KE DASHBOARD --}}
                 <a href="{{ route('dashboard') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Kembali
                 </a>
             </div>
         </div>
 
+        {{-- Progress Bar --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body py-3">
                 <div class="progress-steps">
@@ -44,13 +43,13 @@
 
         <div class="card border-0 shadow-sm">
             <div class="card-body">
-                {{-- ACTION FORM KE ROUTE STORE --}}
+                {{-- Form Action --}}
                 <form id="form-pensiun-bup" action="{{ route('pensiun.bup.store') }}" method="POST"
-                    enctype="multipart/form-data">
+                      enctype="multipart/form-data">
                     @csrf
 
                     {{-- STEP 1: DATA DIRI PEGAWAI --}}
-                    <div class="form-step active" id="step-1">
+                    <div class="form-step active" id="step-1-pensiun-bup">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-user me-2"></i>Data Diri Pegawai
@@ -58,133 +57,132 @@
                             <p class="text-muted">Isi data diri pegawai yang akan mengajukan pensiun</p>
                         </div>
 
+                        {{-- Cek NIP Section --}}
                         <div class="card bg-light border-0 mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Cek Data dengan NIP</h6>
                                 <div class="row">
                                     <div class="col-md-8">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" id="nip_pegawai" name="nip_pegawai"
-                                                placeholder="Masukkan NIP Pegawai"
-                                                value="{{ Auth::user()->pegawai->nip ?? '' }}">
-                                            <button class="btn btn-outline-primary" type="button" id="btn-cek-nip">
+                                            <input type="text" class="form-control" id="nip_pegawai_pensiun_bup" name="nip_pegawai_pensiun_bup"
+                                                   placeholder="Masukkan NIP Pegawai"
+                                                   value="{{ Auth::user()->pegawai->nip ?? '' }}">
+                                            <button class="btn btn-outline-primary" type="button" id="btn-cek-nip-pensiun-bup">
                                                 <i class="fas fa-search me-2"></i>Cek NIP
                                             </button>
                                         </div>
+                                        <small class="text-muted fst-italic">*Klik Cek NIP untuk mengisi data otomatis</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        {{-- Data Readonly & Input --}}
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nama_pegawai" class="form-label">Nama Pegawai <span
+                                <label for="nama_pegawai_pensiun_bup" class="form-label">Nama Pegawai <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <input type="text" class="form-control" id="nama_pegawai" name="nama_pegawai"
-                                        required>
+                                    <input type="text" class="form-control" id="nama_pegawai_pensiun_bup" name="nama_pegawai_pensiun_bup"
+                                           required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi nama pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="jabatan" class="form-label">Jabatan Pegawai <span
+                                <label for="jabatan_pensiun_bup" class="form-label">Jabatan Pegawai <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
-                                    <input type="text" class="form-control" id="jabatan" name="jabatan" required>
+                                    <input type="text" class="form-control" id="jabatan_pensiun_bup" name="jabatan_pensiun_bup" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi jabatan pegawai</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="pangkat" class="form-label">Pangkat Pegawai <span
+                                <label for="pangkat_pensiun_bup" class="form-label">Pangkat Pegawai <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-star"></i></span>
-                                    <input type="text" class="form-control" id="pangkat" name="pangkat" required>
+                                    <input type="text" class="form-control" id="pangkat_pensiun_bup" name="pangkat_pensiun_bup" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi pangkat pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="nip_display" class="form-label">NIP Pegawai <span
+                                <label for="nip_display_pensiun_bup" class="form-label">NIP Pegawai <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" class="form-control bg-light" id="nip_display" name="nip_display"
-                                        required readonly>
+                                    <input type="text" class="form-control bg-light" id="nip_display_pensiun_bup" name="nip_display_pensiun_bup"
+                                           required readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi NIP pegawai</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="satuan_kerja" class="form-label">Satuan Kerja Pegawai <span
+                                <label for="satuan_kerja_pensiun_bup" class="form-label">Satuan Kerja Pegawai <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-building"></i></span>
-                                    <input type="text" class="form-control" id="satuan_kerja" name="satuan_kerja"
-                                        required>
+                                    <input type="text" class="form-control" id="satuan_kerja_pensiun_bup" name="satuan_kerja_pensiun_bup"
+                                           required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi satuan kerja</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="golongan" class="form-label">Golongan dan Ruang Pegawai <span
+                                <label for="golongan_ruang_pensiun_bup" class="form-label">Golongan dan Ruang <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
-                                    <input type="text" class="form-control" id="golongan" name="golongan" required>
+                                    <input type="text" class="form-control" id="golongan_ruang_pensiun_bup" name="golongan_ruang_pensiun_bup" required>
                                 </div>
-                                <div class="invalid-feedback">Harap isi golongan/ruang</div>
                             </div>
-                        </div>
 
-                        <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="tmt_pensiun" class="form-label">TMT Pensiun Pegawai <span
+                                <label for="tmt_pensiun_bup" class="form-label">TMT Pensiun <span
                                         class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                    <input type="date" class="form-control" id="tmt_pensiun" name="tmt_pensiun"
-                                        required>
+                                    <input type="date" class="form-control" id="tmt_pensiun_bup" name="tmt_pensiun_bup"
+                                           required>
                                 </div>
                                 <div class="invalid-feedback">Harap pilih TMT pensiun</div>
                             </div>
                         </div>
 
+
+
                         <div class="d-flex justify-content-between mt-5">
                             <div></div>
-                            <button type="button" class="btn btn-primary btn-next" data-next="2">
+                            <button type="button" class="btn btn-primary btn-next-pensiun-bup" data-next="2">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
-                    {{-- STEP 2: UPLOAD DOKUMEN (DESIGN DISAMAKAN DENGAN FUNGSIONAL) --}}
-                    <div class="form-step" id="step-2">
+                    {{-- STEP 2: UPLOAD DOKUMEN --}}
+                    <div class="form-step" id="step-2-pensiun-bup">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-file-upload me-2"></i>Upload Dokumen Persyaratan
                             </h5>
-                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan (Otomatis dari Database)</p>
+                            <p class="text-muted">Unggah dokumen-dokumen yang diperlukan</p>
                         </div>
 
+                        {{-- INFORMASI FORMAT FILE UPDATE --}}
                         <div class="alert alert-info">
                             <div class="d-flex">
                                 <i class="fas fa-info-circle me-3 mt-1"></i>
                                 <div>
-                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF. Maksimal ukuran file: 2MB
-                                    per dokumen.
+                                    <strong>Informasi:</strong> Format file yang diizinkan: <strong>PDF, JPG, JPEG, PNG</strong>.
+                                    Maksimal ukuran file: 2MB per dokumen.
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
-                                            <span id="upload-progress">0/{{ count($syarat) }}</span> dokumen terunggah
+                                            <span id="upload-progress-pensiun-bup">0/{{ count($syarat) }}</span> dokumen
+                                            terunggah
                                         </small>
                                     </div>
                                 </div>
@@ -205,37 +203,39 @@
                                         </label>
 
                                         <div class="file-input-wrapper">
+                                            {{-- UPDATE ACCEPT ATTRIBUTE --}}
                                             <input type="file" class="form-control file-input-dynamic"
-                                                id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
-                                                accept=".pdf" {{ $dokumen->is_required ? 'required' : '' }}>
+                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
+                                                   accept=".pdf,.jpg,.jpeg,.png" {{ $dokumen->is_required ? 'required' : '' }}>
 
                                             <div class="file-preview mt-2 small text-success"
-                                                id="preview-file_{{ $dokumen->id }}"></div>
+                                                 id="preview-file_{{ $dokumen->id }}"></div>
                                         </div>
-                                        <div class="form-text">Tipe: PDF, Max: 2MB</div>
+                                        <div class="form-text">Tipe: PDF/Gambar, Max: 2MB</div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="col-12">
                                     <div class="alert alert-warning">
-                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (pensiun-bup).
+                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini
+                                        (pensiun-bup).
                                     </div>
                                 </div>
                             @endforelse
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev" data-prev="1">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-pensiun-bup" data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
-                            <button type="button" class="btn btn-primary btn-next" data-next="3">
+                            <button type="button" class="btn btn-primary btn-next-pensiun-bup" data-next="3">
                                 Lanjut <i class="fas fa-arrow-right ms-2"></i>
                             </button>
                         </div>
                     </div>
 
                     {{-- STEP 3: KONFIRMASI --}}
-                    <div class="form-step" id="step-3">
+                    <div class="form-step" id="step-3-pensiun-bup">
                         <div class="step-header mb-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-check-circle me-2"></i>Konfirmasi Pengajuan
@@ -248,15 +248,18 @@
                                 <h6 class="fw-bold mb-3">Ringkasan Data Pegawai</h6>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <p><strong>Nama:</strong> <span id="review-nama">-</span></p>
-                                        <p><strong>NIP:</strong> <span id="review-nip">-</span></p>
-                                        <p><strong>Jabatan:</strong> <span id="review-jabatan">-</span></p>
+                                        <p><strong>Nama:</strong> <span id="review-nama-pensiun-bup">-</span></p>
+                                        <p><strong>NIP:</strong> <span id="review-nip-pensiun-bup">-</span></p>
+                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-pensiun-bup">-</span></p>
+                                        <p><strong>Pangkat:</strong> <span id="review-pangkat-pensiun-bup">-</span></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Satuan Kerja:</strong> <span id="review-satuan-kerja">-</span></p>
-                                        <p><strong>Pangkat/Gol:</strong> <span id="review-pangkat">-</span> / <span
-                                                id="review-golongan">-</span></p>
-                                        <p><strong>TMT Pensiun:</strong> <span id="review-tmt">-</span></p>
+                                        <p><strong>Satuan Kerja:</strong> <span id="review-satuan-kerja-pensiun-bup">-</span></p>
+                                        <p><strong>Golongan/Ruang:</strong> <span id="review-golongan-ruang-pensiun-bup">-</span></p>
+                                        <div class="border-top pt-2 mt-2">
+                                            <p class="text-primary fw-bold mb-1">Data Pensiun:</p>
+                                            <p><strong>TMT Pensiun:</strong> <span id="review-tmt-pensiun-bup">-</span></p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -265,21 +268,22 @@
                         <div class="card border-0 bg-light mb-4">
                             <div class="card-body">
                                 <h6 class="fw-bold mb-3">Dokumen yang Diunggah</h6>
-                                <div id="review-documents" class="small"></div>
+                                <div id="review-documents-pensiun-bup" class="small"></div>
                             </div>
                         </div>
 
                         <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="confirm-data" required>
-                            <label class="form-check-label" for="confirm-data">
-                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung konsekuensi
+                            <input class="form-check-input" type="checkbox" id="confirm-data-pensiun-bup" required>
+                            <label class="form-check-label" for="confirm-data-pensiun-bup">
+                                Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung
+                                konsekuensi
                                 hukum jika data tersebut tidak valid.
                             </label>
                             <div class="invalid-feedback">Anda harus menyetujui pernyataan ini sebelum mengajukan</div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev" data-prev="2">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-pensiun-bup" data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-success">
@@ -292,8 +296,8 @@
         </div>
     </div>
 
+    {{-- CSS Styles --}}
     <style>
-        /* Progress Steps */
         .progress-steps {
             display: flex;
             justify-content: space-between;
@@ -350,7 +354,6 @@
             font-weight: 600;
         }
 
-        /* Form Steps */
         .form-step {
             display: none;
         }
@@ -361,18 +364,10 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* File Upload Cards (Sama Persis Fungsional) */
         .file-upload-card {
             border: 2px dashed #dee2e6;
             border-radius: 8px;
@@ -405,18 +400,10 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-            }
-
-            to {
-                opacity: 1;
-                max-height: 100px;
-            }
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 100px; }
         }
 
-        /* Input Groups & Responsive */
         .input-group-text {
             background-color: #f8f9fa;
             border-right: none;
@@ -436,169 +423,243 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-
-            .progress-steps::before {
-                display: none;
-            }
-
-            .step {
-                flex-direction: row;
-                margin-bottom: 10px;
-            }
-
-            .step-circle {
-                margin-right: 10px;
-                margin-bottom: 0;
-            }
+            .progress-steps::before { display: none; }
+            .step { flex-direction: row; margin-bottom: 10px; }
+            .step-circle { margin-right: 10px; margin-bottom: 0; }
         }
     </style>
 
+    {{-- Javascript Logic --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
-            // --- NOTIFIKASI ---
+            // --- NOTIFIKASI SYSTEM ---
             @if (session('success'))
-                Swal.fire('Berhasil', "{{ session('success') }}", 'success');
+            Swal.fire('Berhasil', "{{ session('success') }}", 'success');
             @endif
             @if (session('error'))
-                Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            Swal.fire('Gagal', "{{ session('error') }}", 'error');
             @endif
             @if ($errors->any())
-                Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning');
+            Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning');
             @endif
 
-            // --- 1. LOGIKA STEPPER ---
+            // --- VARIABLES ---
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
 
+            // --- FUNGSI NAVIGASI STEP ---
             function showStep(idx) {
-                steps.forEach(el => el.classList.remove('active'));
-                progressSteps.forEach(el => el.classList.remove('active'));
-                document.getElementById(`step-${idx}`).classList.add('active');
-                for (let i = 0; i < idx; i++) progressSteps[i].classList.add('active');
+                // Update UI Step
+                steps.forEach(s => s.classList.remove('active'));
+                progressSteps.forEach(s => s.classList.remove('active'));
+
+                document.getElementById(`step-${idx}-pensiun-bup`).classList.add('active');
+                for (let i = 0; i < idx; i++) {
+                    progressSteps[i].classList.add('active');
+                }
+
                 if (idx == 3) updateReview();
             }
 
-            document.querySelectorAll('.btn-next').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const nextStepIndex = this.dataset.next;
+            // --- VALIDASI MANUAL SEBELUM NEXT ---
+            function validateStep(currentStep) {
+                let isValid = true;
+                let errorMsg = '';
+
+                // VALIDASI STEP 1: Data Diri
+                if (currentStep == 1) {
+                    const nama = document.getElementById('nama_pegawai_pensiun_bup').value.trim();
+                    const tmt = document.getElementById('tmt_pensiun_bup').value.trim();
+
+                    if (!nama) {
+                        isValid = false;
+                        errorMsg = 'Silakan lakukan "Cek NIP" dan lengkapi data pegawai terlebih dahulu!';
+                    } else if (!tmt) {
+                        isValid = false;
+                        errorMsg = 'TMT Pensiun wajib diisi!';
+                    }
+                }
+
+                // VALIDASI STEP 2: Dokumen Required
+                if (currentStep == 2) {
+                    const requiredInputs = document.querySelectorAll('#step-2-pensiun-bup input[type="file"][required]');
+                    let emptyCount = 0;
+
+                    requiredInputs.forEach(input => {
+                        if (input.files.length === 0) {
+                            emptyCount++;
+                            input.classList.add('is-invalid');
+                        } else {
+                            input.classList.remove('is-invalid');
+                        }
+                    });
+
+                    if (emptyCount > 0) {
+                        isValid = false;
+                        errorMsg = `Masih ada ${emptyCount} dokumen wajib yang belum diunggah!`;
+                    }
+                }
+
+                if (!isValid) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian',
+                        text: errorMsg
+                    });
+                }
+
+                return isValid;
+            }
+
+            // --- EVENT LISTENER TOMBOL NEXT ---
+            document.querySelectorAll('.btn-next-pensiun-bup').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const nextStepIndex = parseInt(this.dataset.next);
                     const currentStepIndex = nextStepIndex - 1;
-                    const currentStepElement = document.getElementById(`step-${currentStepIndex}`);
 
-                    // 1. Validasi Spesifik: Cek apakah NIP sudah dicek (Step 1 ke 2)
-                    if (nextStepIndex == 2) {
-                        const nama = document.getElementById('nama_pegawai').value;
-                        if (!nama) {
-                            Swal.fire('Data Kosong',
-                                'Silakan Cek NIP terlebih dahulu atau pastikan data terisi!',
-                                'warning');
-                            return;
-                        }
-                    }
-
-                    // 2. Validasi Umum: Cek semua field 'required' di step yang sedang aktif
-                    // Ambil semua input yang wajib diisi di step ini
-                    const requiredInputs = currentStepElement.querySelectorAll(
-                        'input[required], select[required], textarea[required]');
-                    let isValid = true;
-
-                    for (const input of requiredInputs) {
-                        // Jika input tidak valid (kosong tapi required, format salah, dll)
-                        if (!input.checkValidity()) {
-                            input
-                        .reportValidity(); // Memunculkan bubble peringatan browser (seperti "Please fill out this field")
-                            isValid = false;
-                            return; // Stop, jangan lanjut loop, biarkan user isi dulu
-                        }
-                    }
-
-                    // 3. Jika semua aman, baru pindah step
-                    if (isValid) {
+                    // Cek validasi step saat ini sebelum pindah
+                    if (validateStep(currentStepIndex)) {
                         showStep(nextStepIndex);
                     }
                 });
             });
 
-            document.querySelectorAll('.btn-prev').forEach(btn => {
-                btn.addEventListener('click', function() {
+            // --- EVENT LISTENER TOMBOL PREV ---
+            document.querySelectorAll('.btn-prev-pensiun-bup').forEach(btn => {
+                btn.addEventListener('click', function () {
                     showStep(this.dataset.prev);
                 });
             });
 
-            // --- 2. LOGIKA CEK NIP ---
-            const btnCek = document.getElementById('btn-cek-nip');
+            // --- FILE UPLOAD HANDLER ---
+            function handleFileUpload(input) {
+                const previewId = `preview-${input.id}`;
+                const previewEl = document.getElementById(previewId);
+                const maxSize = 2 * 1024 * 1024; // 2MB
+
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+
+                    // Validasi Size
+                    if (file.size > maxSize) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                        if (previewEl) {
+                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: Ukuran file > 2MB!</div>`;
+                            previewEl.style.display = 'block';
+                        }
+                        Swal.fire('File Terlalu Besar', 'Maksimal ukuran file adalah 2MB.', 'warning');
+                        return;
+                    }
+
+                    // Sukses (Tidak ada lagi validasi force PDF only)
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+
+                    if (previewEl) {
+                        previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> ${file.name}</div>`;
+                        previewEl.classList.add('has-file');
+                        previewEl.style.display = 'block';
+                    }
+                } else {
+                    input.classList.remove('is-valid');
+                    if (previewEl) previewEl.style.display = 'none';
+                }
+            }
+
+            function updateUploadProgress() {
+                const allFileInputs = document.querySelectorAll('#step-2-pensiun-bup input[type="file"]');
+                let filledCount = 0;
+                allFileInputs.forEach(input => {
+                    if (input.files.length > 0) filledCount++;
+                });
+                const progressEl = document.getElementById('upload-progress-pensiun-bup');
+                if (progressEl) progressEl.textContent = `${filledCount}/${allFileInputs.length}`;
+            }
+
+            // Attach Event ke Input File
+            document.querySelectorAll('input[type="file"]').forEach(input => {
+                input.addEventListener('change', function () {
+                    handleFileUpload(this);
+                    updateUploadProgress();
+                });
+            });
+
+            // --- LOGIKA CEK NIP ---
+            const btnCek = document.getElementById('btn-cek-nip-pensiun-bup');
             if (btnCek) {
-                btnCek.addEventListener('click', function() {
-                    const nip = document.getElementById('nip_pegawai').value;
+                btnCek.addEventListener('click', function () {
+                    const nip = document.getElementById('nip_pegawai_pensiun_bup').value;
                     if (!nip) {
-                        Swal.fire('Isi NIP!', '', 'warning');
+                        Swal.fire('Isi NIP!', 'Mohon masukkan NIP terlebih dahulu', 'warning');
                         return;
                     }
 
                     const oldHtml = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                    this.disabled = true;
 
                     fetch(`{{ url('/kenaikan-pangkat/ajax/cek-nip') }}/${nip}`)
                         .then(res => res.json())
                         .then(res => {
                             if (res.success) {
                                 const d = res.data;
-                                // Helper set value
                                 const set = (id, val) => {
                                     const el = document.getElementById(id);
                                     if (el) el.value = val || '';
                                 }
 
-                                set('nama_pegawai', d.nama);
-                                set('jabatan', d.jabatan);
-                                set('pangkat', d.pangkat);
-                                set('nip_display', d.nip);
-                                set('satuan_kerja', d.unit_kerja);
-                                set('golongan', d.golongan_ruang);
-                                Swal.fire('Ditemukan', 'Data pegawai dimuat', 'success');
+                                set('nama_pegawai_pensiun_bup', d.nama);
+                                set('jabatan_pensiun_bup', d.jabatan);
+                                set('pangkat_pensiun_bup', d.pangkat);
+                                set('nip_display_pensiun_bup', d.nip);
+                                set('satuan_kerja_pensiun_bup', d.unit_kerja);
+                                set('golongan_ruang_pensiun_bup', d.golongan_ruang);
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Data Ditemukan',
+                                    text: 'Data pegawai berhasil dimuat.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
                             } else {
-                                Swal.fire('Gagal', 'NIP tidak ditemukan', 'error');
+                                Swal.fire('Gagal', 'NIP tidak ditemukan dalam database kepegawaian.', 'error');
                             }
                         })
-                        .catch(() => Swal.fire('Error', 'Gagal koneksi server', 'error'))
-                        .finally(() => this.innerHTML = oldHtml);
+                        .catch(() => Swal.fire('Error', 'Gagal koneksi ke server', 'error'))
+                        .finally(() => {
+                            this.innerHTML = oldHtml;
+                            this.disabled = false;
+                        });
                 });
             }
 
-            // --- 3. LOGIKA UPLOAD FILE (PREVIEW & STYLE) ---
-            document.querySelectorAll('input[type="file"]').forEach(input => {
-                input.addEventListener('change', function() {
-                    const previewId = `preview-${this.id}`; // ID preview: preview-file_1
-                    const previewEl = document.getElementById(previewId);
-
-                    if (this.files.length > 0) {
-                        const fileName = this.files[0].name;
-                        if (previewEl) {
-                            previewEl.innerHTML =
-                                `<i class="fas fa-check-circle me-1"></i> ${fileName}`;
-                            previewEl.classList.add('has-file');
-                        }
-                    }
-                });
-            });
-
-            // --- 4. LOGIKA REVIEW DATA ---
+            // --- LOGIKA REVIEW (STEP 3) - SMART ICON (Sama seperti Tugas Belajar) ---
             function updateReview() {
-                const get = (id) => document.getElementById(id).value || '-';
-                const setText = (id, val) => document.getElementById(id).textContent = val;
+                const get = (id) => document.getElementById(id)?.value || '-';
+                const setText = (id, val) => {
+                    const el = document.getElementById(id);
+                    if(el) el.textContent = val;
+                };
 
-                setText('review-nama', get('nama_pegawai'));
-                setText('review-nip', get('nip_display'));
-                setText('review-jabatan', get('jabatan'));
-                setText('review-satuan-kerja', get('satuan_kerja'));
-                setText('review-pangkat', get('pangkat'));
-                setText('review-golongan', get('golongan'));
+                // Populate Text Data
+                setText('review-nama-pensiun-bup', get('nama_pegawai_pensiun_bup'));
+                setText('review-nip-pensiun-bup', get('nip_display_pensiun_bup'));
+                setText('review-jabatan-pensiun-bup', get('jabatan_pensiun_bup'));
+                setText('review-satuan-kerja-pensiun-bup', get('satuan_kerja_pensiun_bup'));
+                setText('review-pangkat-pensiun-bup', get('pangkat_pensiun_bup'));
+                setText('review-golongan-ruang-pensiun-bup', get('golongan_ruang_pensiun_bup'));
 
-                const tmt = document.getElementById('tmt_pensiun').value;
-                setText('review-tmt', tmt ? new Date(tmt).toLocaleDateString('id-ID') : '-');
+                const tmt = document.getElementById('tmt_pensiun_bup').value;
+                setText('review-tmt-pensiun-bup', tmt ? new Date(tmt).toLocaleDateString('id-ID', {
+                    day: 'numeric', month: 'long', year: 'numeric'
+                }) : '-');
 
-                // Review Dokumen Loop
-                const docContainer = document.getElementById('review-documents');
+                // Populate File Data (Smart Icon Style)
+                const docContainer = document.getElementById('review-documents-pensiun-bup');
                 docContainer.innerHTML = '';
                 let hasFile = false;
 
@@ -606,43 +667,68 @@
                     if (input.files.length > 0) {
                         hasFile = true;
                         const fileName = input.files[0].name;
-                        // Ambil label dari parent card
-                        const label = input.closest('.file-upload-card').querySelector('label').innerText
-                            .replace('*', '').replace('(Opsional)', '').trim();
+                        const fileSize = (input.files[0].size / 1024).toFixed(1) + ' KB';
+
+                        const labelEl = input.closest('.file-upload-card').querySelector('label');
+                        let labelText = labelEl.innerText.replace('*', '').replace('(Opsional)', '').trim();
+
+                        // Detect Extension Logic (Sama dengan Tugas Belajar)
+                        const ext = fileName.split('.').pop().toLowerCase();
+                        let iconClass = 'fa-file';
+                        let iconColor = 'text-secondary';
+
+                        if (ext === 'pdf') {
+                            iconClass = 'fa-file-pdf';
+                            iconColor = 'text-danger';
+                        } else if (['jpg', 'jpeg', 'png'].includes(ext)) {
+                            iconClass = 'fa-file-image';
+                            iconColor = 'text-primary';
+                        }
 
                         const item = document.createElement('div');
-                        item.className = 'd-flex align-items-center mb-2 text-success';
-                        item.innerHTML =
-                            `<i class="fas fa-check-circle me-2"></i> <strong>${label}:</strong> <span class="ms-1 text-dark">${fileName}</span>`;
+                        item.className = 'd-flex align-items-center mb-2 p-2 border rounded bg-white shadow-sm';
+                        item.innerHTML = `
+                            <div class="me-3">
+                                <i class="fas ${iconClass} ${iconColor} fa-2x"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold text-dark" style="font-size: 0.9rem;">${labelText}</div>
+                                <div class="d-flex justify-content-between align-items-center mt-1">
+                                    <span class="text-success small"><i class="fas fa-check-circle me-1"></i>${fileName}</span>
+                                    <span class="text-muted small" style="font-size: 0.75rem;">${fileSize}</span>
+                                </div>
+                            </div>
+                        `;
                         docContainer.appendChild(item);
                     }
                 });
 
                 if (!hasFile) {
-                    docContainer.innerHTML =
-                    '<p class="text-muted fst-italic">Belum ada dokumen yang diunggah.</p>';
+                    docContainer.innerHTML = '<div class="alert alert-warning py-2 small"><i class="fas fa-exclamation-triangle me-1"></i>Belum ada dokumen yang diunggah.</div>';
                 }
             }
 
-            // --- 5. SUBMIT FORM ---
-            document.getElementById('form-pensiun-bup').addEventListener('submit', function(e) {
-                if (!document.getElementById('confirm-data').checked) {
+            // --- SUBMIT FORM ---
+            document.getElementById('form-pensiun-bup').addEventListener('submit', function (e) {
+                if (!document.getElementById('confirm-data-pensiun-bup').checked) {
                     e.preventDefault();
-                    Swal.fire('Konfirmasi', 'Anda harus menyetujui data', 'warning');
+                    Swal.fire('Konfirmasi Diperlukan', 'Anda harus mencentang pernyataan kebenaran data sebelum mengajukan.', 'warning');
                 } else {
                     Swal.fire({
-                        title: 'Mengirim...',
-                        text: 'Mohon tunggu',
+                        title: 'Sedang Mengirim...',
+                        text: 'Mohon tunggu sebentar',
                         allowOutsideClick: false,
                         didOpen: () => Swal.showLoading()
                     });
                 }
             });
 
-            // TMT Min Date (Optional)
+            // Set Min Date TMT (Hari ini)
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('tmt_pensiun').min = today;
+            const tmtInput = document.getElementById('tmt_pensiun_bup');
+            if(tmtInput) tmtInput.min = today;
 
+            // Inisialisasi Step 1
             showStep(1);
         });
     </script>
