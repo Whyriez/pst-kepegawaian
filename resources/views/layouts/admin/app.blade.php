@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/css/style-admin.css') }}">
+
     <style>
         :root {
             --sidebar-width: 260px;
@@ -144,280 +145,383 @@
 </head>
 
 <body>
-    <div id="app">
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div id="app">
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-        @include('layouts.admin.partials.sidebar')
+    @include('layouts.admin.partials.sidebar')
 
-        <div id="main">
-            <header>
-                <button class="btn btn-light border-0 me-3" id="sidebarToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
+    <div id="main">
+        <header>
+            <button class="btn btn-light border-0 me-3" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
 
-                <h5 class="mb-0 fw-bold text-primary d-none d-md-block">Panel Administrator</h5>
+            <h5 class="mb-0 fw-bold text-primary d-none d-md-block">Panel Administrator</h5>
 
-                <div class="ms-auto d-flex align-items-center gap-3">
-                    <div class="dropdown">
-                        <a href="#" class="text-secondary position-relative" data-bs-toggle="dropdown">
-                            <i class="fas fa-bell fa-lg"></i>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <div class="dropdown">
+                    <a href="#" class="text-secondary position-relative" data-bs-toggle="dropdown">
+                        <i class="fas fa-bell fa-lg"></i>
+
+                        {{-- Tampilkan Badge Merah HANYA jika ada notifikasi --}}
+                        @if($notifikasi_tindak_lanjut->count() > 0)
                             <span
                                 class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-                                <span class="visually-hidden">New alerts</span>
-                            </span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
-                            <li>
-                                <h6 class="dropdown-header">Notifikasi</h6>
-                            </li>
-                            <li><a class="dropdown-item small" href="#">Pengajuan baru dari Ahmad</a></li>
-                            <li><a class="dropdown-item small" href="#">Berkas BUP perlu verifikasi</a></li>
-                        </ul>
-                    </div>
+                <span class="visually-hidden">Peringatan baru</span>
+            </span>
+                        @endif
+                    </a>
 
-                    <div class="dropdown">
-                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
-                            data-bs-toggle="dropdown">
-                            <div class="me-2 text-end d-none d-sm-block">
-                                <small class="d-block fw-bold text-dark">{{ Auth::user()->name ?? 'Admin' }}</small>
-                                <small class="d-block text-muted" style="font-size: 10px;">Administrator</small>
-                            </div>
-                            <img src="https://ui-avatars.com/api/?name=Admin&background=435ebe&color=fff" alt="Admin"
-                                class="rounded-circle" width="36" height="36">
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
-                            <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2"></i> Profil Saya</a>
-                            </li>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow"
+                        style="width: 300px; max-height: 400px; overflow-y: auto;">
+                        <li>
+                            <h6 class="dropdown-header d-flex justify-content-between align-items-center">
+                                Notifikasi
+                                @if($notifikasi_tindak_lanjut->count() > 0)
+                                    <span
+                                        class="badge bg-danger rounded-pill">{{ $notifikasi_tindak_lanjut->count() }}</span>
+                                @endif
+                            </h6>
+                        </li>
+
+                        {{-- Loop Data Notifikasi --}}
+                        @forelse($notifikasi_tindak_lanjut as $notif)
+                            @php
+                                // ===============================================
+                                // MAPPING ROUTE DINAMIS (PENTING!)
+                                // ===============================================
+                                // Kita cocokkan SLUG di database dengan NAMA ROUTE di web.php
+                                // Sesuaikan nama route di sebelah kanan dengan route name Anda
+                                $routeMap = [
+                                    // Kenaikan Pangkat
+                                    'kp-fungsional' => 'admin.kp.fungsional',
+                                    'kp-pi'         => 'admin.kp.penyesuaian_ijazah',
+                                    'kp-reguler'    => 'admin.kp.reguler',
+                                    'kp-struktural' => 'admin.kp.struktural',
+
+                                    // Pensiun
+                                    'pensiun-bup'        => 'admin.pensiun.bup',
+                                    'pensiun-janda-duda' => 'admin.pensiun.janda_duda_yatim',
+                                    'pensiun-aps'        => 'admin.pensiun.aps',
+                                    'pensiun-meninggal'  => 'admin.pensiun.meninggal',
+                                    'pensiun-uzur'       => 'admin.pensiun.uzur',
+                                    'pensiun-hilang'     => 'admin.pensiun.hilang',
+                                    'pensiun-taw'        => 'admin.pensiun.taw',
+
+                                    // Pindah Instansi
+                                    'pindah-masuk'  => 'admin.pindah.masuk',
+                                    'pindah-keluar' => 'admin.pindah.keluar',
+
+                                    // Jabatan Fungsional
+                                    'jf-pengangkatan'  => 'admin.jf.pengangkatan',
+                                    'jf-pemberhentian' => 'admin.jf.pemberhentian',
+                                    'jf-naik-jenjang'  => 'admin.jf.naik_jenjang',
+
+                                    // Lainnya
+                                    'satyalancana'           => 'admin.satyalancana',
+                                    'gelar-akademik'         => 'admin.gelar.akademik',
+                                    'gelar-profesi'          => 'admin.gelar.profesi',
+                                    'penugasan'              => 'admin.penugasan',
+                                    'perbaikan-data-asn'     => 'admin.perbaikan_data',
+                                    'tugas-belajar'          => 'admin.tugas_belajar',
+                                    'konversi-ak-pendidikan' => 'admin.konversi_ak_pendidikan',
+                                ];
+
+                                // Ambil Slug dari relasi (aman karena sudah di-load di AppServiceProvider)
+                                $slug = $notif->jenisLayanan->slug ?? '';
+
+                                // Tentukan Route (Default ke dashboard jika slug tidak terdaftar)
+                                $targetRoute = $routeMap[$slug] ?? 'admin.dashboard';
+                            @endphp
+
                             <li>
-                                <hr class="dropdown-divider">
+                                {{-- Link Dinamis berdasarkan RouteMap --}}
+                                {{-- Parameter: search=NOMOR_TIKET, trigger_modal=true --}}
+                                <a class="dropdown-item border-bottom py-2"
+                                   href="{{ route($targetRoute, ['search' => $notif->nomor_tiket, 'trigger_modal' => 'true']) }}">
+
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-2 text-warning mt-1">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                        </div>
+                                        <div class="w-100">
+                                            {{-- Judul Layanan --}}
+                                            <small class="fw-bold d-block text-primary text-truncate" style="max-width: 220px;">
+                                                {{ $notif->jenisLayanan->nama_layanan ?? 'Pengajuan' }}
+                                            </small>
+
+                                            <small class="text-dark d-block" style="font-size: 11px;">
+                                                <strong>{{ $notif->pegawai->nama_lengkap ?? 'Pegawai' }}</strong>
+                                            </small>
+
+                                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                                <small class="text-muted" style="font-size: 10px;">
+                                                    Tiket: {{ $notif->nomor_tiket }}
+                                                </small>
+                                                <small class="text-danger fw-bold" style="font-size: 10px;">
+                                                    <i class="fas fa-calendar-alt me-1"></i>
+                                                    {{ $notif->tanggal_tindak_lanjut->format('d M') }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
                             </li>
+                        @empty
                             <li>
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fas fa-sign-out-alt me-2"></i> Keluar
-                                    </button>
-                                </form>
+                                <div class="dropdown-item text-center text-muted py-3">
+                                    <i class="fas fa-bell-slash mb-2"></i><br>
+                                    <small>Tidak ada pengingat saat ini.</small>
+                                </div>
                             </li>
-                        </ul>
-                    </div>
+                        @endforelse
+                    </ul>
                 </div>
-            </header>
 
-            <div class="page-content">
-                @yield('content')
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
+                       data-bs-toggle="dropdown">
+                        <div class="me-2 text-end d-none d-sm-block">
+                            <small class="d-block fw-bold text-dark">{{ Auth::user()->name ?? 'Admin' }}</small>
+                            <small class="d-block text-muted" style="font-size: 10px;">Administrator</small>
+                        </div>
+                        <img src="https://ui-avatars.com/api/?name=Admin&background=435ebe&color=fff" alt="Admin"
+                             class="rounded-circle" width="36" height="36">
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow">
+                        <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user me-2"></i>
+                                Profil Saya</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt me-2"></i> Keluar
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             </div>
+        </header>
 
-            <footer>
-                &copy; {{ date('Y') }} PTSP Kemenag Gorontalo. Developed with <i
-                    class="fas fa-heart text-danger"></i> by UNG Students.
-            </footer>
+        <div class="page-content">
+            @yield('content')
+        </div>
+
+        <footer>
+            &copy; {{ date('Y') }} PTSP Kemenag Gorontalo. Developed with <i
+                class="fas fa-heart text-danger"></i> by UNG Students.
+        </footer>
+    </div>
+</div>
+
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-times-circle me-2"></i>Tolak Pengajuan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="rejectForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Kategori Penolakan</label>
+                        <select class="form-select" id="rejectCategory" required>
+                            <option value="" selected disabled>Pilih alasan...</option>
+                            <option value="dokumen_tidak_lengkap">Dokumen Tidak Lengkap</option>
+                            <option value="data_tidak_valid">Data Tidak Valid / Tidak Sesuai</option>
+                            <option value="masa_kerja_kurang">Masa Kerja Belum Mencukupi</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Catatan Perbaikan</label>
+                        <textarea class="form-control" id="rejectReason" rows="4"
+                                  placeholder="Jelaskan detail kekurangan dokumen atau data..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" onclick="submitRejection()">Kirim Penolakan</button>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="rejectModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title"><i class="fas fa-times-circle me-2"></i>Tolak Pengajuan</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="rejectForm">
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Kategori Penolakan</label>
-                            <select class="form-select" id="rejectCategory" required>
-                                <option value="" selected disabled>Pilih alasan...</option>
-                                <option value="dokumen_tidak_lengkap">Dokumen Tidak Lengkap</option>
-                                <option value="data_tidak_valid">Data Tidak Valid / Tidak Sesuai</option>
-                                <option value="masa_kerja_kurang">Masa Kerja Belum Mencukupi</option>
-                                <option value="lainnya">Lainnya</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Catatan Perbaikan</label>
-                            <textarea class="form-control" id="rejectReason" rows="4"
-                                placeholder="Jelaskan detail kekurangan dokumen atau data..."></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-danger" onclick="submitRejection()">Kirim Penolakan</button>
+<div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" style="height: 90vh;">
+            <div class="modal-header bg-white border-bottom py-3">
+                <h5 class="modal-title fw-bold text-dark" id="previewTitle">
+                    Preview Berkas
+                </h5>
+                <div class="ms-auto d-flex gap-2">
+                    <a href="#" id="btnDownloadFile" target="_blank"
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-download me-1"></i> Download File Ini
+                    </a>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div class="modal fade" id="previewModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content" style="height: 90vh;">
-                <div class="modal-header bg-white border-bottom py-3">
-                    <h5 class="modal-title fw-bold text-dark" id="previewTitle">
-                        Preview Berkas
-                    </h5>
-                    <div class="ms-auto d-flex gap-2">
-                        <a href="#" id="btnDownloadFile" target="_blank"
-                            class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-download me-1"></i> Download File Ini
-                        </a>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                </div>
+            <div class="modal-body p-0">
+                <div class="row h-100 m-0">
 
-                <div class="modal-body p-0">
-                    <div class="row h-100 m-0">
-
-                        <div class="col-lg-3 col-md-4 border-end bg-white p-0 d-flex flex-column">
-                            <div class="p-3 bg-light border-bottom">
-                                <small class="text-uppercase text-muted fw-bold"
-                                    style="font-size: 0.7rem; letter-spacing: 1px;">Daftar Dokumen</small>
-                            </div>
-                            <div class="list-group list-group-flush overflow-auto flex-grow-1" id="fileListContainer">
-                            </div>
+                    <div class="col-lg-3 col-md-4 border-end bg-white p-0 d-flex flex-column">
+                        <div class="p-3 bg-light border-bottom">
+                            <small class="text-uppercase text-muted fw-bold"
+                                   style="font-size: 0.7rem; letter-spacing: 1px;">Daftar Dokumen</small>
                         </div>
+                        <div class="list-group list-group-flush overflow-auto flex-grow-1" id="fileListContainer">
+                        </div>
+                    </div>
 
-                        <div
-                            class="col-lg-9 col-md-8 bg-secondary bg-opacity-10 p-0 position-relative d-flex align-items-center justify-content-center">
+                    <div
+                        class="col-lg-9 col-md-8 bg-secondary bg-opacity-10 p-0 position-relative d-flex align-items-center justify-content-center">
 
-                            <div id="pdfPlaceholder" class="text-center text-muted p-5">
-                                <div class="mb-3">
+                        <div id="pdfPlaceholder" class="text-center text-muted p-5">
+                            <div class="mb-3">
                                     <span class="fa-stack fa-3x">
                                         <i class="fas fa-circle fa-stack-2x text-white"></i>
                                         <i class="fas fa-file-alt fa-stack-1x text-secondary"></i>
                                     </span>
-                                </div>
-                                <h6 class="fw-bold text-dark">Pilih Dokumen</h6>
-                                <p class="small">Silakan pilih salah satu dokumen di panel kiri untuk melihat preview.
-                                </p>
                             </div>
+                            <h6 class="fw-bold text-dark">Pilih Dokumen</h6>
+                            <p class="small">Silakan pilih salah satu dokumen di panel kiri untuk melihat preview.
+                            </p>
+                        </div>
 
-                            <embed id="pdfViewer" type="application/pdf" style="display:none; width:100%; height:500px;">
+                        <embed id="pdfViewer" type="application/pdf" style="display:none; width:100%; height:500px;">
 
-                            <img id="imageViewer" src="" class="img-fluid shadow-sm rounded border bg-white"
-                                style="display: none; max-height: 90%; max-width: 90%; object-fit: contain;">
+                        <img id="imageViewer" src="" class="img-fluid shadow-sm rounded border bg-white"
+                             style="display: none; max-height: 90%; max-width: 90%; object-fit: contain;">
 
-                            <div id="unsupportedFormat" class="text-center text-muted p-5" style="display: none;">
-                                <div class="mb-3">
+                        <div id="unsupportedFormat" class="text-center text-muted p-5" style="display: none;">
+                            <div class="mb-3">
                                     <span class="fa-stack fa-3x">
                                         <i class="fas fa-circle fa-stack-2x text-white"></i>
                                         <i class="fas fa-eye-slash fa-stack-1x text-danger"></i>
                                     </span>
-                                </div>
-                                <h6 class="fw-bold text-dark">Preview Tidak Tersedia</h6>
-                                <p class="small">Format file ini tidak dapat ditampilkan langsung di sini.</p>
-                                <p class="small">Silakan gunakan tombol download di atas.</p>
                             </div>
-
+                            <h6 class="fw-bold text-dark">Preview Tidak Tersedia</h6>
+                            <p class="small">Format file ini tidak dapat ditampilkan langsung di sini.</p>
+                            <p class="small">Silakan gunakan tombol download di atas.</p>
                         </div>
+
                     </div>
                 </div>
+            </div>
 
-                <div class="modal-footer bg-light py-2">
-                    <small class="text-muted me-auto fst-italic"><i class="fas fa-info-circle me-1"></i> Pastikan
-                        dokumen terbaca dengan jelas sebelum menyetujui.</small>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
-                </div>
+            <div class="modal-footer bg-light py-2">
+                <small class="text-muted me-auto fst-italic"><i class="fas fa-info-circle me-1"></i> Pastikan
+                    dokumen terbaca dengan jelas sebelum menyetujui.</small>
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. Toggle Sidebar Mobile
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay'); // Sesuaikan ID overlay
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. Toggle Sidebar Mobile
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay'); // Sesuaikan ID overlay
 
-            function toggleSidebar() {
-                sidebar.classList.toggle('active');
-                if (overlay) overlay.classList.toggle('show');
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('show');
 
-                // Jika di mobile, kunci scroll body saat sidebar terbuka
-                if (window.innerWidth <= 992) {
-                    document.body.classList.toggle('overflow-hidden');
+            // Jika di mobile, kunci scroll body saat sidebar terbuka
+            if (window.innerWidth <= 992) {
+                document.body.classList.toggle('overflow-hidden');
+            }
+        }
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', toggleSidebar);
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', toggleSidebar);
+        }
+
+        // 2. Dropdown Menu Logic (FIXED)
+        // Target elemen <a> yang merupakan anak langsung dari .has-submenu
+        const menuTriggers = document.querySelectorAll('.has-submenu > .menu-item');
+
+        menuTriggers.forEach(trigger => {
+            trigger.addEventListener('click', function (e) {
+                e.preventDefault(); // Mencegah navigasi
+
+                // Ambil parent <li>
+                const parentLi = this.parentElement;
+
+                // Cek apakah menu ini sedang aktif/terbuka
+                const isOpen = parentLi.classList.contains('active') && parentLi.classList
+                    .contains('open');
+
+                // Tutup semua menu lain (Accordion Effect - Opsional, hapus loop ini jika ingin multi-open)
+                /*
+                document.querySelectorAll('.has-submenu').forEach(item => {
+                    if(item !== parentLi) {
+                        item.classList.remove('active', 'open');
+                        const sub = item.querySelector('.submenu');
+                        if(sub) sub.style.display = 'none';
+                    }
+                });
+                */
+
+                // Toggle menu yang diklik
+                if (isOpen) {
+                    parentLi.classList.remove('active', 'open');
+                    const submenu = parentLi.querySelector('.submenu');
+                    if (submenu) $(submenu).slideUp(
+                        300); // Jika pakai jQuery, atau gunakan style.display manual
+                    // Manual JS slide up
+                    if (submenu) submenu.style.display = 'none';
+                } else {
+                    parentLi.classList.add('active', 'open');
+                    const submenu = parentLi.querySelector('.submenu');
+                    // Manual JS slide down
+                    if (submenu) submenu.style.display = 'block';
                 }
-            }
+            });
+        });
 
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', toggleSidebar);
-            }
+        // 3. Search Sidebar
+        const searchInput = document.getElementById('sidebarSearch');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function () {
+                const value = this.value.toLowerCase();
+                const menuItems = document.querySelectorAll('#mainMenu > li');
 
-            if (overlay) {
-                overlay.addEventListener('click', toggleSidebar);
-            }
+                menuItems.forEach(item => {
+                    // Skip footer/search items if any
+                    if (item.classList.contains('sidebar-search') || item.querySelector(
+                        '.user-mini')) return;
 
-            // 2. Dropdown Menu Logic (FIXED)
-            // Target elemen <a> yang merupakan anak langsung dari .has-submenu
-            const menuTriggers = document.querySelectorAll('.has-submenu > .menu-item');
-
-            menuTriggers.forEach(trigger => {
-                trigger.addEventListener('click', function(e) {
-                    e.preventDefault(); // Mencegah navigasi
-
-                    // Ambil parent <li>
-                    const parentLi = this.parentElement;
-
-                    // Cek apakah menu ini sedang aktif/terbuka
-                    const isOpen = parentLi.classList.contains('active') && parentLi.classList
-                        .contains('open');
-
-                    // Tutup semua menu lain (Accordion Effect - Opsional, hapus loop ini jika ingin multi-open)
-                    /*
-                    document.querySelectorAll('.has-submenu').forEach(item => {
-                        if(item !== parentLi) {
-                            item.classList.remove('active', 'open');
-                            const sub = item.querySelector('.submenu');
-                            if(sub) sub.style.display = 'none';
-                        }
-                    });
-                    */
-
-                    // Toggle menu yang diklik
-                    if (isOpen) {
-                        parentLi.classList.remove('active', 'open');
-                        const submenu = parentLi.querySelector('.submenu');
-                        if (submenu) $(submenu).slideUp(
-                            300); // Jika pakai jQuery, atau gunakan style.display manual
-                        // Manual JS slide up
-                        if (submenu) submenu.style.display = 'none';
+                    const text = item.textContent.toLowerCase();
+                    if (text.indexOf(value) > -1) {
+                        item.style.display = "";
                     } else {
-                        parentLi.classList.add('active', 'open');
-                        const submenu = parentLi.querySelector('.submenu');
-                        // Manual JS slide down
-                        if (submenu) submenu.style.display = 'block';
+                        item.style.display = "none";
                     }
                 });
             });
+        }
+    });
+</script>
 
-            // 3. Search Sidebar
-            const searchInput = document.getElementById('sidebarSearch');
-            if (searchInput) {
-                searchInput.addEventListener('keyup', function() {
-                    const value = this.value.toLowerCase();
-                    const menuItems = document.querySelectorAll('#mainMenu > li');
-
-                    menuItems.forEach(item => {
-                        // Skip footer/search items if any
-                        if (item.classList.contains('sidebar-search') || item.querySelector(
-                                '.user-mini')) return;
-
-                        const text = item.textContent.toLowerCase();
-                        if (text.indexOf(value) > -1) {
-                            item.style.display = "";
-                        } else {
-                            item.style.display = "none";
-                        }
-                    });
-                });
-            }
-        });
-    </script>
-
-    @stack('scripts')
+@stack('scripts')
 </body>
 
 </html>

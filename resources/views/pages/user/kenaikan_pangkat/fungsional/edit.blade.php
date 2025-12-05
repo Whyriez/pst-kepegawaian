@@ -73,7 +73,8 @@
                                 <label class="form-label">Jabatan Pegawai <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control"
                                        id="jabatan_kp_fungsional" name="jabatan_kp_fungsional"
-                                       value="{{ $pengajuan->data_tambahan['jabatan_saat_ini'] ?? $pengajuan->pegawai->jabatan }}" required>
+                                       value="{{ $pengajuan->data_tambahan['jabatan_saat_ini'] ?? $pengajuan->pegawai->jabatan }}"
+                                       required>
                             </div>
                         </div>
 
@@ -82,7 +83,8 @@
                                 <label class="form-label">Pangkat Pegawai <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control"
                                        id="pangkat_kp_fungsional" name="pangkat_kp_fungsional"
-                                       value="{{ $pengajuan->data_tambahan['pangkat_saat_ini'] ?? $pengajuan->pegawai->pangkat }}" required>
+                                       value="{{ $pengajuan->data_tambahan['pangkat_saat_ini'] ?? $pengajuan->pegawai->pangkat }}"
+                                       required>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -97,11 +99,13 @@
                                 <label class="form-label">Unit Kerja Pegawai <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control"
                                        id="unit_kerja_kp_fungsional" name="unit_kerja_kp_fungsional"
-                                       value="{{ $pengajuan->data_tambahan['unit_kerja'] ?? $pengajuan->pegawai->satuanKerja->nama_satuan_kerja ?? '' }}" required>
+                                       value="{{ $pengajuan->data_tambahan['unit_kerja'] ?? $pengajuan->pegawai->satuanKerja->nama_satuan_kerja ?? '' }}"
+                                       required>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Golongan Ruang Diusulkan <span class="text-danger">*</span></label>
+                                <label class="form-label">Golongan Ruang Diusulkan <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control"
                                        id="golongan_ruang_kp_fungsional" name="golongan_ruang_kp_fungsional"
                                        value="{{ $pengajuan->data_tambahan['golongan_ruang'] ?? '' }}" required>
@@ -126,7 +130,8 @@
 
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-circle me-2"></i>
-                            Jika tidak ingin mengganti dokumen, biarkan input file kosong. Dokumen lama akan tetap digunakan.
+                            Jika tidak ingin mengganti dokumen, biarkan input file kosong. Dokumen lama akan tetap
+                            digunakan.
                         </div>
 
                         <div class="row">
@@ -134,6 +139,8 @@
                                 @php
                                     // Cari apakah dokumen ini sudah pernah diupload sebelumnya
                                     $uploaded = $pengajuan->dokumenPengajuans->firstWhere('syarat_dokumen_id', $dokumen->id);
+
+                                    $acceptTypes = collect(explode(',', $dokumen->allowed_types))->map(fn($item) => '.' . trim($item))->implode(',');
                                 @endphp
                                 <div class="col-md-6 mb-3">
                                     <div class="file-upload-card h-100">
@@ -147,10 +154,13 @@
                                         {{-- Tampilkan Info File Lama --}}
                                         @if($uploaded)
                                             <div class="mb-2 p-2 bg-light border rounded small existing-file-info"
-                                                 data-label="{{ $dokumen->nama_dokumen }}" data-filename="{{ $uploaded->nama_file_asli }}">
+                                                 data-label="{{ $dokumen->nama_dokumen }}"
+                                                 data-filename="{{ $uploaded->nama_file_asli }}">
                                                 <i class="fas fa-check-circle text-success me-1"></i>
-                                                File saat ini: <strong>{{ Str::limit($uploaded->nama_file_asli, 25) }}</strong>
-                                                <a href="{{ Storage::url($uploaded->path_file) }}" target="_blank" class="ms-1 text-primary"><i class="fas fa-download"></i></a>
+                                                File saat ini:
+                                                <strong>{{ Str::limit($uploaded->nama_file_asli, 25) }}</strong>
+                                                <a href="{{ Storage::url($uploaded->path_file) }}" target="_blank"
+                                                   class="ms-1 text-primary"><i class="fas fa-download"></i></a>
                                             </div>
                                         @else
                                             <div class="mb-2 small text-danger">
@@ -160,9 +170,13 @@
 
                                         <div class="file-input-wrapper">
                                             {{-- Input file: Jika sudah ada file ($uploaded), maka TIDAK required --}}
-                                            <input type="file" class="form-control file-input-dynamic"
-                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
-                                                   accept=".pdf,.jpg,.jpeg,.png"
+                                            <input type="file"
+                                                   class="form-control file-input-dynamic"
+                                                   id="file_{{ $dokumen->id }}"
+                                                   name="file_{{ $dokumen->id }}"
+                                                   accept="{{ $acceptTypes }}"
+                                                   data-max-size="{{ $dokumen->max_size_kb }}"
+                                                   data-allowed-types="{{ $dokumen->allowed_types }}"
                                                 {{ ($dokumen->is_required && !$uploaded) ? 'required' : '' }}>
 
                                             <div class="file-preview mt-2 small text-success"
@@ -174,24 +188,35 @@
                                     </div>
                                 </div>
                             @empty
-                                <div class="col-12"><div class="alert alert-warning">Tidak ada syarat dokumen.</div></div>
+                                <div class="col-12">
+                                    <div class="alert alert-warning">Tidak ada syarat dokumen.</div>
+                                </div>
                             @endforelse
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Periode Kenaikan Pangkat <span class="text-danger">*</span></label>
+                                <label class="form-label">Periode Kenaikan Pangkat <span
+                                        class="text-danger">*</span></label>
                                 <select class="form-control" id="periode_kenaikan_pangkat_kp_fungsional"
                                         name="periode_kenaikan_pangkat_kp_fungsional" required>
-                                    @php $periode = $pengajuan->data_tambahan['periode'] ?? ''; @endphp
-                                    <option value="April" {{ $periode == 'April' ? 'selected' : '' }}>April</option>
-                                    <option value="Oktober" {{ $periode == 'Oktober' ? 'selected' : '' }}>Oktober</option>
+                                    @php
+                                        $periode = $pengajuan->data_tambahan['periode'] ?? '';
+                                        $bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                                    @endphp
+                                    <option value="">Pilih Periode</option>
+                                    @foreach($bulan as $b)
+                                        <option
+                                            value="{{ $b }}" {{ $periode == $b ? 'selected' : '' }}>{{ $b }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
 
+
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-fungsional" data-prev="1">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-fungsional"
+                                    data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="button" class="btn btn-primary btn-next-kp-fungsional" data-next="3">
@@ -216,11 +241,14 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p><strong>Nama:</strong> <span id="review-nama-kp-fungsional">-</span></p>
-                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-kp-fungsional">-</span></p>
+                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-kp-fungsional">-</span>
+                                        </p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Gol. Diusulkan:</strong> <span id="review-golongan-ruang-kp-fungsional">-</span></p>
-                                        <p><strong>Periode:</strong> <span id="review-periode-kp-fungsional">-</span></p>
+                                        <p><strong>Gol. Diusulkan:</strong> <span
+                                                id="review-golongan-ruang-kp-fungsional">-</span></p>
+                                        <p><strong>Periode:</strong> <span id="review-periode-kp-fungsional">-</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -241,7 +269,8 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-fungsional" data-prev="2">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-fungsional"
+                                    data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-warning text-white">
@@ -256,27 +285,117 @@
 
     {{-- CSS Styles --}}
     <style>
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
-        .progress-steps .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 8px; border: 3px solid #e9ecef; transition: all 0.3s ease; }
-        .step.active .step-circle { background-color: #1a73e8; border-color: #1a73e8; color: white; }
-        .step-label { font-size: 0.875rem; font-weight: 500; color: #6c757d; }
-        .step.active .step-label { color: #1a73e8; font-weight: 600; }
-        .form-step { display: none; }
-        .form-step.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .file-upload-card { border: 2px dashed #dee2e6; border-radius: 8px; padding: 15px; background: white; }
-        .file-upload-card:hover { border-color: #1a73e8; background-color: #f8f9fa; }
-        .file-preview.has-file { display: block; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 100px; } }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+
+        .progress-steps .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background-color: #1a73e8;
+            border-color: #1a73e8;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .step.active .step-label {
+            color: #1a73e8;
+            font-weight: 600;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-upload-card {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+
+        .file-upload-card:hover {
+            border-color: #1a73e8;
+            background-color: #f8f9fa;
+        }
+
+        .file-preview.has-file {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 100px;
+            }
+        }
     </style>
 
     {{-- Javascript Logic --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Notifikasi
-            @if (session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error'); @endif
+            @if (session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            @endif
             @if ($errors->any()) Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning'); @endif
 
             // Navigasi
@@ -296,49 +415,47 @@
                 btn.addEventListener('click', function () {
                     const next = parseInt(this.dataset.next);
 
-                    // Validasi Step 2: Cek required file inputs
+                    // Saat mau pindah ke Step 3 (Konfirmasi)
                     if (next === 3) {
+                        // Cek 1: Apakah ada file yang ERROR (Merah)?
+                        const invalidInputs = document.querySelectorAll('#step-2-kp-fungsional input.is-invalid');
+                        if (invalidInputs.length > 0) {
+                            Swal.fire('Dokumen Tidak Valid', 'Mohon perbaiki dokumen yang bertanda merah sebelum lanjut.', 'error');
+                            return; // Stop, jangan lanjut
+                        }
+
+                        // Cek 2: Apakah dokumen REQUIRED yang belum punya file lama sudah diisi?
                         let valid = true;
-                        // Hanya cek input yang visible dan required
                         const reqInputs = document.querySelectorAll('#step-2-kp-fungsional input[type="file"][required]');
                         reqInputs.forEach(input => {
                             if (input.files.length === 0) {
                                 input.classList.add('is-invalid');
                                 valid = false;
-                            } else {
-                                input.classList.remove('is-invalid');
                             }
                         });
 
-                        if(!valid) {
-                            Swal.fire('Perhatian', 'Lengkapi dokumen yang wajib diunggah (yang belum memiliki file lama).', 'warning');
+                        if (!valid) {
+                            Swal.fire('Lengkapi Dokumen', 'Harap unggah dokumen wajib!', 'warning');
                             return;
                         }
                     }
+
+                    // Kalau aman, lanjut
                     showStep(next);
                 });
             });
 
             document.querySelectorAll('.btn-prev-kp-fungsional').forEach(btn => {
-                btn.addEventListener('click', function () { showStep(this.dataset.prev); });
+                btn.addEventListener('click', function () {
+                    showStep(this.dataset.prev);
+                });
             });
 
             // Preview File Baru
             document.querySelectorAll('input[type="file"]').forEach(input => {
                 input.addEventListener('change', function () {
-                    const preview = document.getElementById(`preview-${this.id}`);
-                    if (this.files.length > 0) {
-                        if (this.files[0].size > 2 * 1024 * 1024) {
-                            Swal.fire('Error', 'File max 2MB', 'warning');
-                            this.value = '';
-                        } else {
-                            preview.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> File Baru: ${this.files[0].name}</div>`;
-                            preview.style.display = 'block';
-                            this.classList.remove('is-invalid');
-                        }
-                    } else {
-                        preview.innerHTML = '';
-                    }
+                    // Panggil fungsi yang kita buat di atas
+                    handleFileUpload(this);
                 });
             });
 
@@ -356,7 +473,7 @@
 
                 // Loop setiap card dokumen
                 document.querySelectorAll('.file-upload-card').forEach(card => {
-                    const label = card.querySelector('label').innerText.replace('*','').trim();
+                    const label = card.querySelector('label').innerText.replace('*', '').trim();
                     const fileInput = card.querySelector('input[type="file"]');
                     const existingInfo = card.querySelector('.existing-file-info');
 
@@ -382,6 +499,76 @@
             }
 
             showStep(1);
+
+
+            function handleFileUpload(input) {
+                const previewId = `preview-${input.id}`;
+                const previewEl = document.getElementById(previewId);
+
+                // Ambil aturan dari atribut HTML (Fallback ke default jika error)
+                const dbMaxSizeKb = parseInt(input.getAttribute('data-max-size')) || 2048;
+                const maxSizeBytes = dbMaxSizeKb * 1024;
+
+                // Ambil allowed types, misal "pdf,jpg" -> jadi array ["pdf", "jpg"]
+                const rawTypes = input.getAttribute('data-allowed-types') || 'pdf,jpg,jpeg,png';
+                const allowedExtensions = rawTypes.split(',').map(t => t.trim().toLowerCase());
+
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+                    const fileName = file.name;
+                    const fileExt = fileName.split('.').pop().toLowerCase();
+
+                    // A. VALIDASI UKURAN
+                    if (file.size > maxSizeBytes) {
+                        input.value = ''; // Kosongkan input
+                        input.classList.add('is-invalid'); // Tandai merah
+                        input.classList.remove('is-valid');
+
+                        let sizeMsg = dbMaxSizeKb >= 1024
+                            ? (dbMaxSizeKb / 1024).toFixed(1) + ' MB'
+                            : dbMaxSizeKb + ' KB';
+
+                        if (previewEl) {
+                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: File terlalu besar (Max: ${sizeMsg})</div>`;
+                            previewEl.style.display = 'block';
+                        }
+                        Swal.fire('File Terlalu Besar', `Maksimal ukuran file adalah ${sizeMsg}.`, 'warning');
+                        return;
+                    }
+
+                    // B. VALIDASI TIPE (EKSTENSI)
+                    if (!allowedExtensions.includes(fileExt)) {
+                        input.value = ''; // Kosongkan input
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+
+                        if (previewEl) {
+                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: Format file salah.</div>`;
+                            previewEl.style.display = 'block';
+                        }
+                        Swal.fire('Format Salah', `Hanya menerima format: ${allowedExtensions.join(', ').toUpperCase()}`, 'warning');
+                        return;
+                    }
+
+                    // C. JIKA LOLOS
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+
+                    if (previewEl) {
+                        previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> File Baru: ${file.name} (${(file.size / 1024).toFixed(0)} KB)</div>`;
+                        previewEl.classList.add('has-file');
+                        previewEl.style.display = 'block';
+                    }
+                } else {
+                    // Jika user cancel upload (file kosong)
+                    input.classList.remove('is-valid');
+                    input.classList.remove('is-invalid');
+                    if (previewEl) {
+                        previewEl.innerHTML = '';
+                        previewEl.style.display = 'none';
+                    }
+                }
+            }
         });
     </script>
 @endsection

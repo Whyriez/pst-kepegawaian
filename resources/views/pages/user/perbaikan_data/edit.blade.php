@@ -61,7 +61,8 @@
                         </div>
 
                         {{-- Hidden NIP Display --}}
-                        <input type="hidden" name="nip_display_perbaikan_data_asn" value="{{ $pengajuan->pegawai->nip }}">
+                        <input type="hidden" name="nip_display_perbaikan_data_asn"
+                               value="{{ $pengajuan->pegawai->nip }}">
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -99,14 +100,16 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Unit Kerja <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control"
-                                       id="unit_kerja_pegawai_perbaikan_data_asn" name="unit_kerja_pegawai_perbaikan_data_asn"
+                                       id="unit_kerja_pegawai_perbaikan_data_asn"
+                                       name="unit_kerja_pegawai_perbaikan_data_asn"
                                        value="{{ $pengajuan->data_tambahan['unit_kerja'] ?? '' }}" required>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Golongan Ruang <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control"
-                                       id="golongan_ruang_pegawai_perbaikan_data_asn" name="golongan_ruang_pegawai_perbaikan_data_asn"
+                                       id="golongan_ruang_pegawai_perbaikan_data_asn"
+                                       name="golongan_ruang_pegawai_perbaikan_data_asn"
                                        value="{{ $pengajuan->data_tambahan['golongan_ruang'] ?? '' }}" required>
                             </div>
                         </div>
@@ -136,6 +139,9 @@
                             @forelse($syarat as $dokumen)
                                 @php
                                     $uploaded = $pengajuan->dokumenPengajuans->firstWhere('syarat_dokumen_id', $dokumen->id);
+                               $acceptTypes = collect(explode(',', $dokumen->allowed_types))
+        ->map(fn($item) => '.' . trim($item))
+        ->implode(',');
                                 @endphp
                                 <div class="col-md-6 mb-3">
                                     <div class="file-upload-card h-100">
@@ -152,8 +158,10 @@
                                                  data-label="{{ $dokumen->nama_dokumen }}"
                                                  data-filename="{{ $uploaded->nama_file_asli }}">
                                                 <i class="fas fa-check-circle text-success me-1"></i>
-                                                File saat ini: <strong>{{ Str::limit($uploaded->nama_file_asli, 25) }}</strong>
-                                                <a href="{{ Storage::url($uploaded->path_file) }}" target="_blank" class="ms-1 text-primary">
+                                                File saat ini:
+                                                <strong>{{ Str::limit($uploaded->nama_file_asli, 25) }}</strong>
+                                                <a href="{{ Storage::url($uploaded->path_file) }}" target="_blank"
+                                                   class="ms-1 text-primary">
                                                     <i class="fas fa-download"></i>
                                                 </a>
                                             </div>
@@ -165,9 +173,13 @@
 
                                         {{-- Input File --}}
                                         <div class="file-input-wrapper">
-                                            <input type="file" class="form-control file-input-dynamic"
-                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
-                                                   accept=".pdf,.jpg,.jpeg,.png"
+                                            <input type="file"
+                                                   class="form-control file-input-dynamic"
+                                                   id="file_{{ $dokumen->id }}"
+                                                   name="file_{{ $dokumen->id }}"
+                                                   accept="{{ $acceptTypes }}"
+                                                   data-max-size="{{ $dokumen->max_size_kb }}"
+                                                   data-allowed-types="{{ $dokumen->allowed_types }}"
                                                 {{ ($dokumen->is_required && !$uploaded) ? 'required' : '' }}>
 
                                             <div class="file-preview mt-2 small text-success"
@@ -176,12 +188,15 @@
                                     </div>
                                 </div>
                             @empty
-                                <div class="col-12"><div class="alert alert-warning">Tidak ada syarat dokumen.</div></div>
+                                <div class="col-12">
+                                    <div class="alert alert-warning">Tidak ada syarat dokumen.</div>
+                                </div>
                             @endforelse
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-perbaikan-data-asn" data-prev="1">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-perbaikan-data-asn"
+                                    data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="button" class="btn btn-primary btn-next-perbaikan-data-asn" data-next="3">
@@ -206,12 +221,16 @@
                                     <div class="col-md-6">
                                         <p><strong>Nama:</strong> <span id="review-nama-perbaikan-data-asn">-</span></p>
                                         <p><strong>NIP:</strong> <span id="review-nip-perbaikan-data-asn">-</span></p>
-                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-perbaikan-data-asn">-</span></p>
+                                        <p><strong>Jabatan:</strong> <span
+                                                id="review-jabatan-perbaikan-data-asn">-</span></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Pangkat:</strong> <span id="review-pangkat-perbaikan-data-asn">-</span></p>
-                                        <p><strong>Unit Kerja:</strong> <span id="review-unit-kerja-perbaikan-data-asn">-</span></p>
-                                        <p><strong>Golongan/Ruang:</strong> <span id="review-golongan-ruang-perbaikan-data-asn">-</span></p>
+                                        <p><strong>Pangkat:</strong> <span
+                                                id="review-pangkat-perbaikan-data-asn">-</span></p>
+                                        <p><strong>Unit Kerja:</strong> <span id="review-unit-kerja-perbaikan-data-asn">-</span>
+                                        </p>
+                                        <p><strong>Golongan/Ruang:</strong> <span
+                                                id="review-golongan-ruang-perbaikan-data-asn">-</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -225,7 +244,8 @@
                         </div>
 
                         <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="confirm-data-perbaikan-data-asn" required>
+                            <input class="form-check-input" type="checkbox" id="confirm-data-perbaikan-data-asn"
+                                   required>
                             <label class="form-check-label" for="confirm-data-perbaikan-data-asn">
                                 Saya menyatakan bahwa data yang saya berikan adalah benar dan siap menanggung
                                 konsekuensi
@@ -235,7 +255,8 @@
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-perbaikan-data-asn" data-prev="2">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-perbaikan-data-asn"
+                                    data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-success">
@@ -250,29 +271,173 @@
 
     {{-- CSS Styles --}}
     <style>
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
-        .progress-steps .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 8px; border: 3px solid #e9ecef; transition: all 0.3s ease; }
-        .step.active .step-circle { background-color: #1a73e8; border-color: #1a73e8; color: white; }
-        .step-label { font-size: 0.875rem; font-weight: 500; color: #6c757d; }
-        .step.active .step-label { color: #1a73e8; font-weight: 600; }
-        .form-step { display: none; }
-        .form-step.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .file-upload-card { border: 2px dashed #dee2e6; border-radius: 8px; padding: 15px; background: white; }
-        .file-upload-card:hover { border-color: #1a73e8; background-color: #f8f9fa; }
-        .file-preview.has-file { display: block; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 100px; } }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+
+        .progress-steps .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background-color: #1a73e8;
+            border-color: #1a73e8;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .step.active .step-label {
+            color: #1a73e8;
+            font-weight: 600;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-upload-card {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+
+        .file-upload-card:hover {
+            border-color: #1a73e8;
+            background-color: #f8f9fa;
+        }
+
+        .file-preview.has-file {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 100px;
+            }
+        }
     </style>
 
     {{-- Javascript Logic --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Notifikasi System
-            @if (session('success')) Swal.fire('Berhasil', "{{ session('success') }}", 'success'); @endif
-            @if (session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error'); @endif
+            @if (session('success')) Swal.fire('Berhasil', "{{ session('success') }}", 'success');
+            @endif
+            @if (session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            @endif
             @if ($errors->any()) Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning'); @endif
+
+            function handleFileUpload(input) {
+                const previewId = `preview-${input.id}`;
+                const previewEl = document.getElementById(previewId);
+
+                // Ambil aturan dari database via atribut HTML
+                const dbMaxSizeKb = parseInt(input.getAttribute('data-max-size')) || 2048;
+                const maxSizeBytes = dbMaxSizeKb * 1024;
+
+                const rawTypes = input.getAttribute('data-allowed-types') || 'pdf,jpg,png';
+                const allowedExtensions = rawTypes.split(',').map(t => t.trim().toLowerCase());
+
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+                    const fileExt = file.name.split('.').pop().toLowerCase();
+
+                    // A. VALIDASI UKURAN
+                    if (file.size > maxSizeBytes) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+
+                        let sizeMsg = dbMaxSizeKb >= 1024
+                            ? (dbMaxSizeKb/1024).toFixed(1) + ' MB'
+                            : dbMaxSizeKb + ' KB';
+
+                        if (previewEl) previewEl.innerHTML = `<span class="text-danger small">File terlalu besar! Max: ${sizeMsg}</span>`;
+                        Swal.fire('File Terlalu Besar', `Maksimal ukuran: ${sizeMsg}`, 'warning');
+                        return;
+                    }
+
+                    // B. VALIDASI TIPE
+                    if (!allowedExtensions.includes(fileExt)) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+
+                        if (previewEl) previewEl.innerHTML = `<span class="text-danger small">Format salah!</span>`;
+                        Swal.fire('Format Salah', `Hanya menerima: ${allowedExtensions.join(', ').toUpperCase()}`, 'warning');
+                        return;
+                    }
+
+                    // C. SUKSES
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                    if (previewEl) previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> File Baru: ${file.name}</div>`;
+                } else {
+                    // Cancel upload
+                    input.classList.remove('is-valid');
+                    input.classList.remove('is-invalid');
+                    if (previewEl) previewEl.innerHTML = '';
+                }
+            }
 
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
@@ -291,22 +456,25 @@
                 btn.addEventListener('click', function () {
                     const next = parseInt(this.dataset.next);
 
-                    // Validasi Step 2 (Dokumen)
+                    // Validasi saat mau ke Step 3 (Konfirmasi)
                     if (next === 3) {
+                        // Cek 1: Apakah ada file error (is-invalid)?
+                        if (document.querySelectorAll('#step-2-perbaikan-data-asn input.is-invalid').length > 0) {
+                            Swal.fire('Dokumen Bermasalah', 'Perbaiki dokumen yang bertanda merah sebelum lanjut.', 'error');
+                            return;
+                        }
+
+                        // Cek 2: Dokumen wajib yang kosong
                         let valid = true;
-                        // Hanya cek dokumen required yang belum punya file lama
-                        const reqInputs = document.querySelectorAll('#step-2-perbaikan-data-asn input[type="file"][required]');
-                        reqInputs.forEach(input => {
+                        document.querySelectorAll('#step-2-perbaikan-data-asn input[type="file"][required]').forEach(input => {
                             if (input.files.length === 0) {
                                 input.classList.add('is-invalid');
                                 valid = false;
-                            } else {
-                                input.classList.remove('is-invalid');
                             }
                         });
 
                         if(!valid) {
-                            Swal.fire('Perhatian', 'Harap lengkapi dokumen wajib yang belum terunggah.', 'warning');
+                            Swal.fire('Perhatian', 'Harap lengkapi dokumen wajib yang belum diunggah.', 'warning');
                             return;
                         }
                     }
@@ -322,19 +490,7 @@
             // Preview File
             document.querySelectorAll('input[type="file"]').forEach(input => {
                 input.addEventListener('change', function () {
-                    const preview = document.getElementById(`preview-${this.id}`);
-                    if (this.files.length > 0) {
-                        if (this.files[0].size > 2 * 1024 * 1024) {
-                            Swal.fire('Error', 'File max 2MB', 'warning');
-                            this.value = '';
-                        } else {
-                            preview.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> File Baru: ${this.files[0].name}</div>`;
-                            preview.style.display = 'block';
-                            this.classList.remove('is-invalid');
-                        }
-                    } else {
-                        preview.innerHTML = '';
-                    }
+                    handleFileUpload(this);
                 });
             });
 
@@ -342,14 +498,15 @@
             function updateReview() {
                 const get = (id) => document.getElementById(id)?.value || '-';
 
-                document.getElementById('review-nama-perbaikan-data-asn').textContent = document.getElementById('nama_pegawai_perbaikan-data-asn')?.value || document.getElementById('nama_pegawai_perbaikan_data_asn').value;
+                // Data Pegawai
+                document.getElementById('review-nama-perbaikan-data-asn').textContent = document.getElementById('nama_pegawai_perbaikan_data_asn').value;
                 document.getElementById('review-nip-perbaikan-data-asn').textContent = get('nip_display_perbaikan_data_asn');
                 document.getElementById('review-jabatan-perbaikan-data-asn').textContent = get('jabatan_pegawai_perbaikan_data_asn');
                 document.getElementById('review-pangkat-perbaikan-data-asn').textContent = get('pangkat_pegawai_perbaikan_data_asn');
                 document.getElementById('review-unit-kerja-perbaikan-data-asn').textContent = get('unit_kerja_pegawai_perbaikan_data_asn');
                 document.getElementById('review-golongan-ruang-perbaikan-data-asn').textContent = get('golongan_ruang_pegawai_perbaikan_data_asn');
 
-                // Review Dokumen
+                // Render List Dokumen
                 const container = document.getElementById('review-documents-perbaikan-data-asn');
                 container.innerHTML = '';
 
@@ -360,8 +517,8 @@
 
                     let statusHtml = '';
 
-                    if (fileInput.files.length > 0) {
-                        statusHtml = `<span class="text-warning fw-bold"><i class="fas fa-sync me-1"></i>Ganti: ${fileInput.files[0].name}</span>`;
+                    if (fileInput.files.length > 0 && !fileInput.classList.contains('is-invalid')) {
+                        statusHtml = `<span class="text-warning fw-bold"><i class="fas fa-sync me-1"></i>Ganti Baru: ${fileInput.files[0].name}</span>`;
                     } else if (existingInfo) {
                         const oldName = existingInfo.getAttribute('data-filename');
                         statusHtml = `<span class="text-success"><i class="fas fa-check-circle me-1"></i>Tetap: ${oldName}</span>`;
@@ -376,7 +533,7 @@
                 });
             }
 
-            // --- SUBMIT FORM ---
+            // Submit handler
             document.getElementById('form-perbaikan-data-asn').addEventListener('submit', function (e) {
                 if (!document.getElementById('confirm-data-perbaikan-data-asn').checked) {
                     e.preventDefault();

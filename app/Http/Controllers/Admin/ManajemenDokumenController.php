@@ -41,8 +41,19 @@ class ManajemenDokumenController extends Controller
     {
         $request->validate([
             'nama_layanan' => 'required|string|max:255',
-            'kategori'     => 'required|string|max:100', // Validasi string biasa
+            'kategori'     => 'required|string|max:100',
+        ], [
+            // Nama Layanan
+            'nama_layanan.required' => 'Nama layanan wajib diisi.',
+            'nama_layanan.string'   => 'Nama layanan harus berupa teks.',
+            'nama_layanan.max'      => 'Nama layanan tidak boleh lebih dari 255 karakter.',
+
+            // Kategori
+            'kategori.required' => 'Kategori wajib diisi.',
+            'kategori.string'   => 'Kategori harus berupa teks.',
+            'kategori.max'      => 'Kategori tidak boleh lebih dari 100 karakter.',
         ]);
+
 
         JenisLayanan::create([
             'nama_layanan' => $request->nama_layanan,
@@ -61,7 +72,18 @@ class ManajemenDokumenController extends Controller
         $request->validate([
             'nama_layanan' => 'required|string|max:255',
             'kategori'     => 'required|string|max:100',
+        ], [
+            // Nama Layanan
+            'nama_layanan.required' => 'Nama layanan wajib diisi.',
+            'nama_layanan.string'   => 'Nama layanan harus berupa teks.',
+            'nama_layanan.max'      => 'Nama layanan tidak boleh lebih dari 255 karakter.',
+
+            // Kategori
+            'kategori.required' => 'Kategori wajib diisi.',
+            'kategori.string'   => 'Kategori harus berupa teks.',
+            'kategori.max'      => 'Kategori tidak boleh lebih dari 100 karakter.',
         ]);
+
 
         $layanan->update([
             'nama_layanan' => $request->nama_layanan,
@@ -95,9 +117,27 @@ class ManajemenDokumenController extends Controller
         $request->validate([
             'jenis_layanan_id' => 'required|exists:jenis_layanans,id',
             'nama_dokumen'     => 'required|string',
-            'allowed_types'    => 'required|string', // ex: pdf,jpg
+            'allowed_types'    => 'required|string',
             'max_size_kb'      => 'required|integer|min:100',
+        ], [
+            // Jenis Layanan
+            'jenis_layanan_id.required' => 'Jenis layanan wajib dipilih.',
+            'jenis_layanan_id.exists'   => 'Jenis layanan yang dipilih tidak valid.',
+
+            // Nama Dokumen
+            'nama_dokumen.required' => 'Nama dokumen wajib diisi.',
+            'nama_dokumen.string'   => 'Nama dokumen harus berupa teks.',
+
+            // Allowed Types
+            'allowed_types.required' => 'Tipe dokumen yang diperbolehkan wajib diisi.',
+            'allowed_types.string'   => 'Tipe dokumen yang diperbolehkan harus berupa teks.',
+
+            // Max Size KB
+            'max_size_kb.required' => 'Ukuran maksimal dokumen wajib diisi.',
+            'max_size_kb.integer'  => 'Ukuran maksimal dokumen harus berupa angka.',
+            'max_size_kb.min'      => 'Ukuran maksimal dokumen minimal 100 KB.',
         ]);
+
 
         SyaratDokumen::create([
             'jenis_layanan_id' => $request->jenis_layanan_id,
@@ -118,7 +158,20 @@ class ManajemenDokumenController extends Controller
             'nama_dokumen'  => 'required|string',
             'allowed_types' => 'required|string',
             'max_size_kb'   => 'required|integer',
+        ], [
+            // Nama Dokumen
+            'nama_dokumen.required' => 'Nama dokumen wajib diisi.',
+            'nama_dokumen.string'   => 'Nama dokumen harus berupa teks.',
+
+            // Allowed Types
+            'allowed_types.required' => 'Tipe dokumen yang diperbolehkan wajib diisi.',
+            'allowed_types.string'   => 'Tipe dokumen yang diperbolehkan harus berupa teks.',
+
+            // Max Size
+            'max_size_kb.required' => 'Ukuran maksimal dokumen wajib diisi.',
+            'max_size_kb.integer'  => 'Ukuran maksimal dokumen harus berupa angka.',
         ]);
+
 
         $syarat->update([
             'nama_dokumen'  => $request->nama_dokumen,

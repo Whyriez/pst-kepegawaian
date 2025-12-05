@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -36,7 +37,12 @@ class PencantumanGelarController extends Controller
 
     public function createAkademik()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('gelar-akademik')) {
+            return redirect()->route('gelar.akademik')
+                ->with('error', 'Maaf, Periode pengajuan Gelar Akademik sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'gelar-akademik' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'gelar-akademik')->first();
@@ -47,10 +53,20 @@ class PencantumanGelarController extends Controller
 
     public function storeAkademik(Request $request)
     {
+        if (!CekPeriode::isBuka('gelar-akademik')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_gelar_akademik' => 'required|exists:pegawais,nip',
             'jenjang_pendidikan_gelar_akademik' => 'required',
+        ],[
+            'nip_display_gelar_akademik.required' => 'NIP wajib diisi.',
+            'nip_display_gelar_akademik.exists' => 'NIP tidak ditemukan dalam data pegawai.',
+
+            'jenjang_pendidikan_gelar_akademik.required' => 'Jenjang pendidikan wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -137,7 +153,12 @@ class PencantumanGelarController extends Controller
             'jabatan_gelar_akademik' => 'required',
             'satuan_kerja_gelar_akademik' => 'required',
             'jenjang_pendidikan_gelar_akademik' => 'required',
+        ],[
+            'jabatan_gelar_akademik.required' => 'Jabatan wajib diisi.',
+            'satuan_kerja_gelar_akademik.required' => 'Satuan kerja wajib diisi.',
+            'jenjang_pendidikan_gelar_akademik.required' => 'Jenjang pendidikan wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -224,7 +245,12 @@ class PencantumanGelarController extends Controller
 
     public function createProfesi()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('gelar-profesi')) {
+            return redirect()->route('gelar.profesi')
+                ->with('error', 'Maaf, Periode pengajuan Gelar Profesi sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'gelar-profesi' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'gelar-profesi')->first();
@@ -235,10 +261,19 @@ class PencantumanGelarController extends Controller
 
     public function storeProfesi(Request $request)
     {
+        if (!CekPeriode::isBuka('gelar-profesi')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_gelar_profesi' => 'required|exists:pegawais,nip',
             'usul_profesi_gelar_profesi' => 'required',
+        ],[
+            'nip_display_gelar_profesi.required' => 'NIP wajib diisi.',
+            'nip_display_gelar_profesi.exists' => 'NIP tidak ditemukan dalam data pegawai.',
+            'usul_profesi_gelar_profesi.required' => 'Usulan profesi wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -330,7 +365,13 @@ class PencantumanGelarController extends Controller
             'satuan_kerja_gelar_profesi' => 'required',
             'jenjang_pendidikan_gelar_profesi' => 'required',
             'usul_profesi_gelar_profesi' => 'required',
+        ],[
+            'jabatan_gelar_profesi.required' => 'Jabatan wajib diisi.',
+            'satuan_kerja_gelar_profesi.required' => 'Satuan kerja wajib diisi.',
+            'jenjang_pendidikan_gelar_profesi.required' => 'Jenjang pendidikan wajib diisi.',
+            'usul_profesi_gelar_profesi.required' => 'Usulan profesi wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

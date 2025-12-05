@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -37,7 +38,12 @@ class PindahInstansiController extends Controller
 
     public function createMasuk()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pindah-masuk')) {
+            return redirect()->route('pindah.masuk')
+                ->with('error', 'Maaf, Periode pengajuan Pindah Masuk Instansi sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'pindah-masuk' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pindah-masuk')->first();
@@ -49,9 +55,17 @@ class PindahInstansiController extends Controller
 
     public function storeMasuk(Request $request)
     {
+        if (!CekPeriode::isBuka('pindah-masuk')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_pindah_masuk' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_pindah_masuk.required' => 'NIP wajib diisi.',
+            'nip_display_pindah_masuk.exists' => 'NIP tidak ditemukan dalam data pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -147,7 +161,13 @@ class PindahInstansiController extends Controller
             'unit_kerja_pindah_masuk' => 'required',
             'usul_jabatan_pindah_masuk' => 'required',
             'usul_unit_kerja_pindah_masuk' => 'required',
+        ], [
+            'jabatan_pindah_masuk.required' => 'Jabatan pindah masuk wajib diisi.',
+            'unit_kerja_pindah_masuk.required' => 'Unit kerja pindah masuk wajib diisi.',
+            'usul_jabatan_pindah_masuk.required' => 'Usulan jabatan wajib diisi.',
+            'usul_unit_kerja_pindah_masuk.required' => 'Usulan unit kerja wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -243,7 +263,12 @@ class PindahInstansiController extends Controller
 
     public function createKeluar()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pindah-keluar')) {
+            return redirect()->route('pindah.keluar')
+                ->with('error', 'Maaf, Periode pengajuan Pindah Keluar Instansi sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'pindah-keluar' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pindah-keluar')->first();
@@ -254,9 +279,17 @@ class PindahInstansiController extends Controller
 
     public function storeKeluar(Request $request)
     {
+        if (!CekPeriode::isBuka('pindah-keluar')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_pindah_keluar' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_pindah_keluar.required' => 'NIP wajib diisi.',
+            'nip_display_pindah_keluar.exists' => 'NIP tidak ditemukan dalam data pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -349,7 +382,13 @@ class PindahInstansiController extends Controller
             'unit_kerja_pindah_keluar' => 'required',
             'instansi_tujuan_pindah_keluar' => 'required',
             'jabatan_tujuan_pindah_keluar' => 'required',
+        ], [
+            'jabatan_pindah_keluar.required' => 'Jabatan pindah keluar wajib diisi.',
+            'unit_kerja_pindah_keluar.required' => 'Unit kerja pindah keluar wajib diisi.',
+            'instansi_tujuan_pindah_keluar.required' => 'Instansi tujuan wajib diisi.',
+            'jabatan_tujuan_pindah_keluar.required' => 'Jabatan tujuan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

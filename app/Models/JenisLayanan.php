@@ -27,4 +27,19 @@ class JenisLayanan extends Model
     {
         return $this->hasMany(Pengajuan::class);
     }
+
+    public function periodes()
+    {
+        return $this->hasMany(Periode::class);
+    }
+
+    public function isCurrentlyOpen()
+    {
+        // Cek apakah ada SATU SAJA periode yang aktif dan tanggalnya masuk range hari ini
+        return $this->periodes()
+            ->where('is_active', true)
+            ->whereDate('tanggal_mulai', '<=', now())
+            ->whereDate('tanggal_selesai', '>=', now())
+            ->exists();
+    }
 }

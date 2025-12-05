@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -36,7 +37,12 @@ class JabatanFungsionalController extends Controller
 
     public function createPengangkatan()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('jf-pengangkatan')) {
+            return redirect()->route('jf.pengangkatan')
+                ->with('error', 'Maaf, Periode pengajuan Pengangkatan JF sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'jf-pengangkatan' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'jf-pengangkatan')->first();
@@ -47,9 +53,17 @@ class JabatanFungsionalController extends Controller
 
     public function storePengangkatan(Request $request)
     {
+        if (!CekPeriode::isBuka('jf-pengangkatan')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_jf_pengangkatan' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_jf_pengangkatan.required' => 'NIP wajib diisi.',
+            'nip_display_jf_pengangkatan.exists'   => 'NIP tidak ditemukan dalam data pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -138,13 +152,21 @@ class JabatanFungsionalController extends Controller
     {
         // 1. Validasi Input
         $request->validate([
-            'jabatan_jf_pengangkatan' => 'required',
-            'pangkat_jf_pengangkatan' => 'required',
-            'satuan_kerja_jf_pengangkatan' => 'required',
+            'jabatan_jf_pengangkatan'        => 'required',
+            'pangkat_jf_pengangkatan'        => 'required',
+            'satuan_kerja_jf_pengangkatan'   => 'required',
             'golongan_ruang_jf_pengangkatan' => 'required',
-            'usul_jabatan_jf_pengangkatan' => 'required',
+            'usul_jabatan_jf_pengangkatan'   => 'required',
             'usul_satuan_kerja_jf_pengangkatan' => 'required',
+        ], [
+            'jabatan_jf_pengangkatan.required'        => 'Jabatan JF pengangkatan wajib diisi.',
+            'pangkat_jf_pengangkatan.required'        => 'Pangkat JF pengangkatan wajib diisi.',
+            'satuan_kerja_jf_pengangkatan.required'   => 'Satuan kerja JF pengangkatan wajib diisi.',
+            'golongan_ruang_jf_pengangkatan.required' => 'Golongan ruang JF pengangkatan wajib diisi.',
+            'usul_jabatan_jf_pengangkatan.required'   => 'Usul jabatan JF pengangkatan wajib diisi.',
+            'usul_satuan_kerja_jf_pengangkatan.required' => 'Usul satuan kerja JF pengangkatan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -238,7 +260,12 @@ class JabatanFungsionalController extends Controller
 
     public function createPemberhentian()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('jf-pemberhentian')) {
+            return redirect()->route('jf.pemberhentian')
+                ->with('error', 'Maaf, Periode pengajuan Pemberhentian JF sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'jf-pemberhentian' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'jf-pemberhentian')->first();
@@ -249,9 +276,17 @@ class JabatanFungsionalController extends Controller
 
     public function storePemberhentian(Request $request)
     {
+        if (!CekPeriode::isBuka('jf-pemberhentian')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_jf_pemberhentian' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_jf_pemberhentian.required' => 'NIP wajib diisi.',
+            'nip_display_jf_pemberhentian.exists'   => 'NIP tidak ditemukan dalam data pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -337,9 +372,13 @@ class JabatanFungsionalController extends Controller
     {
         // Validasi Input
         $request->validate([
-            'jabatan_jf_pemberhentian' => 'required',
+            'jabatan_jf_pemberhentian'      => 'required',
             'satuan_kerja_jf_pemberhentian' => 'required',
+        ], [
+            'jabatan_jf_pemberhentian.required'      => 'Jabatan JF pemberhentian wajib diisi.',
+            'satuan_kerja_jf_pemberhentian.required' => 'Satuan kerja JF pemberhentian wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -431,7 +470,12 @@ class JabatanFungsionalController extends Controller
 
     public function createNaikJenjang()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('jf-naik-jenjang')) {
+            return redirect()->route('jf.naik_jenjang')
+                ->with('error', 'Maaf, Periode pengajuan Naik Jenjang JF sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'jf-naik-jenjang' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'jf-naik-jenjang')->first();
@@ -442,9 +486,17 @@ class JabatanFungsionalController extends Controller
 
     public function storeNaikJenjang(Request $request)
     {
+        if (!CekPeriode::isBuka('jf-naik-jenjang')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_jf_naik_jenjang' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_jf_naik_jenjang.required' => 'NIP wajib diisi.',
+            'nip_display_jf_naik_jenjang.exists'   => 'NIP tidak ditemukan dalam data pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -533,9 +585,13 @@ class JabatanFungsionalController extends Controller
     {
         // Validasi Input
         $request->validate([
-            'jabatan_jf_naik_jenjang' => 'required',
-            'usul_jabatan_jf_naik_jenjang' => 'required',
+            'jabatan_jf_naik_jenjang'       => 'required',
+            'usul_jabatan_jf_naik_jenjang'  => 'required',
+        ], [
+            'jabatan_jf_naik_jenjang.required'      => 'Jabatan JF naik jenjang wajib diisi.',
+            'usul_jabatan_jf_naik_jenjang.required' => 'Usul jabatan JF naik jenjang wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

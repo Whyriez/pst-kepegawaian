@@ -17,9 +17,18 @@ class AuthController extends Controller
     {
         // 1. Ubah validasi dari email ke nip
         $request->validate([
-            'nip' => 'required|numeric|digits:18',
+            'nip'      => 'required|numeric|digits:18',
             'password' => 'required',
+        ], [
+            // NIP
+            'nip.required' => 'NIP wajib diisi.',
+            'nip.numeric'  => 'NIP harus berupa angka.',
+            'nip.digits'   => 'NIP harus 18 digit.',
+
+            // Password
+            'password.required' => 'Password wajib diisi.',
         ]);
+
 
         // 2. Cari Pegawai berdasarkan NIP
         $pegawai = Pegawai::where('nip', $request->nip)->first();
@@ -36,6 +45,8 @@ class AuthController extends Controller
 
             if (Auth::attempt($credentials)) {
                 $request->session()->regenerate();
+
+                session()->flash('show_periode_modal', true);
 
                 $role = Auth::user()->role;
 

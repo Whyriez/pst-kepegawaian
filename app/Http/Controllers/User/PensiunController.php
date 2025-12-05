@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -36,7 +37,12 @@ class PensiunController extends Controller
 
     public function createBup()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pensiun-bup')) {
+            return redirect()->route('pensiun.bup')
+                ->with('error', 'Maaf, Periode pengajuan Pensiun BUP sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // 2. Ambil Syarat Dokumen (Pastikan slug 'pensiun-bup' ada di tabel jenis_layanans)
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pensiun-bup')->first();
@@ -47,11 +53,22 @@ class PensiunController extends Controller
 
     public function storeBup(Request $request)
     {
+        if (!CekPeriode::isBuka('pensiun-bup')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         // 1. Validasi
         $request->validate([
             'nip_display_pensiun_bup' => 'required|exists:pegawais,nip',
             'tmt_pensiun_bup' => 'required|date',
+        ],[
+            'nip_display_pensiun_bup.required' => 'NIP wajib diisi.',
+            'nip_display_pensiun_bup.exists' => 'NIP tidak terdaftar dalam database pegawai.',
+
+            'tmt_pensiun_bup.required' => 'TMT pensiun wajib diisi.',
+            'tmt_pensiun_bup.date' => 'Format TMT pensiun tidak valid.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -142,7 +159,11 @@ class PensiunController extends Controller
     {
         $request->validate([
             'tmt_pensiun_bup' => 'required|date',
+        ],[
+            'tmt_pensiun_bup.required' => 'TMT pensiun wajib diisi.',
+            'tmt_pensiun_bup.date' => 'Format TMT pensiun tidak valid.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -235,7 +256,12 @@ class PensiunController extends Controller
 
     public function createJandaDudaYatim()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pensiun-jdy')) {
+            return redirect()->route('pensiun.janda_duda_yatim')
+                ->with('error', 'Maaf, Periode pengajuan Pensiun Janda/Duda/Yatim sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'pensiun-jdy' ada di database
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pensiun-jdy')->first();
@@ -246,10 +272,21 @@ class PensiunController extends Controller
 
     public function storeJandaDudaYatim(Request $request)
     {
+        if (!CekPeriode::isBuka('pensiun-jdy')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_jdy' => 'required|exists:pegawais,nip',
             'tmt_pensiun_jdy' => 'required|date',
+        ],[
+            'nip_display_jdy.required' => 'NIP wajib diisi.',
+            'nip_display_jdy.exists' => 'NIP tidak terdaftar dalam database pegawai.',
+
+            'tmt_pensiun_jdy.required' => 'TMT pensiun wajib diisi.',
+            'tmt_pensiun_jdy.date' => 'Format TMT pensiun tidak valid.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -336,7 +373,11 @@ class PensiunController extends Controller
     {
         $request->validate([
             'tmt_pensiun_jdy' => 'required|date',
+        ],[
+            'tmt_pensiun_jdy.required' => 'TMT pensiun wajib diisi.',
+            'tmt_pensiun_jdy.date' => 'Format TMT pensiun tidak valid.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -421,13 +462,17 @@ class PensiunController extends Controller
             ->latest()
             ->paginate(10);
 
-        // Arahkan ke file index.blade.php yang baru kita buat
         return view('pages.user.pensiun.atas_permintaan_sendiri.index', compact('pengajuans'));
     }
 
     public function createAps()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pensiun-aps')) {
+            return redirect()->route('pensiun.aps')
+                ->with('error', 'Maaf, Periode pengajuan Pensiun APS sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'pensiun-aps' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pensiun-aps')->first();
@@ -438,10 +483,21 @@ class PensiunController extends Controller
 
     public function storeAps(Request $request)
     {
+        if (!CekPeriode::isBuka('pensiun-aps')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_aps' => 'required|exists:pegawais,nip',
             'tmt_pensiun_aps' => 'required|date',
+        ],[
+            'nip_display_aps.required' => 'NIP wajib diisi.',
+            'nip_display_aps.exists' => 'NIP tidak terdaftar dalam database pegawai.',
+
+            'tmt_pensiun_aps.required' => 'TMT pensiun wajib diisi.',
+            'tmt_pensiun_aps.date' => 'Format TMT pensiun tidak valid.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -535,7 +591,16 @@ class PensiunController extends Controller
             'pangkat_aps' => 'required',
             'satuan_kerja_aps' => 'required',
             'golongan_aps' => 'required',
+        ],[
+            'tmt_pensiun_aps.required' => 'TMT pensiun wajib diisi.',
+            'tmt_pensiun_aps.date' => 'Format TMT pensiun tidak valid.',
+
+            'jabatan_aps.required' => 'Jabatan wajib diisi.',
+            'pangkat_aps.required' => 'Pangkat wajib diisi.',
+            'satuan_kerja_aps.required' => 'Satuan kerja wajib diisi.',
+            'golongan_aps.required' => 'Golongan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -631,7 +696,12 @@ class PensiunController extends Controller
 
     public function createMeninggal()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pensiun-meninggal')) {
+            return redirect()->route('pensiun.meninggal')
+                ->with('error', 'Maaf, Periode pengajuan Pensiun Meninggal sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'pensiun-meninggal' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pensiun-meninggal')->first();
@@ -642,9 +712,17 @@ class PensiunController extends Controller
 
     public function storeMeninggal(Request $request)
     {
+        if (!CekPeriode::isBuka('pensiun-meninggal')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_meninggal' => 'required|exists:pegawais,nip',
+        ],[
+            'nip_display_meninggal.required' => 'NIP wajib diisi.',
+            'nip_display_meninggal.exists' => 'NIP tidak terdaftar dalam database pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -733,11 +811,17 @@ class PensiunController extends Controller
     {
         // Validasi input form edit
         $request->validate([
-            'jabatan_meninggal' => 'required',
-            'pangkat_meninggal' => 'required',
+            'jabatan_meninggal'      => 'required',
+            'pangkat_meninggal'      => 'required',
             'satuan_kerja_meninggal' => 'required',
-            'golongan_meninggal' => 'required',
+            'golongan_meninggal'     => 'required',
+        ],[
+            'jabatan_meninggal.required'      => 'Jabatan wajib diisi.',
+            'pangkat_meninggal.required'      => 'Pangkat wajib diisi.',
+            'satuan_kerja_meninggal.required' => 'Satuan kerja wajib diisi.',
+            'golongan_meninggal.required'     => 'Golongan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -829,7 +913,12 @@ class PensiunController extends Controller
 
     public function createUzur()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pensiun-uzur')) {
+            return redirect()->route('pensiun.uzur')
+                ->with('error', 'Maaf, Periode pengajuan Pensiun Uzur sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'pensiun-uzur' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pensiun-uzur')->first();
@@ -840,9 +929,17 @@ class PensiunController extends Controller
 
     public function storeUzur(Request $request)
     {
+        if (!CekPeriode::isBuka('pensiun-uzur')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_uzur' => 'required|exists:pegawais,nip',
+        ],[
+            'nip_display_uzur.required' => 'NIP wajib diisi.',
+            'nip_display_uzur.exists'   => 'NIP tidak ditemukan dalam database pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -928,11 +1025,17 @@ class PensiunController extends Controller
     {
         // Validasi input form edit
         $request->validate([
-            'jabatan_uzur' => 'required',
-            'pangkat_uzur' => 'required',
+            'jabatan_uzur'      => 'required',
+            'pangkat_uzur'      => 'required',
             'satuan_kerja_uzur' => 'required',
-            'golongan_uzur' => 'required',
+            'golongan_uzur'     => 'required',
+        ],[
+            'jabatan_uzur.required'      => 'Jabatan wajib diisi.',
+            'pangkat_uzur.required'      => 'Pangkat wajib diisi.',
+            'satuan_kerja_uzur.required' => 'Satuan kerja wajib diisi.',
+            'golongan_uzur.required'     => 'Golongan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -1024,7 +1127,12 @@ class PensiunController extends Controller
 
     public function createHilang()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pensiun-hilang')) {
+            return redirect()->route('pensiun.hilang')
+                ->with('error', 'Maaf, Periode pengajuan Pensiun Hilang sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'pensiun-hilang' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pensiun-hilang')->first();
@@ -1035,9 +1143,17 @@ class PensiunController extends Controller
 
     public function storeHilang(Request $request)
     {
+        if (!CekPeriode::isBuka('pensiun-hilang')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_hilang' => 'required|exists:pegawais,nip',
+        ],[
+            'nip_display_hilang.required' => 'NIP wajib diisi.',
+            'nip_display_hilang.exists'   => 'NIP tidak terdaftar dalam database pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -1124,11 +1240,17 @@ class PensiunController extends Controller
     public function updateHilang(Request $request, $id)
     {
         $request->validate([
-            'jabatan_hilang' => 'required',
-            'pangkat_hilang' => 'required',
-            'satuan_kerja_hilang' => 'required',
-            'golongan_hilang' => 'required',
+            'jabatan_hilang'        => 'required',
+            'pangkat_hilang'        => 'required',
+            'satuan_kerja_hilang'   => 'required',
+            'golongan_hilang'       => 'required',
+        ],[
+            'jabatan_hilang.required'      => 'Jabatan wajib diisi.',
+            'pangkat_hilang.required'      => 'Pangkat wajib diisi.',
+            'satuan_kerja_hilang.required' => 'Satuan kerja wajib diisi.',
+            'golongan_hilang.required'     => 'Golongan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -1218,7 +1340,12 @@ class PensiunController extends Controller
 
     public function createTanpaAhliWaris()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('pensiun-taw')) {
+            return redirect()->route('pensiun.taw')
+                ->with('error', 'Maaf, Periode pengajuan Pensiun Tanpa Ahli Waris sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'pensiun-taw' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'pensiun-taw')->first();
@@ -1229,9 +1356,17 @@ class PensiunController extends Controller
 
     public function storeTanpaAhliWaris(Request $request)
     {
+        if (!CekPeriode::isBuka('pensiun-taw')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_taw' => 'required|exists:pegawais,nip',
+        ],[
+            'nip_display_taw.required' => 'NIP wajib diisi.',
+            'nip_display_taw.exists'   => 'NIP tidak terdaftar dalam database pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -1319,7 +1454,13 @@ class PensiunController extends Controller
             'pangkat_taw' => 'required',
             'satuan_kerja_taw' => 'required',
             'golongan_taw' => 'required',
+        ], [
+            'jabatan_taw.required' => 'Jabatan wajib diisi.',
+            'pangkat_taw.required' => 'Pangkat wajib diisi.',
+            'satuan_kerja_taw.required' => 'Satuan kerja wajib diisi.',
+            'golongan_taw.required' => 'Golongan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

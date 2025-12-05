@@ -12,9 +12,9 @@
             <div class="dropdown">
                 <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
                     id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="https://ui-avatars.com/api/?name=User+Pegawai&background=1a73e8&color=fff" alt="User"
+                    <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=1a73e8&color=fff" alt="User"
                         class="rounded-circle me-2" width="40" height="40">
-                    <span class="d-none d-md-inline">User Pegawai</span>
+                    <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                     <li>

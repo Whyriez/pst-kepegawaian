@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -17,6 +18,11 @@ class SatyalancanaController extends Controller
 {
     public function index()
     {
+        if (!CekPeriode::isBuka('satyalancana')) {
+            return redirect()->route('satyalancana')
+                ->with('error', 'Maaf, Periode pengajuan Satyalancana sedang DITUTUP.');
+        }
+
         $pegawaiId = Auth::user()->pegawai->id;
 
         // Ambil riwayat pengajuan (Slug: satyalancana)
@@ -33,7 +39,7 @@ class SatyalancanaController extends Controller
 
     public function create()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'satyalancana' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'satyalancana')->first();
@@ -45,9 +51,17 @@ class SatyalancanaController extends Controller
 
     public function store(Request $request)
     {
+        if (!CekPeriode::isBuka('satyalancana')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_satyalancana' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_satyalancana.required' => 'NIP wajib diisi.',
+            'nip_display_satyalancana.exists' => 'NIP tidak ditemukan dalam data pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -135,7 +149,11 @@ class SatyalancanaController extends Controller
         $request->validate([
             'jabatan_satyalancana' => 'required',
             'unit_kerja_satyalancana' => 'required',
+        ], [
+            'jabatan_satyalancana.required' => 'Jabatan wajib diisi.',
+            'unit_kerja_satyalancana.required' => 'Unit kerja wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

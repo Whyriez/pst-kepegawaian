@@ -108,13 +108,13 @@
         {{-- ================================================================================== --}}
         <li class="has-submenu {{ request()->routeIs('admin.pensiun.*') ? 'active open' : '' }}">
             <a href="javascript:void(0)" class="menu-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center flex-grow-1">
                     <i class="fas fa-user-clock"></i>
                     <span>Pensiun</span>
                 </div>
                 {{-- BADGE INDUK --}}
                 @if (isset($badgeKategori['Pensiun']) && $badgeKategori['Pensiun'] > 0)
-                    <span class="badge bg-danger rounded-pill ms-auto me-2">{{ $badgeKategori['Pensiun'] }}</span>
+                    <span class="badge bg-danger rounded-pill ms-auto  flex-shrink-0 me-2">{{ $badgeKategori['Pensiun'] }}</span>
                 @endif
                 <i class="fas fa-chevron-down menu-arrow"></i>
             </a>
@@ -308,8 +308,8 @@
                     <span>Satyalancana</span>
                 </div>
                 {{-- Hanya cek Kategori saja --}}
-                @if (isset($badgeSlug['satyalancana']) && $$badgeSlug['satyalancana'] > 0)
-                    <span class="badge bg-danger rounded-pill flex-shrink-0">{{ $$badgeSlug['satyalancana'] }}</span>
+                @if (isset($badgeSlug['satyalancana']) && $badgeSlug['satyalancana'] > 0)
+                    <span class="badge bg-danger rounded-pill flex-shrink-0">{{ $badgeSlug['satyalancana'] }}</span>
                 @endif
             </a>
         </li>
@@ -425,6 +425,15 @@
                 class="menu-item {{ request()->routeIs('admin.manajemen_dokumen.index') ? 'active' : '' }}">
                 <i class="fas fa-file"></i>
                 <span>Manajemen Dokumen</span>
+            </a>
+        </li>
+
+        {{-- Manajemen Dokumen (KHUSUS ADMIN) --}}
+        <li class="">
+            <a href="{{ route('admin.manajemen_dokumen.periode.index') }}"
+               class="menu-item {{ request()->routeIs('admin.manajemen_dokumen.periode.index') ? 'active' : '' }}">
+                <i class="fas fa-calendar"></i>
+                <span>Manajemen Periode</span>
             </a>
         </li>
 

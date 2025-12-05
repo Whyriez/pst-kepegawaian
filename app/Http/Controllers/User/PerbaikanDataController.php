@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -33,7 +34,12 @@ class PerbaikanDataController extends Controller
 
     public function create()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('perbaikan-data-asn')) {
+            return redirect()->route('perbaikan_data')
+                ->with('error', 'Maaf, Periode pengajuan Perbaikan Data ASN sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'perbaikan-data-asn' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'perbaikan-data-asn')->first();
@@ -44,9 +50,17 @@ class PerbaikanDataController extends Controller
 
     public function store(Request $request)
     {
+        if (!CekPeriode::isBuka('perbaikan-data-asn')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_perbaikan_data_asn' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_perbaikan_data_asn.required' => 'NIP wajib diisi.',
+            'nip_display_perbaikan_data_asn.exists' => 'NIP tidak ditemukan dalam data pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -134,7 +148,11 @@ class PerbaikanDataController extends Controller
         $request->validate([
             'jabatan_pegawai_perbaikan_data_asn' => 'required',
             'unit_kerja_pegawai_perbaikan_data_asn' => 'required',
+        ], [
+            'jabatan_pegawai_perbaikan_data_asn.required' => 'Jabatan pegawai wajib diisi.',
+            'unit_kerja_pegawai_perbaikan_data_asn.required' => 'Unit kerja pegawai wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

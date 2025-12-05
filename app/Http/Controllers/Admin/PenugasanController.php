@@ -25,10 +25,10 @@ class PenugasanController extends Controller
 
         // 3. Statistik
         $stats = [
-            'total'     => $query->count(),
-            'pending'   => $query->clone()->where('status', 'pending')->count(),
+            'total' => $query->count(),
+            'pending' => $query->clone()->where('status', 'pending')->count(),
             'disetujui' => $query->clone()->where('status', 'disetujui')->count(),
-            'ditolak'   => $query->clone()->where('status', 'ditolak')->count(),
+            'ditolak' => $query->clone()->where('status', 'ditolak')->count(),
         ];
 
         // 4. Filter Status
@@ -41,7 +41,8 @@ class PenugasanController extends Controller
             $keyword = $request->search;
             $query->whereHas('pegawai', function ($q) use ($keyword) {
                 $q->where('nama_lengkap', 'like', '%' . $keyword . '%')
-                    ->orWhere('nip', 'like', '%' . $keyword . '%');
+                    ->orWhere('nip', 'like', '%' . $keyword . '%')
+                    ->orWhere('nomor_tiket', 'like', '%' . $keyword . '%');
             });
         }
 
@@ -54,8 +55,14 @@ class PenugasanController extends Controller
     // --- APPROVE ---
     public function approve(Request $request)
     {
-        $request->validate(['id' => 'required|exists:pengajuans,id']);
-        
+        $request->validate([
+            'id' => 'required|exists:pengajuans,id',
+        ], [
+            'id.required' => 'ID pengajuan wajib diisi.',
+            'id.exists' => 'ID pengajuan tidak ditemukan atau tidak valid.',
+        ]);
+
+
         Pengajuan::where('id', $request->id)->update([
             'status' => 'disetujui',
             'verifikator_id' => Auth::id(),
@@ -74,7 +81,19 @@ class PenugasanController extends Controller
             'prioritas' => 'required',
             'tanggal_tindak_lanjut' => 'required|date',
             'alasan' => 'required|string',
+        ], [
+            'id.required' => 'ID pengajuan wajib diisi.',
+            'id.exists' => 'ID pengajuan tidak ditemukan atau tidak valid.',
+
+            'prioritas.required' => 'Prioritas wajib dipilih.',
+
+            'tanggal_tindak_lanjut.required' => 'Tanggal tindak lanjut wajib diisi.',
+            'tanggal_tindak_lanjut.date' => 'Tanggal tindak lanjut harus berupa format tanggal yang valid.',
+
+            'alasan.required' => 'Alasan wajib diisi.',
+            'alasan.string' => 'Alasan harus berupa teks.',
         ]);
+
 
         Pengajuan::where('id', $request->id)->update([
             'status' => 'ditunda',
@@ -94,10 +113,19 @@ class PenugasanController extends Controller
             'id' => 'required|exists:pengajuans,id',
             'kategori' => 'required',
             'alasan' => 'required|string',
+        ], [
+            'id.required' => 'ID pengajuan wajib diisi.',
+            'id.exists' => 'ID pengajuan tidak ditemukan atau tidak valid.',
+
+            'kategori.required' => 'Kategori wajib dipilih.',
+
+            'alasan.required' => 'Alasan wajib diisi.',
+            'alasan.string' => 'Alasan harus berupa teks.',
         ]);
 
+
         $pengajuan = Pengajuan::findOrFail($request->id);
-        
+
         $dataTambahan = $pengajuan->data_tambahan ?? [];
         $dataTambahan['kategori_penolakan'] = $request->kategori;
 

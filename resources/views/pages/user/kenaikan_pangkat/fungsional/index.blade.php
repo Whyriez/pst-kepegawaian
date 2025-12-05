@@ -8,18 +8,22 @@
             transition: transform 0.2s;
             cursor: default;
         }
+
         .card-status:hover {
             transform: translateY(-5px);
         }
+
         /* Styling Table agar lebih rapi & Vertikal align ke atas */
         .table-hover tbody tr:hover {
             background-color: #f8f9fa;
         }
+
         .table align-middle td {
             vertical-align: top !important; /* Agar teks catatan tidak membuat baris berantakan */
             padding-top: 1rem;
             padding-bottom: 1rem;
         }
+
         /* Styling Kotak Catatan */
         .rejection-note {
             background-color: #fff5f5;
@@ -95,7 +99,8 @@
         {{-- MAIN TABLE --}}
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-white py-3">
-                <h5 class="card-title mb-0 fw-bold"><i class="fas fa-history me-2 text-primary"></i>Riwayat Pengajuan</h5>
+                <h5 class="card-title mb-0 fw-bold"><i class="fas fa-history me-2 text-primary"></i>Riwayat Pengajuan
+                </h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -140,7 +145,8 @@
 
                                 {{-- 6. Status & Catatan --}}
                                 <td>
-                                    <span class="badge bg-{{ $item->status_badge }} px-3 py-2 rounded-pill text-uppercase mb-1">
+                                    <span
+                                        class="badge bg-{{ $item->status_badge }} px-3 py-2 rounded-pill text-uppercase mb-1">
                                         {{ $item->status }}
                                     </span>
 
@@ -155,7 +161,8 @@
                                 {{-- 7. Aksi --}}
                                 <td class="text-end px-3">
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                        <button class="btn btn-sm btn-light border dropdown-toggle" type="button"
+                                                data-bs-toggle="dropdown">
                                             <i class="fas fa-cog"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
@@ -166,7 +173,9 @@
                                                 </a>
                                             </li>
                                             @if(in_array($item->status, ['pending', 'perbaikan']))
-                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
                                                 <li>
                                                     <a class="dropdown-item fw-bold text-warning"
                                                        href="{{ route('kp.fungsional.edit', ['id' => $item->id]) }}">
@@ -182,9 +191,11 @@
                             <tr>
                                 <td colspan="6" class="text-center py-5">
                                     <div class="py-4">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486747.png" alt="Empty" width="80" class="mb-3 opacity-50">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486747.png" alt="Empty"
+                                             width="80" class="mb-3 opacity-50">
                                         <h6 class="text-muted fw-bold">Belum ada riwayat pengajuan</h6>
-                                        <a href="{{ route('kp.fungsional.create') }}" class="btn btn-sm btn-primary mt-2">
+                                        <a href="{{ route('kp.fungsional.create') }}"
+                                           class="btn btn-sm btn-primary mt-2">
                                             Ajukan Sekarang
                                         </a>
                                     </div>
@@ -201,7 +212,8 @@
                 <div class="card-footer bg-white py-3">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="small text-muted">
-                            Menampilkan {{ $pengajuans->firstItem() }} sampai {{ $pengajuans->lastItem() }} dari {{ $pengajuans->total() }} data
+                            Menampilkan {{ $pengajuans->firstItem() }} sampai {{ $pengajuans->lastItem() }}
+                            dari {{ $pengajuans->total() }} data
                         </div>
                         <div>
                             {{ $pengajuans->links() }}
@@ -231,5 +243,18 @@
                 confirmButtonText: 'Tutup'
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            @if (session('success'))
+            Swal.fire('Berhasil', "{{ session('success') }}", 'success');
+            @endif
+            @if (session('error'))
+            Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            @endif
+            @if ($errors->any())
+            Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning');
+            @endif
+        });
+
     </script>
 @endsection

@@ -15,7 +15,7 @@ class ProfileController extends Controller
     public function index()
     {
         $user = Auth::user()->load('pegawai.satuanKerja');
-        
+
         // Ambil semua data Satuan Kerja untuk dropdown (Khusus Admin)
         $satuanKerjas = SatuanKerja::all();
 
@@ -37,7 +37,7 @@ class ProfileController extends Controller
             'nama'      => 'required|string|max:255',
             'email'     => 'required|email|unique:users,email,' . $user->id,
             'avatar'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            
+
             // Validasi Data Pegawai
             'nip'       => 'required|numeric|digits:18|unique:pegawais,nip,' . $pegawaiId,
             'jabatan'   => 'required|string|max:255',
@@ -48,12 +48,43 @@ class ProfileController extends Controller
             'pendidikan_terakhir' => 'required|string|max:255',
         ];
 
+        $messages = [
+            // User
+            'nama.required' => 'Nama wajib diisi.',
+            'nama.string' => 'Nama harus berupa teks.',
+            'nama.max' => 'Nama maksimal 255 karakter.',
+
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah digunakan oleh pengguna lain.',
+
+            'avatar.image' => 'Avatar harus berupa file gambar.',
+            'avatar.mimes' => 'Avatar harus berformat jpeg, png, jpg, atau gif.',
+            'avatar.max' => 'Ukuran avatar maksimal 2MB.',
+
+            // Pegawai
+            'nip.required' => 'NIP wajib diisi.',
+            'nip.numeric' => 'NIP harus berupa angka.',
+            'nip.digits' => 'NIP harus berjumlah 18 digit.',
+            'nip.unique' => 'NIP sudah terdaftar.',
+
+            'jabatan.required' => 'Jabatan wajib diisi.',
+            'pangkat.required' => 'Pangkat wajib diisi.',
+            'golongan_ruang.required' => 'Golongan ruang wajib diisi.',
+            'tempat_lahir.required' => 'Tempat lahir wajib diisi.',
+
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+            'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
+
+            'pendidikan_terakhir.required' => 'Pendidikan terakhir wajib diisi.',
+        ];
+
         // Jika Admin, wajib pilih Satuan Kerja
         if ($user->role === 'admin') {
             $rules['satuan_kerja_id'] = 'required|exists:satuan_kerjas,id';
         }
 
-        $request->validate($rules);
+        $request->validate($rules, $messages);
 
         DB::beginTransaction();
         try {
@@ -74,7 +105,7 @@ class ProfileController extends Controller
             $user->update($userData);
 
             // B. Update Data Pegawai
-            
+
             // Tentukan Satuan Kerja ID
             if ($user->role === 'admin') {
                 // Jika Admin, ambil dari input form select
@@ -101,10 +132,10 @@ class ProfileController extends Controller
             );
 
             DB::commit();
-            
+
             // Redirect sesuai role
             $redirectRoute = ($user->role === 'admin') ? 'admin.dashboard' : 'profile';
-            
+
             // Untuk Admin kita bisa return ke profile lagi atau dashboard
             return redirect()->back()->with('success', 'Profil Admin berhasil diperbarui!');
 

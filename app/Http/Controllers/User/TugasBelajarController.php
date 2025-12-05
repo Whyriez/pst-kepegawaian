@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -33,7 +34,12 @@ class TugasBelajarController extends Controller
 
     public function create()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('tugas-belajar')) {
+            return redirect()->route('tugas_belajar')
+                ->with('error', 'Maaf, Periode pengajuan Tugas Belajar sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Mengambil layanan dengan slug 'tugas-belajar'
         // Pastikan di tabel jenis_layanans sudah ada data dengan slug ini
@@ -47,11 +53,20 @@ class TugasBelajarController extends Controller
 
     public function store(Request $request)
     {
+        if (!CekPeriode::isBuka('tugas-belajar')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         // 1. Validasi Input Utama
         $request->validate([
             'nip_display_tugas_belajar' => 'required|exists:pegawais,nip',
             'jenis_tugas_belajar' => 'required|string',
+        ], [
+            'nip_display_tugas_belajar.required' => 'NIP wajib diisi.',
+            'nip_display_tugas_belajar.exists' => 'NIP tidak ditemukan dalam data pegawai.',
+            'jenis_tugas_belajar.required' => 'Jenis tugas belajar wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -154,8 +169,12 @@ class TugasBelajarController extends Controller
     {
         $request->validate([
             'jenis_tugas_belajar' => 'required',
-            'jabatan_tugas_belajar' => 'required', // Validasi field lain jika perlu
+            'jabatan_tugas_belajar' => 'required',
+        ], [
+            'jenis_tugas_belajar.required' => 'Jenis tugas belajar wajib diisi.',
+            'jabatan_tugas_belajar.required' => 'Jabatan tugas belajar wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

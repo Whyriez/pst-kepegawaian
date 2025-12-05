@@ -9,61 +9,58 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
 
-                    {{-- Tombol Cetak Biru di Atas Kanan --}}
                     <div class="d-flex justify-content-end mb-3">
-                        {{-- ADDED ATTRIBUTES HERE --}}
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cetakModal">
                             <i class="fas fa-print me-1"></i> Cetak Surat Pengantar
                         </button>
                     </div>
 
-                    {{-- Search Bar --}}
                     <div class="d-flex justify-content-end align-items-center mb-3">
                         <label for="searchTable" class="me-2 text-muted small">Search:</label>
                         <input type="text" id="searchTable" class="form-control form-control-sm w-auto d-inline-block"
-                            placeholder="">
+                               placeholder="">
                     </div>
 
-                    {{-- Tabel Data --}}
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle mb-0" style="font-size: 0.9rem;">
                             <thead class="bg-light">
-                                <tr class="text-center">
-                                    <th width="5%">No</th>
-                                    <th width="30%">Nama Pegawai</th>
-                                    <th width="45%">Jabatan</th>
-                                    <th width="20%">Perihal</th>
-                                </tr>
+                            <tr class="text-center">
+                                <th width="5%">No</th>
+                                <th width="30%">Nama Pegawai</th>
+                                <th width="45%">Jabatan</th>
+                                <th width="20%">Perihal</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                @foreach ($data_pegawai as $index => $pegawai)
-                                    <tr>
-                                        <td class="text-center">{{ $index + 1 }}.</td>
-                                        <td>
-                                            <div class="fw-bold text-dark">{{ $pegawai->nama }}</div>
-                                            <div class="text-muted small">NIP: {{ $pegawai->nip }}</div>
-                                        </td>
-                                        <td>
-                                            {{ $pegawai->jabatan }}
-                                        </td>
-                                        <td class="text-center">
-                                            {{ $pegawai->perihal }}
-                                        </td>
-                                    </tr>
-                                @endforeach
+                            @forelse ($data_pegawai as $index => $pegawai)
+                                <tr>
+                                    <td class="text-center">
+                                        {{ $data_pegawai->firstItem() + $index }}.
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ $pegawai->nama }}</div>
+                                        <div class="text-muted small">NIP: {{ $pegawai->nip }}</div>
+                                    </td>
+                                    <td>
+                                        {{ $pegawai->jabatan }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $pegawai->perihal }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-3 text-muted">
+                                        Tidak ada pengajuan pending saat ini.
+                                    </td>
+                                </tr>
+                            @endforelse
                             </tbody>
                         </table>
                     </div>
 
-                    {{-- Pagination Dummy (Agar mirip tabel asli) --}}
-                    <div class="mt-3">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination justify-content-end pagination-sm mb-0">
-                                <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                            </ul>
-                        </nav>
+                    <div class="mt-3 d-flex justify-content-end">
+                        {{ $data_pegawai->links() }}
                     </div>
 
                 </div>
@@ -75,66 +72,69 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
 
-                    {{-- Tombol Upload Hijau/Teal --}}
                     <div class="d-grid mb-4">
-                        {{-- TAMBAHKAN DATA-BS DI SINI --}}
-                        <button class="btn btn-info text-white" style="background-color: #17a2b8; border-color: #17a2b8;"
-                            data-bs-toggle="modal" data-bs-target="#uploadModal">
+                        <button class="btn btn-info text-white"
+                                style="background-color: #17a2b8; border-color: #17a2b8;"
+                                data-bs-toggle="modal" data-bs-target="#uploadModal">
                             <i class="fas fa-upload me-1"></i> Upload Surat Pengantar
                         </button>
                     </div>
 
-                    {{-- Tabel Sidebar --}}
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle mb-0" style="font-size: 0.85rem;">
                             <thead class="bg-light text-center">
-                                <tr>
-                                    <th width="10%">No</th>
-                                    <th>Perihal</th>
-                                    <th width="35%">Aksi</th>
-                                </tr>
+                            <tr>
+                                <th width="10%">No</th>
+                                <th>Perihal / File</th>
+                                <th width="35%">Aksi</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {{-- Baris Kosong (Row 1 & 2 di gambar kosong) --}}
-                                <tr style="height: 40px;">
-                                    <td class="text-center">1.</td>
-                                    <td></td>
-                                    <td class="text-center">
-                                        <a href="#" class="text-dark me-2 text-decoration-none"><i
-                                                class="fas fa-search"></i> Lihat</a>
-                                        <a href="#" class="btn btn-xs btn-info text-white px-2 py-0"
-                                            style="font-size: 0.7rem;"><i class="fas fa-edit"></i> Edit</a>
-                                    </td>
-                                </tr>
-                                <tr style="height: 40px;">
-                                    <td class="text-center">2.</td>
-                                    <td></td>
-                                    <td class="text-center">
-                                        <a href="#" class="text-dark me-2 text-decoration-none"><i
-                                                class="fas fa-search"></i> Lihat</a>
-                                        <a href="#" class="btn btn-xs btn-info text-white px-2 py-0"
-                                            style="font-size: 0.7rem;"><i class="fas fa-edit"></i> Edit</a>
-                                    </td>
-                                </tr>
+                            @forelse ($templates as $index => $tmpl)
+                                <tr>
+                                    <td class="text-center">{{ $index + 1 }}.</td>
+                                    <td>
+                                        <span class="fw-bold d-block">
+                                                {{ $tmpl->jenisLayanan->nama_layanan ?? 'Umum' }}
+                                        </span>
 
-                                {{-- Baris Isi (Row 3 dst) --}}
-                                @foreach ($templates as $index => $tmpl)
-                                    <tr>
-                                        <td class="text-center">{{ $index + 3 }}.</td>
-                                        <td>{{ $tmpl->perihal }}</td>
-                                        <td class="text-center">
-                                            <div class="d-flex justify-content-center align-items-center gap-1">
-                                                <a href="#" class="text-dark text-decoration-none small">
-                                                    <i class="fas fa-search"></i> Lihat
-                                                </a>
-                                                <a href="#" class="btn btn-sm btn-info text-white p-1"
-                                                    style="font-size: 0.7rem; line-height: 1;">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                        @if($tmpl->periode)
+                                            <span class="text-muted small d-block">
+                                                    (Periode: {{ ucfirst($tmpl->periode) }})
+                                            </span>
+                                        @endif
+
+                                        <small class="text-success fst-italic" style="font-size: 0.7rem;">
+                                            <i class="fas fa-file-pdf me-1"></i> {{ Str::limit($tmpl->file_name, 20) }}
+                                        </small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center align-items-center gap-1">
+                                            <a href="{{ Storage::url(str_replace('public/', '', $tmpl->file_path)) }}"
+                                               target="_blank"
+                                               class="text-dark text-decoration-none small">
+                                                <i class="fas fa-search"></i> Lihat
+                                            </a>
+
+                                            <button type="button"
+                                                    class="btn btn-sm btn-info text-white p-1 btn-edit-arsip"
+                                                    style="font-size: 0.7rem; line-height: 1;"
+                                                    data-id="{{ $tmpl->id }}"
+                                                    data-jenis="{{ $tmpl->jenis_layanan_id }}"
+                                                    data-periode="{{ $tmpl->periode }}"
+                                                    data-filename="{{ $tmpl->file_name }}">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted py-3">
+                                        Belum ada template yang diupload.
+                                    </td>
+                                </tr>
+                            @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -146,75 +146,86 @@
     </div>
 
 
-    {{-- MODAL UPLOAD SURAT PENGANTAR --}}
+    {{-- ================= MODAL UPLOAD ================= --}}
     <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
 
-                {{-- Header: Judul Besar --}}
                 <div class="modal-header border-0 pb-0">
                     <h4 class="modal-title fw-normal fs-4" id="uploadModalLabel">Upload Surat Pengantar</h4>
-                    {{-- Tombol X dihapus agar mirip gambar, user pakai tombol Kembali --}}
                 </div>
 
                 <div class="modal-body pt-4">
-                    <form action="#" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.cetak_surat.store_arsip') }}" method="POST"
+                          enctype="multipart/form-data">
                         @csrf
+                        <input type="hidden" name="jenis_dokumen" value="PENGANTAR">
 
                         {{-- 1. Perihal Surat --}}
                         <div class="mb-3">
                             <label class="form-label fw-bold">Perihal Surat <span class="text-danger">*</span></label>
-                            <select class="form-select" name="perihal" required>
+                            {{-- ID unik untuk JS --}}
+                            <select class="form-select @error('jenis_layanan_id') is-invalid @enderror"
+                                    name="jenis_layanan_id" id="upload_jenis" required>
                                 <option value="" selected disabled>- Pilih -</option>
-                                <option value="kp">Kenaikan Pangkat</option>
-                                <option value="gelar">Pencantuman Gelar</option>
-                                <option value="pensiun">Pensiun</option>
+                                @foreach($jenis_layanan as $layanan)
+                                    {{-- Penting: data-kategori untuk trigger JS --}}
+                                    <option value="{{ $layanan->id }}" data-kategori="{{ $layanan->kategori }}">
+                                        {{ $layanan->nama_layanan }} ({{ $layanan->kategori }})
+                                    </option>
+                                @endforeach
                             </select>
+
+                            @error('jenis_layanan_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        {{-- 2. Periode Kenaikan Pangkat --}}
-                        <div class="mb-3">
+                        {{-- 2. Periode (DINAMIS: Hidden by Default) --}}
+                        <div class="mb-3" id="div_upload_periode" style="display: none;">
                             <label class="form-label fw-bold">
                                 Periode Kenaikan Pangkat
-                                <span class="text-danger fw-normal small ms-1">Kosongkan jika bukan Kenaikan Pangkat</span>
                             </label>
                             <select class="form-select" name="periode">
-                                <option value="" selected>- Pilih -</option>
+                                <option value="" selected disabled>- Pilih Bulan -</option>
+                                <option value="januari">Januari</option>
+                                <option value="februari">Februari</option>
+                                <option value="maret">Maret</option>
                                 <option value="april">April</option>
+                                <option value="mei">Mei</option>
+                                <option value="juni">Juni</option>
+                                <option value="juli">Juli</option>
+                                <option value="agustus">Agustus</option>
+                                <option value="september">September</option>
                                 <option value="oktober">Oktober</option>
+                                <option value="november">November</option>
+                                <option value="desember">Desember</option>
                             </select>
                         </div>
 
-                        {{-- 3. Dokumen Surat Pengantar (Custom File Input) --}}
+                        {{-- 3. Dokumen --}}
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Dokumen Surat Pengantar <span
-                                    class="text-danger">*</span></label>
-
-                            {{-- Input Group untuk meniru tampilan: [ Text Box ] [ Browse Button ] --}}
+                            <label class="form-label fw-bold">Dokumen Surat Pengantar <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="text" class="form-control bg-white" id="fileNameDisplay"
-                                    placeholder="Upload Berkas" readonly style="cursor: pointer;"
-                                    onclick="document.getElementById('fileInput').click()">
+                                       placeholder="Upload Berkas" readonly style="cursor: pointer;"
+                                       onclick="document.getElementById('fileInput').click()">
                                 <button class="btn btn-light border" type="button"
-                                    onclick="document.getElementById('fileInput').click()"
-                                    style="background-color: #e9ecef;">Browse</button>
+                                        onclick="document.getElementById('fileInput').click()"
+                                        style="background-color: #e9ecef;">Browse
+                                </button>
                             </div>
-
-                            {{-- Input File Asli (Disembunyikan) --}}
                             <input type="file" name="dokumen" id="fileInput" class="d-none" accept=".pdf"
-                                onchange="updateFileName(this)">
-
+                                   onchange="updateFileName(this)">
+                            @error('dokumen')
+                            <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
                             <div class="form-text text-muted mt-1">Type File: PDF, Max size : 2MB</div>
                         </div>
 
-                        {{-- Footer Tombol (Simpan & Kembali) --}}
                         <div class="d-flex justify-content-between mt-4">
-                            {{-- Tombol Simpan (Biru) --}}
                             <button type="submit" class="btn btn-primary px-4 py-2">Simpan</button>
-
-                            {{-- Tombol Kembali (Merah) --}}
-                            <button type="button" class="btn btn-danger px-4 py-2"
-                                data-bs-dismiss="modal">Kembali</button>
+                            <button type="button" class="btn btn-danger px-4 py-2" data-bs-dismiss="modal">Kembali</button>
                         </div>
 
                     </form>
@@ -224,63 +235,145 @@
     </div>
 
 
-    {{-- MODAL CETAK SURAT PENGANTAR --}}
+    {{-- ================= MODAL EDIT ================= --}}
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h4 class="modal-title fw-normal fs-4">Edit Arsip Pengantar</h4>
+                </div>
+                <div class="modal-body pt-4">
+                    <form id="formEditArsip" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+
+                        {{-- 1. Perihal --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Perihal / Kategori <span class="text-danger">*</span></label>
+                            <select class="form-select" name="jenis_layanan_id" id="edit_jenis_layanan_id" required>
+                                <option value="" disabled>- Pilih -</option>
+                                @foreach($jenis_layanan as $layanan)
+                                    <option value="{{ $layanan->id }}" data-kategori="{{ $layanan->kategori }}">
+                                        {{ $layanan->nama_layanan }} ({{ $layanan->kategori }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- 2. Periode (DINAMIS: Hidden by Default) --}}
+                        <div class="mb-3" id="div_edit_periode" style="display: none;">
+                            <label class="form-label fw-bold">Periode</label>
+                            <select class="form-select" name="periode" id="edit_periode">
+                                <option value="">- Tidak Ada Periode -</option>
+                                <option value="januari">Januari</option>
+                                <option value="februari">Februari</option>
+                                <option value="maret">Maret</option>
+                                <option value="april">April</option>
+                                <option value="mei">Mei</option>
+                                <option value="juni">Juni</option>
+                                <option value="juli">Juli</option>
+                                <option value="agustus">Agustus</option>
+                                <option value="september">September</option>
+                                <option value="oktober">Oktober</option>
+                                <option value="november">November</option>
+                                <option value="desember">Desember</option>
+                            </select>
+                        </div>
+
+                        {{-- 3. File --}}
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Update File (Opsional)</label>
+                            <div class="alert alert-light border p-2 mb-2 small">
+                                File saat ini: <strong id="currentFileName" class="text-success"></strong>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" class="form-control bg-white" id="editFileNameDisplay"
+                                       placeholder="Klik untuk ganti file..." readonly style="cursor: pointer;"
+                                       onclick="document.getElementById('editFileInput').click()">
+                                <button class="btn btn-light border" type="button"
+                                        onclick="document.getElementById('editFileInput').click()">Browse
+                                </button>
+                            </div>
+                            <input type="file" name="dokumen" id="editFileInput" class="d-none" accept=".pdf"
+                                   onchange="document.getElementById('editFileNameDisplay').value = this.files[0].name">
+                            <div class="form-text text-muted">Biarkan kosong jika tidak ingin mengubah file.</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-primary px-4 py-2">Update</button>
+                            <button type="button" class="btn btn-danger px-4 py-2" data-bs-dismiss="modal">Batal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{-- ================= MODAL CETAK ================= --}}
     <div class="modal fade" id="cetakModal" tabindex="-1" aria-labelledby="cetakModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
 
-                {{-- Header: Simple Title --}}
                 <div class="modal-header border-0 pb-0">
                     <h4 class="modal-title fw-normal fs-4" id="cetakModalLabel">Cetak Surat Pengantar</h4>
                 </div>
 
                 <div class="modal-body pt-4">
-                    <form action="#" method="POST" target="_blank"> {{-- target_blank for printing usually --}}
+                    <form action="{{ route('admin.cetak_surat.pengantar.export') }}" method="POST" target="_blank">
                         @csrf
 
-                        {{-- 1. Nomor Surat --}}
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nomor Surat <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="nomor_surat" required>
                         </div>
 
-                        {{-- 2. Status Kepala Kantor --}}
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Status Kepala Kantor <span
-                                    class="text-danger">*</span></label>
+                            <label class="form-label fw-bold">Status Kepala Kantor <span class="text-danger">*</span></label>
                             <select class="form-select" name="status_kepala" required>
                                 <option value="" selected disabled>- Pilih Status -</option>
-                                <option value="definitif">Definitif</option>
-                                <option value="plt">Plt (Pelaksana Tugas)</option>
-                                <option value="plh">Plh (Pelaksana Harian)</option>
+                                <option value="definitif">DEFINITIF</option>
+                                <option value="plt">PLH</option>
+                                <option value="plh">PLT</option>
                             </select>
                         </div>
 
-                        {{-- 3. Perihal Surat --}}
+                        {{-- Perihal --}}
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Perihal Surat <span class="text-danger">*</span></label>
-                            <select class="form-select" name="perihal" required>
-                                <option value="" selected disabled>- Pilih -</option>
-                                <option value="kp">Kenaikan Pangkat</option>
-                                <option value="gelar">Pencantuman Gelar</option>
-                                <option value="pensiun">Pensiun</option>
+                            <label class="form-label fw-bold">Perihal / Jenis Layanan <span class="text-danger">*</span></label>
+                            {{-- ID unik untuk JS --}}
+                            <select class="form-select" name="jenis_layanan_id" id="cetak_jenis" required>
+                                <option value="" selected disabled>- Pilih Layanan -</option>
+                                @foreach($jenis_layanan as $layanan)
+                                    <option value="{{ $layanan->id }}" data-kategori="{{ $layanan->kategori }}">
+                                        {{ $layanan->nama_layanan }} ({{ $layanan->kategori }})
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
 
-                        {{-- 4. Periode Kenaikan Pangkat --}}
-                        <div class="mb-3">
+                        {{-- Periode (DINAMIS: Hidden by Default) --}}
+                        <div class="mb-3" id="div_cetak_periode" style="display: none;">
                             <label class="form-label fw-bold">
                                 Periode Kenaikan Pangkat
-                                <span class="text-danger fw-normal small ms-1">Kosongkan jika bukan Kenaikan Pangkat</span>
                             </label>
                             <select class="form-select" name="periode">
-                                <option value="" selected>- Pilih -</option>
+                                <option value="" selected disabled>- Pilih Bulan -</option>
+                                <option value="januari">Januari</option>
+                                <option value="februari">Februari</option>
+                                <option value="maret">Maret</option>
                                 <option value="april">April</option>
+                                <option value="mei">Mei</option>
+                                <option value="juni">Juni</option>
+                                <option value="juli">Juli</option>
+                                <option value="agustus">Agustus</option>
+                                <option value="september">September</option>
                                 <option value="oktober">Oktober</option>
+                                <option value="november">November</option>
+                                <option value="desember">Desember</option>
                             </select>
                         </div>
 
-                        {{-- 5. Metode Surat --}}
                         <div class="mb-4">
                             <label class="form-label fw-bold">Metode Surat <span class="text-danger">*</span></label>
                             <select class="form-select" name="metode" required>
@@ -290,14 +383,9 @@
                             </select>
                         </div>
 
-                        {{-- Footer Buttons --}}
                         <div class="d-flex justify-content-between mt-4">
-                            {{-- Tombol Cetak (Biru) --}}
                             <button type="submit" class="btn btn-primary px-4 py-2">Cetak</button>
-
-                            {{-- Tombol Kembali (Merah) --}}
-                            <button type="button" class="btn btn-danger px-4 py-2"
-                                data-bs-dismiss="modal">Kembali</button>
+                            <button type="button" class="btn btn-danger px-4 py-2" data-bs-dismiss="modal">Kembali</button>
                         </div>
 
                     </form>
@@ -306,11 +394,85 @@
         </div>
     </div>
 
-    {{-- SCRIPT SEDERHANA UNTUK UPDATE NAMA FILE --}}
+    {{-- Script untuk Nama File Upload --}}
     <script>
         function updateFileName(input) {
             var fileName = input.files[0].name;
             document.getElementById('fileNameDisplay').value = fileName;
         }
+    </script>
+
+    {{-- Script untuk Logic Show/Hide Periode --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Fungsi Reusable: Cek apakah kategori mengandung kata 'Kenaikan Pangkat'
+            function handlePeriodeVisibility(selectId, divId) {
+                const select = document.getElementById(selectId);
+                const div = document.getElementById(divId);
+
+                if(!select || !div) return;
+
+                function check() {
+                    const selectedOption = select.options[select.selectedIndex];
+                    const kategori = selectedOption ? selectedOption.getAttribute('data-kategori') : '';
+
+                    // LOGIKA INTI: Jika Kategori = 'Kenaikan Pangkat', tampilkan dropdown periode
+                    if (kategori && kategori.toLowerCase().includes('kenaikan pangkat')) {
+                        div.style.display = 'block';
+                    } else {
+                        div.style.display = 'none';
+                        // Opsional: Reset value periode jika di-hide agar tidak terkirim
+                        const periodeSelect = div.querySelector('select');
+                        if(periodeSelect) periodeSelect.value = "";
+                    }
+                }
+
+                select.addEventListener('change', check);
+                // Jalankan sekali saat load (untuk antisipasi old input)
+                check();
+            }
+
+            // 1. Terapkan ke Modal Upload
+            handlePeriodeVisibility('upload_jenis', 'div_upload_periode');
+
+            // 2. Terapkan ke Modal Cetak
+            handlePeriodeVisibility('cetak_jenis', 'div_cetak_periode');
+
+            // 3. Terapkan ke Modal Edit
+            handlePeriodeVisibility('edit_jenis_layanan_id', 'div_edit_periode');
+
+
+            // --- Logic Tombol Edit (Load Data ke Modal) ---
+            const editButtons = document.querySelectorAll('.btn-edit-arsip');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.getAttribute('data-id');
+                    const jenisId = this.getAttribute('data-jenis');
+                    const periode = this.getAttribute('data-periode');
+                    const filename = this.getAttribute('data-filename');
+
+                    // Set Nilai Input
+                    document.getElementById('edit_jenis_layanan_id').value = jenisId;
+                    document.getElementById('edit_periode').value = periode || '';
+                    document.getElementById('currentFileName').textContent = filename;
+
+                    // Reset Input File
+                    document.getElementById('editFileInput').value = '';
+                    document.getElementById('editFileNameDisplay').value = '';
+
+                    // Set Action Form
+                    let url = "{{ route('admin.cetak_surat.update_arsip', ':id') }}";
+                    url = url.replace(':id', id);
+                    document.getElementById('formEditArsip').action = url;
+
+                    // PENTING: Trigger check visibility secara manual setelah set value
+                    document.getElementById('edit_jenis_layanan_id').dispatchEvent(new Event('change'));
+
+                    // Tampilkan Modal
+                    var editModal = new bootstrap.Modal(document.getElementById('editModal'));
+                    editModal.show();
+                });
+            });
+        });
     </script>
 @endsection

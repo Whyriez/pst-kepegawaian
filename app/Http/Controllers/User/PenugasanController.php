@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -33,7 +34,12 @@ class PenugasanController extends Controller
 
     public function create()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('penugasan')) {
+            return redirect()->route('penugasan')
+                ->with('error', 'Maaf, Periode pengajuan Penugasan sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Pastikan slug 'penugasan' ada di tabel jenis_layanans
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'penugasan')->first();
@@ -44,9 +50,17 @@ class PenugasanController extends Controller
 
     public function store(Request $request)
     {
+        if (!CekPeriode::isBuka('penugasan')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         $request->validate([
             'nip_display_penugasan' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_penugasan.required' => 'NIP wajib diisi.',
+            'nip_display_penugasan.exists' => 'NIP tidak ditemukan dalam data pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -134,7 +148,11 @@ class PenugasanController extends Controller
         $request->validate([
             'jabatan_penugasan' => 'required',
             'satuan_kerja_penugasan' => 'required',
+        ], [
+            'jabatan_penugasan.required' => 'Jabatan penugasan wajib diisi.',
+            'satuan_kerja_penugasan.required' => 'Satuan kerja penugasan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

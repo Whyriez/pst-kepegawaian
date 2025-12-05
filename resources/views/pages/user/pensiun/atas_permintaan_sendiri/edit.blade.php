@@ -147,7 +147,10 @@
                             @forelse($syarat as $dokumen)
                                 @php
                                     $uploaded = $pengajuan->dokumenPengajuans->firstWhere('syarat_dokumen_id', $dokumen->id);
-                                @endphp
+                                $acceptTypes = collect(explode(',', $dokumen->allowed_types))
+        ->map(fn($item) => '.' . trim($item))
+        ->implode(',');
+                                    @endphp
                                 <div class="col-md-6 mb-3">
                                     <div class="file-upload-card h-100">
                                         <label for="file_{{ $dokumen->id }}" class="form-label fw-bold">
@@ -176,9 +179,13 @@
 
                                         {{-- Input File --}}
                                         <div class="file-input-wrapper">
-                                            <input type="file" class="form-control file-input-dynamic"
-                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
-                                                   accept=".pdf,.jpg,.jpeg,.png"
+                                            <input type="file"
+                                                   class="form-control file-input-dynamic"
+                                                   id="file_{{ $dokumen->id }}"
+                                                   name="file_{{ $dokumen->id }}"
+                                                   accept="{{ $acceptTypes }}"
+                                                   data-max-size="{{ $dokumen->max_size_kb }}"
+                                                   data-allowed-types="{{ $dokumen->allowed_types }}"
                                                 {{ ($dokumen->is_required && !$uploaded) ? 'required' : '' }}>
 
                                             <div class="file-preview mt-2 small text-success"
@@ -281,6 +288,59 @@
             @if (session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error'); @endif
             @if ($errors->any()) Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning'); @endif
 
+            function handleFileUpload(input) {
+                const previewId = `preview-${input.id}`;
+                const previewEl = document.getElementById(previewId);
+
+                // Ambil aturan dari database via atribut HTML
+                const dbMaxSizeKb = parseInt(input.getAttribute('data-max-size')) || 2048;
+                const maxSizeBytes = dbMaxSizeKb * 1024;
+
+                const rawTypes = input.getAttribute('data-allowed-types') || 'pdf,jpg,png';
+                const allowedExtensions = rawTypes.split(',').map(t => t.trim().toLowerCase());
+
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+                    const fileExt = file.name.split('.').pop().toLowerCase();
+
+                    // A. VALIDASI UKURAN
+                    if (file.size > maxSizeBytes) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+
+                        let sizeMsg = dbMaxSizeKb >= 1024
+                            ? (dbMaxSizeKb/1024).toFixed(1) + ' MB'
+                            : dbMaxSizeKb + ' KB';
+
+                        if (previewEl) previewEl.innerHTML = `<span class="text-danger small">File terlalu besar! Max: ${sizeMsg}</span>`;
+                        Swal.fire('File Terlalu Besar', `Maksimal ukuran: ${sizeMsg}`, 'warning');
+                        return;
+                    }
+
+                    // B. VALIDASI TIPE
+                    if (!allowedExtensions.includes(fileExt)) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+
+                        if (previewEl) previewEl.innerHTML = `<span class="text-danger small">Format salah!</span>`;
+                        Swal.fire('Format Salah', `Hanya menerima: ${allowedExtensions.join(', ').toUpperCase()}`, 'warning');
+                        return;
+                    }
+
+                    // C. SUKSES
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                    if (previewEl) previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> File Baru: ${file.name}</div>`;
+                } else {
+                    // Cancel upload
+                    input.classList.remove('is-valid');
+                    input.classList.remove('is-invalid');
+                    if (previewEl) previewEl.innerHTML = '';
+                }
+            }
+
             const steps = document.querySelectorAll('.form-step');
             const progressSteps = document.querySelectorAll('.progress-steps .step');
 
@@ -298,22 +358,25 @@
                 btn.addEventListener('click', function () {
                     const next = parseInt(this.dataset.next);
 
-                    // Validasi Step 2 (Dokumen)
+                    // Validasi saat mau ke Step 3 (Konfirmasi)
                     if (next === 3) {
+                        // Cek 1: Apakah ada file error (is-invalid)?
+                        if (document.querySelectorAll('#step-2-aps input.is-invalid').length > 0) {
+                            Swal.fire('Dokumen Bermasalah', 'Perbaiki dokumen yang bertanda merah sebelum lanjut.', 'error');
+                            return;
+                        }
+
+                        // Cek 2: Dokumen wajib yang kosong
                         let valid = true;
-                        // Hanya cek dokumen required yang belum punya file lama
-                        const reqInputs = document.querySelectorAll('#step-2-aps input[type="file"][required]');
-                        reqInputs.forEach(input => {
+                        document.querySelectorAll('#step-2-aps input[type="file"][required]').forEach(input => {
                             if (input.files.length === 0) {
                                 input.classList.add('is-invalid');
                                 valid = false;
-                            } else {
-                                input.classList.remove('is-invalid');
                             }
                         });
 
                         if(!valid) {
-                            Swal.fire('Perhatian', 'Harap lengkapi dokumen wajib yang belum terunggah.', 'warning');
+                            Swal.fire('Perhatian', 'Harap lengkapi dokumen wajib yang belum diunggah.', 'warning');
                             return;
                         }
                     }
@@ -329,42 +392,29 @@
             // Preview File
             document.querySelectorAll('input[type="file"]').forEach(input => {
                 input.addEventListener('change', function () {
-                    const preview = document.getElementById(`preview-${this.id}`);
-                    if (this.files.length > 0) {
-                        if (this.files[0].size > 2 * 1024 * 1024) {
-                            Swal.fire('Error', 'File max 2MB', 'warning');
-                            this.value = '';
-                        } else {
-                            preview.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> File Baru: ${this.files[0].name}</div>`;
-                            preview.style.display = 'block';
-                            this.classList.remove('is-invalid');
-                        }
-                    } else {
-                        preview.innerHTML = '';
-                    }
+                    handleFileUpload(this);
                 });
             });
 
             // Update Review Page (Ringkasan)
             function updateReview() {
                 const get = (id) => document.getElementById(id)?.value || '-';
-                const setText = (id, val) => {
-                    const el = document.getElementById(id);
-                    if(el) el.textContent = val;
-                };
 
-                setText('review-nama-aps', document.getElementById('nama_pegawai_aps').value);
-                setText('review-jabatan-aps', get('jabatan_aps'));
-                setText('review-pangkat-aps', get('pangkat_aps'));
-                setText('review-satuan-kerja-aps', get('satuan_kerja_aps'));
-                setText('review-golongan-aps', get('golongan_aps'));
+                // Data Pegawai
+                document.getElementById('review-nama-aps').textContent = document.getElementById('nama_pegawai_aps').value;
+                document.getElementById('review-nip-aps').textContent = document.getElementById('nip_view').value;
+                document.getElementById('review-jabatan-aps').textContent = get('jabatan_aps');
+                document.getElementById('review-pangkat-aps').textContent = get('pangkat_aps');
+                document.getElementById('review-satuan-kerja-aps').textContent = get('satuan_kerja_aps');
+                document.getElementById('review-golongan-aps').textContent = get('golongan_aps');
 
+                // Format Tanggal TMT
                 const tmt = get('tmt_pensiun_aps');
-                setText('review-tmt-aps', tmt !== '-' ? new Date(tmt).toLocaleDateString('id-ID', {
+                document.getElementById('review-tmt-aps').textContent = tmt !== '-' ? new Date(tmt).toLocaleDateString('id-ID', {
                     day: 'numeric', month: 'long', year: 'numeric'
-                }) : '-');
+                }) : '-';
 
-                // Review Dokumen
+                // Render List Dokumen
                 const container = document.getElementById('review-documents-aps');
                 container.innerHTML = '';
 
@@ -375,15 +425,12 @@
 
                     let statusHtml = '';
 
-                    if (fileInput.files.length > 0) {
-                        // User upload file baru
-                        statusHtml = `<span class="text-warning fw-bold"><i class="fas fa-sync me-1"></i>Ganti: ${fileInput.files[0].name}</span>`;
+                    if (fileInput.files.length > 0 && !fileInput.classList.contains('is-invalid')) {
+                        statusHtml = `<span class="text-warning fw-bold"><i class="fas fa-sync me-1"></i>Ganti Baru: ${fileInput.files[0].name}</span>`;
                     } else if (existingInfo) {
-                        // User pakai file lama
                         const oldName = existingInfo.getAttribute('data-filename');
                         statusHtml = `<span class="text-success"><i class="fas fa-check-circle me-1"></i>Tetap: ${oldName}</span>`;
                     } else {
-                        // Tidak ada file
                         statusHtml = `<span class="text-danger"><i class="fas fa-times me-1"></i>Tidak ada file</span>`;
                     }
 

@@ -1,14 +1,15 @@
 @extends('layouts.admin.app')
-@section('title', 'Home')
+@section('title', 'Beranda')
 
 @section('content')
-    {{-- Page Header --}}
+    {{-- Header Halaman --}}
     <div class="page-header mb-4">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div class="flex-grow-1">
-                <h2 class="h3 fw-bold text-dark mb-2">Dashboard Admin</h2>
+                <h2 class="h3 fw-bold text-dark mb-2">Dasbor Admin</h2>
                 <p class="text-muted mb-0">
-                    <i class="fas fa-calendar me-1"></i> {{ \Carbon\Carbon::now()->isoFormat('dddd, D MMMM Y') }}
+                    {{-- PERBAIKAN: Menambahkan ->locale('id') agar hari dan bulan menjadi Bahasa Indonesia --}}
+                    <i class="fas fa-calendar me-1"></i> {{ \Carbon\Carbon::now()->locale('id')->isoFormat('dddd, D MMMM Y') }}
                     <span class="mx-2">•</span>
                     <i class="fas fa-clock me-1"></i> <span id="liveClock">{{ date('H:i:s') }}</span>
                 </p>
@@ -22,10 +23,10 @@
                     <div class="vr"></div>
                     <div class="text-end">
                         <small class="text-muted d-block">Pengguna</small>
-                        <small class="fw-bold text-primary">{{ $stats['user_active'] }} Active</small>
+                        <small class="fw-bold text-primary">{{ $stats['user_active'] }} Aktif</small>
                     </div>
                 </div>
-                {{-- Quick Actions Dropdown --}}
+                {{-- Dropdown Aksi Cepat --}}
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle px-3" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-bolt me-2"></i>Aksi Cepat
@@ -101,7 +102,7 @@
         </div>
     </div>
 
-    {{-- CHARTS SECTION --}}
+    {{-- BAGIAN GRAFIK --}}
     <div class="row g-4 mb-4">
         <div class="col-xl-8">
             <div class="card border-0 shadow-sm h-100">
@@ -145,7 +146,7 @@
                         </div>
                     </div>
                 </div>
-                {{-- CARD RINGKASAN (SEKARANG DINAMIS) --}}
+                {{-- KARTU RINGKASAN --}}
                 <div class="col-12">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header bg-white py-3">
@@ -180,55 +181,55 @@
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead class="table-light">
-                                <tr>
-                                    <th class="border-0 ps-4">Waktu</th>
-                                    <th class="border-0">Layanan</th>
-                                    <th class="border-0">Pegawai</th>
-                                    <th class="border-0">Status</th>
-                                    <th class="border-0 text-center">Aksi</th>
-                                </tr>
+                            <tr>
+                                <th class="border-0 ps-4">Waktu</th>
+                                <th class="border-0">Layanan</th>
+                                <th class="border-0">Pegawai</th>
+                                <th class="border-0">Status</th>
+                                <th class="border-0 text-center">Aksi</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                @forelse($recentActivities as $item)
-                                    <tr>
-                                        <td class="ps-4">
-                                            <div class="fw-bold">{{ $item->updated_at->format('H:i') }}</div>
-                                            <small class="text-muted">{{ $item->updated_at->format('d M') }}</small>
-                                        </td>
-                                        <td>{{ $item->jenisLayanan->nama_layanan ?? '-' }}</td>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                <img src="https://ui-avatars.com/api/?name={{ urlencode($item->pegawai->nama_lengkap) }}&background=random" class="rounded-circle me-2" width="24">
-                                                <span class="text-truncate" style="max-width: 150px;">{{ $item->pegawai->nama_lengkap }}</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            @if ($item->status == 'pending')
-                                                <span class="badge bg-warning text-dark">Pending</span>
-                                            @elseif($item->status == 'disetujui')
-                                                <span class="badge bg-success">Disetujui</span>
-                                            @elseif($item->status == 'ditolak')
-                                                <span class="badge bg-danger">Ditolak</span>
-                                            @else
-                                                <span class="badge bg-secondary">{{ ucfirst($item->status) }}</span>
-                                            @endif
-                                        </td>
-                                        <td class="text-center">
-                                            @php
-                                                $route = match($item->jenisLayanan->slug) {
-                                                    'kp-fungsional' => route('admin.kp.fungsional'),
-                                                    'kp-struktural' => route('admin.kp.struktural'),
-                                                    'kp-reguler' => route('admin.kp.reguler'),
-                                                    'kp-penyesuaian-ijazah' => route('admin.kp.penyesuaian_ijazah'),
-                                                    default => '#'
-                                                };
-                                            @endphp
-                                            <a href="{{ $route }}?search={{ $item->pegawai->nip }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr><td colspan="5" class="text-center py-4">Belum ada aktivitas.</td></tr>
-                                @endforelse
+                            @forelse($recentActivities as $item)
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">{{ $item->updated_at->format('H:i') }}</div>
+                                        <small class="text-muted">{{ $item->updated_at->format('d M') }}</small>
+                                    </td>
+                                    <td>{{ $item->jenisLayanan->nama_layanan ?? '-' }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode($item->pegawai->nama_lengkap) }}&background=random" class="rounded-circle me-2" width="24">
+                                            <span class="text-truncate" style="max-width: 150px;">{{ $item->pegawai->nama_lengkap }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if ($item->status == 'pending')
+                                            <span class="badge bg-warning text-dark">Menunggu</span>
+                                        @elseif($item->status == 'disetujui')
+                                            <span class="badge bg-success">Disetujui</span>
+                                        @elseif($item->status == 'ditolak')
+                                            <span class="badge bg-danger">Ditolak</span>
+                                        @else
+                                            <span class="badge bg-secondary">{{ ucfirst($item->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @php
+                                            $route = match($item->jenisLayanan->slug) {
+                                                'kp-fungsional' => route('admin.kp.fungsional'),
+                                                'kp-struktural' => route('admin.kp.struktural'),
+                                                'kp-reguler' => route('admin.kp.reguler'),
+                                                'kp-penyesuaian-ijazah' => route('admin.kp.penyesuaian_ijazah'),
+                                                default => '#'
+                                            };
+                                        @endphp
+                                        <a href="{{ $route }}?search={{ $item->pegawai->nip }}" class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="5" class="text-center py-4">Belum ada aktivitas.</td></tr>
+                            @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -239,7 +240,7 @@
 @endsection
 
 @push('scripts')
-    {{-- 1. PANGGIL LIBRARY CHART.JS (Wajib ada agar chart muncul) --}}
+    {{-- 1. PANGGIL LIBRARY CHART.JS --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
@@ -258,18 +259,18 @@
                 <small class="text-muted">${today.toLocaleString('id-ID', { weekday: 'long' })}</small>
             </div>`;
 
-        // --- CHART JS LOGIC ---
+        // --- LOGIKA CHART JS ---
         document.addEventListener('DOMContentLoaded', function() {
-            
+
             // A. DATA DARI CONTROLLER (JSON)
-            const lineLabels = @json($chartData->pluck('date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('d M')));
+            const lineLabels = @json($chartData->pluck('date')->map(fn($d) => \Carbon\Carbon::parse($d)->locale('id')->isoFormat('D MMM')));
             const lineTotal = @json($chartData->pluck('total'));
             const lineApproved = @json($chartData->pluck('disetujui'));
 
             const pieLabels = @json($pieData->pluck('nama_layanan'));
             const pieValues = @json($pieData->pluck('total'));
 
-            // B. RENDER LINE CHART (Submission)
+            // B. RENDER CHART GARIS (Pengajuan)
             const lineCtx = document.getElementById('submissionChart');
             if (lineCtx) {
                 new Chart(lineCtx, {
@@ -297,7 +298,7 @@
                 });
             }
 
-            // C. RENDER PIE CHART (Distribution)
+            // C. RENDER CHART DONAT (Distribusi)
             const pieCtx = document.getElementById('typeDistributionChart');
             if (pieCtx) {
                 new Chart(pieCtx, {
@@ -309,8 +310,8 @@
                             backgroundColor: ['#1a73e8', '#00d2d3', '#ff9f43', '#ff6b6b', '#5f27cd']
                         }]
                     },
-                    options: { 
-                        responsive: true, 
+                    options: {
+                        responsive: true,
                         maintainAspectRatio: false,
                         plugins: { legend: { position: 'bottom' } }
                     }

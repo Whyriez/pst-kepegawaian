@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -33,7 +34,12 @@ class KonversiAKPendidikanController extends Controller
 
     public function create()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('konversi-ak-pendidikan')) {
+            return redirect()->route('konversi_ak_pendidikan')
+                ->with('error', 'Maaf, Periode pengajuan Konversi AK Pendidikan sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // Mengambil layanan dengan slug 'konversi-ak-pendidikan'
         // Pastikan di database tabel jenis_layanans sudah ada slug ini
@@ -47,10 +53,18 @@ class KonversiAKPendidikanController extends Controller
 
     public function store(Request $request)
     {
+        if (!CekPeriode::isBuka('konversi-ak-pendidikan')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         // 1. Validasi Input Utama (Hanya NIP, karena dokumen divalidasi manual di loop)
         $request->validate([
             'nip_display_konversi_ak_pendidikan' => 'required|exists:pegawais,nip',
+        ], [
+            'nip_display_konversi_ak_pendidikan.required' => 'NIP wajib diisi.',
+            'nip_display_konversi_ak_pendidikan.exists'   => 'NIP tidak terdaftar dalam database pegawai.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -150,9 +164,13 @@ class KonversiAKPendidikanController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'jabatan_konversi_ak_pendidikan' => 'required',
+            'jabatan_konversi_ak_pendidikan'      => 'required',
             'satuan_kerja_konversi_ak_pendidikan' => 'required',
+        ], [
+            'jabatan_konversi_ak_pendidikan.required'      => 'Jabatan konversi angka kredit pendidikan wajib diisi.',
+            'satuan_kerja_konversi_ak_pendidikan.required' => 'Satuan kerja konversi angka kredit pendidikan wajib diisi.',
         ]);
+
 
         try {
             DB::beginTransaction();

@@ -41,7 +41,8 @@ class JabatanFungsionalController extends Controller
             $keyword = $request->search;
             $query->whereHas('pegawai', function ($q) use ($keyword) {
                 $q->where('nama_lengkap', 'like', '%' . $keyword . '%')
-                    ->orWhere('nip', 'like', '%' . $keyword . '%');
+                    ->orWhere('nip', 'like', '%' . $keyword . '%')
+                    ->orWhere('nomor_tiket', 'like', '%' . $keyword . '%');
             });
         }
 
@@ -82,7 +83,8 @@ class JabatanFungsionalController extends Controller
             $keyword = $request->search;
             $query->whereHas('pegawai', function ($q) use ($keyword) {
                 $q->where('nama_lengkap', 'like', '%' . $keyword . '%')
-                    ->orWhere('nip', 'like', '%' . $keyword . '%');
+                    ->orWhere('nip', 'like', '%' . $keyword . '%')
+                    ->orWhere('nomor_tiket', 'like', '%' . $keyword . '%');
             });
         }
 
@@ -123,7 +125,8 @@ class JabatanFungsionalController extends Controller
             $keyword = $request->search;
             $query->whereHas('pegawai', function ($q) use ($keyword) {
                 $q->where('nama_lengkap', 'like', '%' . $keyword . '%')
-                    ->orWhere('nip', 'like', '%' . $keyword . '%');
+                    ->orWhere('nip', 'like', '%' . $keyword . '%')
+                    ->orWhere('nomor_tiket', 'like', '%' . $keyword . '%');
             });
         }
 
@@ -135,7 +138,13 @@ class JabatanFungsionalController extends Controller
 
     public function approve(Request $request)
     {
-        $request->validate(['id' => 'required|exists:pengajuans,id']);
+        $request->validate([
+            'id' => 'required|exists:pengajuans,id',
+        ], [
+            'id.required' => 'ID pengajuan wajib diisi.',
+            'id.exists'   => 'ID pengajuan tidak ditemukan atau tidak valid.',
+        ]);
+
 
         Pengajuan::where('id', $request->id)->update([
             'status' => 'disetujui',
@@ -151,11 +160,23 @@ class JabatanFungsionalController extends Controller
     public function postpone(Request $request)
     {
         $request->validate([
-            'id' => 'required|exists:pengajuans,id',
-            'prioritas' => 'required',
+            'id'                    => 'required|exists:pengajuans,id',
+            'prioritas'             => 'required',
             'tanggal_tindak_lanjut' => 'required|date',
-            'alasan' => 'required|string',
+            'alasan'                => 'required|string',
+        ], [
+            'id.required'    => 'ID pengajuan wajib diisi.',
+            'id.exists'      => 'ID pengajuan tidak ditemukan atau tidak valid.',
+
+            'prioritas.required' => 'Prioritas wajib dipilih.',
+
+            'tanggal_tindak_lanjut.required' => 'Tanggal tindak lanjut wajib diisi.',
+            'tanggal_tindak_lanjut.date'     => 'Tanggal tindak lanjut harus berupa format tanggal yang valid.',
+
+            'alasan.required' => 'Alasan wajib diisi.',
+            'alasan.string'   => 'Alasan harus berupa teks.',
         ]);
+
 
         Pengajuan::where('id', $request->id)->update([
             'status' => 'ditunda',
@@ -172,10 +193,19 @@ class JabatanFungsionalController extends Controller
     public function reject(Request $request)
     {
         $request->validate([
-            'id' => 'required|exists:pengajuans,id',
+            'id'       => 'required|exists:pengajuans,id',
             'kategori' => 'required',
-            'alasan' => 'required|string',
+            'alasan'   => 'required|string',
+        ], [
+            'id.required'  => 'ID pengajuan wajib diisi.',
+            'id.exists'    => 'ID pengajuan tidak ditemukan atau tidak valid.',
+
+            'kategori.required' => 'Kategori wajib dipilih.',
+
+            'alasan.required' => 'Alasan wajib diisi.',
+            'alasan.string'   => 'Alasan harus berupa teks.',
         ]);
+
 
         $pengajuan = Pengajuan::findOrFail($request->id);
 

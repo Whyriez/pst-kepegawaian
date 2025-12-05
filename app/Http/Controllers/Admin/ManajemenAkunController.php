@@ -42,15 +42,37 @@ class ManajemenAkunController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nip'      => 'required|numeric|digits:18|unique:pegawais,nip', // <--- Validasi NIP Wajib
+            'nip'      => 'required|numeric|digits:18|unique:pegawais,nip',
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:6',
             'role'     => 'required|in:admin,user',
         ], [
-            'nip.unique' => 'NIP sudah terdaftar pada akun lain.',
-            'nip.digits' => 'NIP harus 18 digit.',
+            // NIP
+            'nip.required' => 'NIP wajib diisi.',
+            'nip.numeric'  => 'NIP harus berupa angka.',
+            'nip.digits'   => 'NIP harus 18 digit.',
+            'nip.unique'   => 'NIP sudah terdaftar pada akun lain.',
+
+            // Name
+            'name.required' => 'Nama wajib diisi.',
+            'name.string'   => 'Nama harus berupa teks.',
+            'name.max'      => 'Nama tidak boleh lebih dari 255 karakter.',
+
+            // Email
+            'email.required' => 'Email wajib diisi.',
+            'email.email'    => 'Format email tidak valid.',
+            'email.unique'   => 'Email sudah terdaftar pada akun lain.',
+
+            // Password
+            'password.required' => 'Password wajib diisi.',
+            'password.min'      => 'Password minimal 6 karakter.',
+
+            // Role
+            'role.required' => 'Role wajib dipilih.',
+            'role.in'       => 'Role tidak valid.',
         ]);
+
 
         try {
             DB::transaction(function () use ($request) {
@@ -90,13 +112,37 @@ class ManajemenAkunController extends Controller
         $pegawai = $user->pegawai;
 
         $request->validate([
-            // Validasi NIP: Unique kecuali punya diri sendiri
+            // Validasi NIP: Unique kecuali milik sendiri
             'nip'      => ['required', 'numeric', 'digits:18', Rule::unique('pegawais')->ignore($pegawai->id ?? 0)],
             'name'     => 'required|string|max:255',
             'email'    => ['required', 'email', Rule::unique('users')->ignore($user->id)],
             'role'     => 'required|in:admin,user',
             'password' => 'nullable|min:6',
+        ], [
+            // NIP
+            'nip.required' => 'NIP wajib diisi.',
+            'nip.numeric'  => 'NIP harus berupa angka.',
+            'nip.digits'   => 'NIP harus 18 digit.',
+            'nip.unique'   => 'NIP sudah digunakan oleh akun lain.',
+
+            // Name
+            'name.required' => 'Nama wajib diisi.',
+            'name.string'   => 'Nama harus berupa teks.',
+            'name.max'      => 'Nama tidak boleh lebih dari 255 karakter.',
+
+            // Email
+            'email.required' => 'Email wajib diisi.',
+            'email.email'    => 'Format email tidak valid.',
+            'email.unique'   => 'Email sudah digunakan oleh akun lain.',
+
+            // Role
+            'role.required' => 'Role wajib dipilih.',
+            'role.in'       => 'Role tidak valid.',
+
+            // Password
+            'password.min' => 'Password minimal 6 karakter.',
         ]);
+
 
         try {
             DB::transaction(function () use ($request, $user, $pegawai) {

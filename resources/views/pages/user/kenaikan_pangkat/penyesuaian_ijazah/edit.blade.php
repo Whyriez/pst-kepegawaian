@@ -60,7 +60,8 @@
                         </div>
 
                         {{-- Hidden Inputs --}}
-                        <input type="hidden" name="nip_display_kp_penyesuaian_ijazah" value="{{ $pengajuan->pegawai->nip }}">
+                        <input type="hidden" name="nip_display_kp_penyesuaian_ijazah"
+                               value="{{ $pengajuan->pegawai->nip }}">
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -75,7 +76,8 @@
                                 <input type="text" class="form-control"
                                        id="jabatan_kp_penyesuaian_ijazah"
                                        name="jabatan_kp_penyesuaian_ijazah"
-                                       value="{{ $pengajuan->data_tambahan['jabatan'] ?? $pengajuan->pegawai->jabatan }}" required>
+                                       value="{{ $pengajuan->data_tambahan['jabatan'] ?? $pengajuan->pegawai->jabatan }}"
+                                       required>
                             </div>
                         </div>
 
@@ -85,7 +87,8 @@
                                 <input type="text" class="form-control"
                                        id="pangkat_kp_penyesuaian_ijazah"
                                        name="pangkat_kp_penyesuaian_ijazah"
-                                       value="{{ $pengajuan->data_tambahan['pangkat'] ?? $pengajuan->pegawai->pangkat }}" required>
+                                       value="{{ $pengajuan->data_tambahan['pangkat'] ?? $pengajuan->pegawai->pangkat }}"
+                                       required>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -139,6 +142,7 @@
                             @forelse($syarat as $dokumen)
                                 @php
                                     $uploaded = $pengajuan->dokumenPengajuans->firstWhere('syarat_dokumen_id', $dokumen->id);
+                                    $acceptTypes = collect(explode(',', $dokumen->allowed_types))->map(fn($item) => '.' . trim($item))->implode(',');
                                 @endphp
                                 <div class="col-md-6 mb-3">
                                     <div class="file-upload-card h-100">
@@ -152,10 +156,13 @@
                                         {{-- Info File Lama --}}
                                         @if($uploaded)
                                             <div class="mb-2 p-2 bg-light border rounded small existing-file-info"
-                                                 data-label="{{ $dokumen->nama_dokumen }}" data-filename="{{ $uploaded->nama_file_asli }}">
+                                                 data-label="{{ $dokumen->nama_dokumen }}"
+                                                 data-filename="{{ $uploaded->nama_file_asli }}">
                                                 <i class="fas fa-check-circle text-success me-1"></i>
-                                                File saat ini: <strong>{{ Str::limit($uploaded->nama_file_asli, 25) }}</strong>
-                                                <a href="{{ Storage::url($uploaded->path_file) }}" target="_blank" class="ms-1 text-primary"><i class="fas fa-download"></i></a>
+                                                File saat ini:
+                                                <strong>{{ Str::limit($uploaded->nama_file_asli, 25) }}</strong>
+                                                <a href="{{ Storage::url($uploaded->path_file) }}" target="_blank"
+                                                   class="ms-1 text-primary"><i class="fas fa-download"></i></a>
                                             </div>
                                         @else
                                             <div class="mb-2 small text-danger">
@@ -164,9 +171,13 @@
                                         @endif
 
                                         <div class="file-input-wrapper">
-                                            <input type="file" class="form-control file-input-dynamic"
-                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
-                                                   accept=".pdf,.jpg,.jpeg,.png"
+                                            <input type="file"
+                                                   class="form-control file-input-dynamic"
+                                                   id="file_{{ $dokumen->id }}"
+                                                   name="file_{{ $dokumen->id }}"
+                                                   accept="{{ $acceptTypes }}"
+                                                   data-max-size="{{ $dokumen->max_size_kb }}"
+                                                   data-allowed-types="{{ $dokumen->allowed_types }}"
                                                 {{ ($dokumen->is_required && !$uploaded) ? 'required' : '' }}>
 
                                             <div class="file-preview mt-2 small text-success"
@@ -175,24 +186,34 @@
                                     </div>
                                 </div>
                             @empty
-                                <div class="col-12"><div class="alert alert-warning">Tidak ada syarat dokumen.</div></div>
+                                <div class="col-12">
+                                    <div class="alert alert-warning">Tidak ada syarat dokumen.</div>
+                                </div>
                             @endforelse
                         </div>
 
                         <div class="row mt-3">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Periode Kenaikan Pangkat <span class="text-danger">*</span></label>
+                                <label class="form-label">Periode Kenaikan Pangkat <span
+                                        class="text-danger">*</span></label>
                                 <select class="form-control" id="periode_kenaikan_pangkat_kp_penyesuaian_ijazah"
                                         name="periode_kenaikan_pangkat_kp_penyesuaian_ijazah" required>
-                                    @php $periode = $pengajuan->data_tambahan['periode'] ?? ''; @endphp
-                                    <option value="April" {{ $periode == 'April' ? 'selected' : '' }}>April</option>
-                                    <option value="Oktober" {{ $periode == 'Oktober' ? 'selected' : '' }}>Oktober</option>
+                                    @php
+                                        $periode = $pengajuan->data_tambahan['periode'] ?? '';
+                                        $bulan = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                                    @endphp
+                                    <option value="">Pilih Periode</option>
+                                    @foreach($bulan as $b)
+                                        <option
+                                            value="{{ $b }}" {{ $periode == $b ? 'selected' : '' }}>{{ $b }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-penyesuaian-ijazah" data-prev="1">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-penyesuaian-ijazah"
+                                    data-prev="1">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="button" class="btn btn-primary btn-next-kp-penyesuaian-ijazah" data-next="3">
@@ -215,15 +236,23 @@
                                 <h6 class="fw-bold mb-3">Ringkasan Data Pegawai</h6>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <p><strong>Nama:</strong> <span id="review-nama-kp-penyesuaian-ijazah">-</span></p>
-                                        <p><strong>NIP:</strong> <span id="review-nip-kp-penyesuaian-ijazah">{{ $pengajuan->pegawai->nip }}</span></p>
-                                        <p><strong>Jabatan:</strong> <span id="review-jabatan-kp-penyesuaian-ijazah">-</span></p>
-                                        <p><strong>Pangkat:</strong> <span id="review-pangkat-kp-penyesuaian-ijazah">-</span></p>
+                                        <p><strong>Nama:</strong> <span id="review-nama-kp-penyesuaian-ijazah">-</span>
+                                        </p>
+                                        <p><strong>NIP:</strong> <span
+                                                id="review-nip-kp-penyesuaian-ijazah">{{ $pengajuan->pegawai->nip }}</span>
+                                        </p>
+                                        <p><strong>Jabatan:</strong> <span
+                                                id="review-jabatan-kp-penyesuaian-ijazah">-</span></p>
+                                        <p><strong>Pangkat:</strong> <span
+                                                id="review-pangkat-kp-penyesuaian-ijazah">-</span></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p><strong>Unit Kerja:</strong> <span id="review-unit-kerja-kp-penyesuaian-ijazah">-</span></p>
-                                        <p><strong>Golongan/Ruang:</strong> <span id="review-golongan-ruang-kp-penyesuaian-ijazah">-</span></p>
-                                        <p><strong>Periode:</strong> <span id="review-periode-kp-penyesuaian-ijazah">-</span></p>
+                                        <p><strong>Unit Kerja:</strong> <span
+                                                id="review-unit-kerja-kp-penyesuaian-ijazah">-</span></p>
+                                        <p><strong>Golongan/Ruang:</strong> <span
+                                                id="review-golongan-ruang-kp-penyesuaian-ijazah">-</span></p>
+                                        <p><strong>Periode:</strong> <span
+                                                id="review-periode-kp-penyesuaian-ijazah">-</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -237,14 +266,16 @@
                         </div>
 
                         <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="confirm-data-kp-penyesuaian-ijazah" required>
+                            <input class="form-check-input" type="checkbox" id="confirm-data-kp-penyesuaian-ijazah"
+                                   required>
                             <label class="form-check-label" for="confirm-data-kp-penyesuaian-ijazah">
                                 Saya menyatakan perbaikan data ini benar.
                             </label>
                         </div>
 
                         <div class="d-flex justify-content-between mt-5">
-                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-penyesuaian-ijazah" data-prev="2">
+                            <button type="button" class="btn btn-outline-secondary btn-prev-kp-penyesuaian-ijazah"
+                                    data-prev="2">
                                 <i class="fas fa-arrow-left me-2"></i>Kembali
                             </button>
                             <button type="submit" class="btn btn-warning text-white">
@@ -260,28 +291,171 @@
     {{-- CSS Styles --}}
     <style>
         /* Menggunakan style yang sama dengan Create/Fungsional */
-        .progress-steps { display: flex; justify-content: space-between; position: relative; }
-        .progress-steps::before { content: ''; position: absolute; top: 15px; left: 0; right: 0; height: 3px; background-color: #e9ecef; z-index: 1; }
-        .progress-steps .step { display: flex; flex-direction: column; align-items: center; position: relative; z-index: 2; }
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 8px; border: 3px solid #e9ecef; transition: all 0.3s ease; }
-        .step.active .step-circle { background-color: #1a73e8; border-color: #1a73e8; color: white; }
-        .step-label { font-size: 0.875rem; font-weight: 500; color: #6c757d; }
-        .step.active .step-label { color: #1a73e8; font-weight: 600; }
-        .form-step { display: none; }
-        .form-step.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .file-upload-card { border: 2px dashed #dee2e6; border-radius: 8px; padding: 15px; background: white; }
-        .file-upload-card:hover { border-color: #1a73e8; background-color: #f8f9fa; }
-        .file-preview.has-file { display: block; animation: slideDown 0.3s ease; }
-        @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 100px; } }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+
+        .progress-steps .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            border: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background-color: #1a73e8;
+            border-color: #1a73e8;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .step.active .step-label {
+            color: #1a73e8;
+            font-weight: 600;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-upload-card {
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+        }
+
+        .file-upload-card:hover {
+            border-color: #1a73e8;
+            background-color: #f8f9fa;
+        }
+
+        .file-preview.has-file {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 100px;
+            }
+        }
     </style>
 
     {{-- Javascript Logic --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Notifikasi
-            @if (session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error'); @endif
+            @if (session('error')) Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            @endif
             @if ($errors->any()) Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning'); @endif
+
+            function handleFileUpload(input) {
+                const previewId = `preview-${input.id}`;
+                const previewEl = document.getElementById(previewId);
+
+                // Ambil aturan dari database via atribut HTML
+                const dbMaxSizeKb = parseInt(input.getAttribute('data-max-size')) || 2048;
+                const maxSizeBytes = dbMaxSizeKb * 1024;
+
+                const rawTypes = input.getAttribute('data-allowed-types') || 'pdf,jpg,png';
+                const allowedExtensions = rawTypes.split(',').map(t => t.trim().toLowerCase());
+
+                if (input.files.length > 0) {
+                    const file = input.files[0];
+                    const fileExt = file.name.split('.').pop().toLowerCase();
+
+                    // A. VALIDASI UKURAN
+                    if (file.size > maxSizeBytes) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+
+                        let sizeMsg = dbMaxSizeKb >= 1024
+                            ? (dbMaxSizeKb/1024).toFixed(1) + ' MB'
+                            : dbMaxSizeKb + ' KB';
+
+                        if (previewEl) previewEl.innerHTML = `<span class="text-danger small">File terlalu besar! Max: ${sizeMsg}</span>`;
+                        Swal.fire('File Terlalu Besar', `Maksimal ukuran: ${sizeMsg}`, 'warning');
+                        return;
+                    }
+
+                    // B. VALIDASI TIPE
+                    if (!allowedExtensions.includes(fileExt)) {
+                        input.value = ''; // Reset
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+
+                        if (previewEl) previewEl.innerHTML = `<span class="text-danger small">Format salah!</span>`;
+                        Swal.fire('Format Salah', `Hanya menerima: ${allowedExtensions.join(', ').toUpperCase()}`, 'warning');
+                        return;
+                    }
+
+                    // C. SUKSES
+                    input.classList.remove('is-invalid');
+                    input.classList.add('is-valid');
+                    if (previewEl) previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> File Baru: ${file.name}</div>`;
+                } else {
+                    // Cancel upload
+                    input.classList.remove('is-valid');
+                    input.classList.remove('is-invalid');
+                    if (previewEl) previewEl.innerHTML = '';
+                }
+            }
 
             // Navigasi
             const steps = document.querySelectorAll('.form-step');
@@ -300,21 +474,25 @@
                 btn.addEventListener('click', function () {
                     const next = parseInt(this.dataset.next);
 
-                    // Validasi sebelum step 3
+                    // Validasi saat mau ke Step 3 (Konfirmasi)
                     if (next === 3) {
+                        // Cek 1: Apakah ada file error (is-invalid)?
+                        if (document.querySelectorAll('#step-2-kp-penyesuaian-ijazah input.is-invalid').length > 0) {
+                            Swal.fire('Dokumen Bermasalah', 'Perbaiki dokumen yang bertanda merah sebelum lanjut.', 'error');
+                            return;
+                        }
+
+                        // Cek 2: Dokumen wajib yang kosong (HTML required attribute)
                         let valid = true;
-                        const reqInputs = document.querySelectorAll('#step-2-kp-penyesuaian-ijazah input[type="file"][required]');
-                        reqInputs.forEach(input => {
+                        document.querySelectorAll('#step-2-kp-penyesuaian-ijazah input[type="file"][required]').forEach(input => {
                             if (input.files.length === 0) {
                                 input.classList.add('is-invalid');
                                 valid = false;
-                            } else {
-                                input.classList.remove('is-invalid');
                             }
                         });
 
                         if(!valid) {
-                            Swal.fire('Perhatian', 'Lengkapi dokumen yang wajib diunggah (yang belum memiliki file lama).', 'warning');
+                            Swal.fire('Perhatian', 'Harap lengkapi dokumen wajib yang belum diunggah.', 'warning');
                             return;
                         }
                     }
@@ -323,25 +501,15 @@
             });
 
             document.querySelectorAll('.btn-prev-kp-penyesuaian-ijazah').forEach(btn => {
-                btn.addEventListener('click', function () { showStep(this.dataset.prev); });
+                btn.addEventListener('click', function () {
+                    showStep(this.dataset.prev);
+                });
             });
 
             // Preview File Baru
             document.querySelectorAll('input[type="file"]').forEach(input => {
                 input.addEventListener('change', function () {
-                    const preview = document.getElementById(`preview-${this.id}`);
-                    if (this.files.length > 0) {
-                        if (this.files[0].size > 2 * 1024 * 1024) {
-                            Swal.fire('Error', 'File max 2MB', 'warning');
-                            this.value = '';
-                        } else {
-                            preview.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> File Baru: ${this.files[0].name}</div>`;
-                            preview.style.display = 'block';
-                            this.classList.remove('is-invalid');
-                        }
-                    } else {
-                        preview.innerHTML = '';
-                    }
+                    handleFileUpload(this);
                 });
             });
 
@@ -349,14 +517,17 @@
             function updateReview() {
                 const get = (id) => document.getElementById(id)?.value || '-';
 
-                document.getElementById('review-nama-kp-penyesuaian-ijazah').textContent = get('nama_pegawai_kp_penyesuaian-ijazah') || '{{ $pengajuan->pegawai->nama_lengkap }}';
+                document.getElementById('review-nama-kp-penyesuaian-ijazah').textContent = document.getElementById('nama_pegawai_kp_penyesuaian_ijazah').value;
                 document.getElementById('review-jabatan-kp-penyesuaian-ijazah').textContent = get('jabatan_kp_penyesuaian_ijazah');
                 document.getElementById('review-pangkat-kp-penyesuaian-ijazah').textContent = get('pangkat_kp_penyesuaian_ijazah');
                 document.getElementById('review-unit-kerja-kp-penyesuaian-ijazah').textContent = get('unit_kerja_kp_penyesuaian_ijazah');
                 document.getElementById('review-golongan-ruang-kp-penyesuaian-ijazah').textContent = get('golongan_ruang_kp_penyesuaian_ijazah');
-                document.getElementById('review-periode-kp-penyesuaian-ijazah').textContent = document.getElementById('periode_kenaikan_pangkat_kp_penyesuaian_ijazah').value;
 
-                // Cek Dokumen Status
+                // Ambil text periode
+                const pSelect = document.getElementById('periode_kenaikan_pangkat_kp_penyesuaian_ijazah');
+                document.getElementById('review-periode-kp-penyesuaian-ijazah').textContent = pSelect.options[pSelect.selectedIndex]?.text || '-';
+
+                // Render List Dokumen
                 const container = document.getElementById('review-documents-kp-penyesuaian-ijazah');
                 container.innerHTML = '';
 
@@ -367,8 +538,8 @@
 
                     let statusHtml = '';
 
-                    if (fileInput.files.length > 0) {
-                        statusHtml = `<span class="text-warning fw-bold"><i class="fas fa-sync me-1"></i>Ganti: ${fileInput.files[0].name}</span>`;
+                    if (fileInput.files.length > 0 && !fileInput.classList.contains('is-invalid')) {
+                        statusHtml = `<span class="text-warning fw-bold"><i class="fas fa-sync me-1"></i>Ganti Baru: ${fileInput.files[0].name}</span>`;
                     } else if (existingInfo) {
                         const oldName = existingInfo.getAttribute('data-filename');
                         statusHtml = `<span class="text-success"><i class="fas fa-check-circle me-1"></i>Tetap: ${oldName}</span>`;

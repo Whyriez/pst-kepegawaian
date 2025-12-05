@@ -135,7 +135,7 @@
                                     {{-- Ambil Pangkat Baru dari kolom JSON data_tambahan --}}
                                     <small class="text-muted">
                                         Usul: {{ $item->data_tambahan['pangkat_kp_fungsional'] ?? '-' }}
-                                        ({{ $item->data_tambahan['golongan_ruang_kp_fungsional'] ?? '-' }})
+                                        ({{ $item->data_tambahan['golongan_ruang'] ?? '-' }})
                                     </small>
                                 </td>
 

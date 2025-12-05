@@ -385,14 +385,25 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/syarat/store', [ManajemenDokumenController::class, 'storeSyarat'])->name('syarat.store');
             Route::put('/syarat/update/{id}', [ManajemenDokumenController::class, 'updateSyarat'])->name('syarat.update');
             Route::delete('/syarat/destroy/{id}', [ManajemenDokumenController::class, 'destroySyarat'])->name('syarat.destroy');
+
+            Route::get('/periode', [\App\Http\Controllers\Admin\PeriodeController::class, 'index'])->name('periode.index');
+            Route::post('/periode', [\App\Http\Controllers\Admin\PeriodeController::class, 'store'])->name('periode.store');
+            Route::delete('/periode/{id}', [\App\Http\Controllers\Admin\PeriodeController::class, 'destroy'])->name('periode.destroy');
         });
 
         // Cetak Surat
         Route::prefix('cetak-surat')->name('cetak_surat.')->group(function () {
             Route::get('/pengantar', [AdminCetakSuratController::class, 'pengantar'])->name('pengantar');
+            Route::post('/pengantar/export', [AdminCetakSuratController::class, 'exportPengantar'])->name('pengantar.export');
+
+            Route::post('/store-arsip', [AdminCetakSuratController::class, 'storeArsip'])->name('store_arsip');
+            Route::put('/update-arsip/{id}', [AdminCetakSuratController::class, 'updateArsip'])->name('update_arsip');
 
             Route::get('/sptjm', [AdminCetakSuratController::class, 'sptjm'])->name('sptjm');
+            Route::post('/sptjm/export', [AdminCetakSuratController::class, 'exportSptjm'])->name('sptjm.export');
         });
+
+
     });
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');

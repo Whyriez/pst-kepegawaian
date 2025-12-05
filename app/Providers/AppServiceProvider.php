@@ -38,14 +38,23 @@ class AppServiceProvider extends ServiceProvider
             $badgeKategori = $rawCounts->groupBy('kategori')->map(function ($row) {
                 return $row->sum('total');
             })->toArray();
-            
+
             // 2. Data untuk Badge Sub-Menu (Total per slug spesifik)
             // Contoh: ['kp-fungsional' => 2, 'kp-struktural' => 3]
             // PENTING: Key array ini adalah 'slug' yang ada di database table jenis_layanans
             $badgeSlug = $rawCounts->pluck('total', 'slug')->toArray();
 
-            $view->with('badgeKategori', $badgeKategori);
-            $view->with('badgeSlug', $badgeSlug);
+            $notifikasi_tindak_lanjut = Pengajuan::with(['pegawai', 'jenisLayanan'])
+                ->where('status', 'ditunda')
+                ->whereDate('tanggal_tindak_lanjut', '<=', now())
+                ->orderBy('tanggal_tindak_lanjut', 'asc')
+                ->get();
+
+            $view->with([
+                'badgeKategori' => $badgeKategori,
+                'badgeSlug' => $badgeSlug,
+                'notifikasi_tindak_lanjut' => $notifikasi_tindak_lanjut
+            ]);
         });
     }
 }

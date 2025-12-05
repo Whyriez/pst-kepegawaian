@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\CekPeriode;
 use App\Http\Controllers\Controller;
 use App\Models\DokumenPengajuan;
 use App\Models\JenisLayanan;
@@ -38,7 +39,12 @@ class KenaikanPangkatController extends Controller
 
     public function createFungsional()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('kp-fungsional')) {
+            return redirect()->route('kp.fungsional')
+                ->with('error', 'Maaf, Periode pengajuan untuk Kenaikan Pangkat Fungsional sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->firstOrFail();
 
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'kp-fungsional')->first();
 
@@ -77,9 +83,13 @@ class KenaikanPangkatController extends Controller
     public function updateFungsional(Request $request, $id)
     {
         $request->validate([
-            'nip_display_kp_fungsional' => 'required',
-            'periode_kenaikan_pangkat_kp_fungsional' => 'required',
+            'nip_display_kp_fungsional'                  => 'required',
+            'periode_kenaikan_pangkat_kp_fungsional'     => 'required',
+        ], [
+            'nip_display_kp_fungsional.required'              => 'NIP wajib diisi.',
+            'periode_kenaikan_pangkat_kp_fungsional.required' => 'Periode kenaikan pangkat wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -152,14 +162,23 @@ class KenaikanPangkatController extends Controller
 
     public function storeFungsional(Request $request)
     {
+        if (!CekPeriode::isBuka('kp-fungsional')) {
+            return redirect()->back()->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         // 1. Validasi Data Utama
         $request->validate([
-            'nip_display_kp_fungsional' => 'required|exists:pegawais,nip',
+            'nip_display_kp_fungsional'              => 'required|exists:pegawais,nip',
             'periode_kenaikan_pangkat_kp_fungsional' => 'required',
         ], [
-            'nip_display_kp_fungsional.exists' => 'NIP tidak terdaftar dalam database pegawai.',
-            'periode_kenaikan_pangkat_kp_fungsional.required' => 'Periode kenaikan pangkat wajib dipilih.'
+            // NIP
+            'nip_display_kp_fungsional.required' => 'NIP wajib diisi.',
+            'nip_display_kp_fungsional.exists'   => 'NIP tidak terdaftar dalam database pegawai.',
+
+            // Periode
+            'periode_kenaikan_pangkat_kp_fungsional.required' => 'Periode kenaikan pangkat wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -252,8 +271,13 @@ class KenaikanPangkatController extends Controller
 
     public function createPenyesuaianIjazah()
     {
+        if (!CekPeriode::isBuka('kp-pi')) {
+            return redirect()->route('kp.penyesuaian_ijazah')
+                ->with('error', 'Maaf, Periode pengajuan Penyesuaian Ijazah sedang DITUTUP.');
+        }
+
         // 1. Ambil data pegawai (Autofill)
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // 2. Ambil syarat dokumen dinamis berdasarkan slug layanan
         // PASTIKAN DI DATABASE TABEL jenis_layanans SUDAH ADA SLUG: 'kp-penyesuaian-ijazah'
@@ -265,11 +289,22 @@ class KenaikanPangkatController extends Controller
 
     public function storePenyesuaianIjazah(Request $request)
     {
+        if (!CekPeriode::isBuka('kp-pi')) {
+            return redirect()->back()
+                ->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         // 1. Validasi Dasar
         $request->validate([
-            'nip_display_kp_penyesuaian_ijazah' => 'required|exists:pegawais,nip',
+            'nip_display_kp_penyesuaian_ijazah'              => 'required|exists:pegawais,nip',
             'periode_kenaikan_pangkat_kp_penyesuaian_ijazah' => 'required',
+        ], [
+            'nip_display_kp_penyesuaian_ijazah.required' => 'NIP wajib diisi.',
+            'nip_display_kp_penyesuaian_ijazah.exists'   => 'NIP tidak terdaftar dalam database pegawai.',
+
+            'periode_kenaikan_pangkat_kp_penyesuaian_ijazah.required' => 'Periode kenaikan pangkat wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -362,7 +397,10 @@ class KenaikanPangkatController extends Controller
     {
         $request->validate([
             'periode_kenaikan_pangkat_kp_penyesuaian_ijazah' => 'required',
+        ], [
+            'periode_kenaikan_pangkat_kp_penyesuaian_ijazah.required' => 'Periode kenaikan pangkat wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -456,7 +494,12 @@ class KenaikanPangkatController extends Controller
 
     public function createReguler()
     {
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        if (!CekPeriode::isBuka('kp-reguler')) {
+            return redirect()->route('kp.reguler')
+                ->with('error', 'Maaf, Periode pengajuan Kenaikan Pangkat Reguler sedang DITUTUP.');
+        }
+
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'kp-reguler')->first();
         $syarat = $layanan ? $layanan->syaratDokumens : collect([]);
 
@@ -465,11 +508,22 @@ class KenaikanPangkatController extends Controller
 
     public function storeReguler(Request $request)
     {
+        if (!CekPeriode::isBuka('kp-reguler')) {
+            return redirect()->back()
+                ->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         // 1. Validation
         $request->validate([
-            'nip_display_kp_reguler' => 'required|exists:pegawais,nip',
+            'nip_display_kp_reguler'              => 'required|exists:pegawais,nip',
             'periode_kenaikan_pangkat_kp_reguler' => 'required',
+        ], [
+            'nip_display_kp_reguler.required' => 'NIP wajib diisi.',
+            'nip_display_kp_reguler.exists'   => 'NIP tidak terdaftar dalam database pegawai.',
+
+            'periode_kenaikan_pangkat_kp_reguler.required' => 'Periode kenaikan pangkat wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -561,7 +615,10 @@ class KenaikanPangkatController extends Controller
         // 1. Validasi
         $request->validate([
             'periode_kenaikan_pangkat_kp_reguler' => 'required',
+        ], [
+            'periode_kenaikan_pangkat_kp_reguler.required' => 'Periode kenaikan pangkat wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -655,8 +712,13 @@ class KenaikanPangkatController extends Controller
 
     public function createStruktural()
     {
+        if (!CekPeriode::isBuka('kp-struktural')) {
+            return redirect()->route('kp.struktural')
+                ->with('error', 'Maaf, Periode pengajuan Kenaikan Pangkat Struktural sedang DITUTUP.');
+        }
+
         // 1. Ambil data pegawai login
-        $pegawai = Pegawai::where('user_id', Auth::id())->first();
+        $pegawai = Pegawai::with('satuanKerja')->where('user_id', Auth::id())->first();
 
         // 2. Ambil Dokumen (Pastikan slug 'kp-struktural' ada di tabel jenis_layanans)
         $layanan = JenisLayanan::with('syaratDokumens')->where('slug', 'kp-struktural')->first();
@@ -667,11 +729,22 @@ class KenaikanPangkatController extends Controller
 
     public function storeStruktural(Request $request)
     {
+        if (!CekPeriode::isBuka('kp-struktural')) {
+            return redirect()->back()
+                ->with('error', 'Gagal! Periode pengajuan telah berakhir.');
+        }
+
         // 1. Validasi
         $request->validate([
-            'nip_display_kp_struktural' => 'required|exists:pegawais,nip',
+            'nip_display_kp_struktural'              => 'required|exists:pegawais,nip',
             'periode_kenaikan_pangkat_kp_struktural' => 'required',
+        ], [
+            'nip_display_kp_struktural.required' => 'NIP wajib diisi.',
+            'nip_display_kp_struktural.exists'   => 'NIP tidak terdaftar dalam database pegawai.',
+
+            'periode_kenaikan_pangkat_kp_struktural.required' => 'Periode kenaikan pangkat wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();
@@ -763,7 +836,10 @@ class KenaikanPangkatController extends Controller
         // 1. Validasi
         $request->validate([
             'periode_kenaikan_pangkat_kp_struktural' => 'required',
+        ], [
+            'periode_kenaikan_pangkat_kp_struktural.required' => 'Periode kenaikan pangkat wajib dipilih.',
         ]);
+
 
         try {
             DB::beginTransaction();

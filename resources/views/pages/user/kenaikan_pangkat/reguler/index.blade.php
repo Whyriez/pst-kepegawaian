@@ -241,8 +241,16 @@
         }
 
         // Flash Message Script (Opsional jika belum ada di layout utama)
-        @if(session('success'))
-        Swal.fire('Berhasil!', '{{ session('success') }}', 'success');
-        @endif
+        document.addEventListener('DOMContentLoaded', function () {
+            @if (session('success'))
+            Swal.fire('Berhasil', "{{ session('success') }}", 'success');
+            @endif
+            @if (session('error'))
+            Swal.fire('Gagal', "{{ session('error') }}", 'error');
+            @endif
+            @if ($errors->any())
+            Swal.fire('Validasi Gagal', 'Cek inputan Anda', 'warning');
+            @endif
+        });
     </script>
 @endsection

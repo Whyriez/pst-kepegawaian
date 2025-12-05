@@ -54,101 +54,83 @@
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-user me-2"></i>Data Diri Pegawai
                             </h5>
-                            <p class="text-muted">Isi data diri pegawai yang mengajukan pengangkatan jabatan fungsional</p>
+                            <p class="text-muted">Data diri pegawai diambil otomatis dari sistem.</p>
                         </div>
 
-                        <div class="card bg-light border-0 mb-4">
-                            <div class="card-body">
-                                <h6 class="fw-bold mb-3">Cek Data dengan NIP</h6>
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="nip_pegawai_jf_pengangkatan"
-                                                   name="nip_pegawai_jf_pengangkatan" placeholder="Masukkan NIP Pegawai"
-                                                   value="{{ Auth::user()->pegawai->nip ?? '' }}">
-                                            <button class="btn btn-outline-primary" type="button"
-                                                    id="btn-cek-nip-jf-pengangkatan">
-                                                <i class="fas fa-search me-2"></i>Cek NIP
-                                            </button>
-                                        </div>
-                                        <small class="text-muted fst-italic">*Klik Cek NIP untuk mengisi data otomatis</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                        {{-- DATA DIRI (READONLY) --}}
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="nama_pegawai_jf_pengangkatan" class="form-label">Nama Pegawai <span
-                                        class="text-danger">*</span></label>
+                                <label for="nama_pegawai_jf_pengangkatan" class="form-label">Nama Pegawai</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                    <input type="text" class="form-control" id="nama_pegawai_jf_pengangkatan"
-                                           name="nama_pegawai_jf_pengangkatan" required>
+                                    <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control bg-light" id="nama_pegawai_jf_pengangkatan"
+                                           name="nama_pegawai_jf_pengangkatan"
+                                           value="{{ $pegawai->nama_lengkap ?? Auth::user()->name }}"
+                                           readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi nama pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="nip_display_jf_pengangkatan" class="form-label">NIP Pegawai <span
-                                        class="text-danger">*</span></label>
+                                <label for="nip_display_jf_pengangkatan" class="form-label">NIP Pegawai</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    <span class="input-group-text bg-light"><i class="fas fa-id-card"></i></span>
                                     <input type="text" class="form-control bg-light" id="nip_display_jf_pengangkatan"
-                                           name="nip_display_jf_pengangkatan" required readonly>
+                                           name="nip_display_jf_pengangkatan"
+                                           value="{{ $pegawai->nip ?? '-' }}"
+                                           readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi NIP pegawai</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="jabatan_jf_pengangkatan" class="form-label">Jabatan Saat Ini <span
-                                        class="text-danger">*</span></label>
+                                <label for="jabatan_jf_pengangkatan" class="form-label">Jabatan Saat Ini</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
-                                    <input type="text" class="form-control" id="jabatan_jf_pengangkatan"
-                                           name="jabatan_jf_pengangkatan" required>
+                                    <span class="input-group-text bg-light"><i class="fas fa-briefcase"></i></span>
+                                    <input type="text" class="form-control bg-light" id="jabatan_jf_pengangkatan"
+                                           name="jabatan_jf_pengangkatan"
+                                           value="{{ $pegawai->jabatan ?? '-' }}"
+                                           readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi jabatan pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="pangkat_jf_pengangkatan" class="form-label">Pangkat <span
-                                        class="text-danger">*</span></label>
+                                <label for="pangkat_jf_pengangkatan" class="form-label">Pangkat</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-star"></i></span>
-                                    <input type="text" class="form-control" id="pangkat_jf_pengangkatan"
-                                           name="pangkat_jf_pengangkatan" required>
+                                    <span class="input-group-text bg-light"><i class="fas fa-star"></i></span>
+                                    <input type="text" class="form-control bg-light" id="pangkat_jf_pengangkatan"
+                                           name="pangkat_jf_pengangkatan"
+                                           value="{{ $pegawai->pangkat ?? '-' }}"
+                                           readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi pangkat pegawai</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="golongan_ruang_jf_pengangkatan" class="form-label">Golongan/Ruang <span
-                                        class="text-danger">*</span></label>
+                                <label for="golongan_ruang_jf_pengangkatan" class="form-label">Golongan/Ruang</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
-                                    <input type="text" class="form-control" id="golongan_ruang_jf_pengangkatan"
-                                           name="golongan_ruang_jf_pengangkatan" required>
+                                    <span class="input-group-text bg-light"><i class="fas fa-layer-group"></i></span>
+                                    <input type="text" class="form-control bg-light" id="golongan_ruang_jf_pengangkatan"
+                                           name="golongan_ruang_jf_pengangkatan"
+                                           value="{{ $pegawai->golongan_ruang ?? '-' }}"
+                                           readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi golongan dan ruang pegawai</div>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="satuan_kerja_jf_pengangkatan" class="form-label">Satuan Kerja Saat Ini <span
-                                        class="text-danger">*</span></label>
+                                <label for="satuan_kerja_jf_pengangkatan" class="form-label">Satuan Kerja Saat Ini</label>
                                 <div class="input-group">
-                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
-                                    <input type="text" class="form-control" id="satuan_kerja_jf_pengangkatan"
-                                           name="satuan_kerja_jf_pengangkatan" required>
+                                    <span class="input-group-text bg-light"><i class="fas fa-building"></i></span>
+                                    <input type="text" class="form-control bg-light" id="satuan_kerja_jf_pengangkatan"
+                                           name="satuan_kerja_jf_pengangkatan"
+                                           value="{{ $pegawai->satuanKerja->nama_satuan_kerja ?? '-' }}"
+                                           readonly>
                                 </div>
-                                <div class="invalid-feedback">Harap isi satuan kerja</div>
                             </div>
                         </div>
 
+                        {{-- DATA USULAN (EDITABLE) --}}
                         <div class="step-header mb-4 mt-4 border-top pt-4">
                             <h5 class="fw-bold text-primary mb-2">
                                 <i class="fas fa-user-plus me-2"></i>Usulan Pengangkatan
@@ -158,8 +140,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="usul_jabatan_jf_pengangkatan" class="form-label">Usul Jabatan Fungsional <span
-                                        class="text-danger">*</span></label>
+                                <label for="usul_jabatan_jf_pengangkatan" class="form-label">Usul Jabatan Fungsional <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
                                     <input type="text" class="form-control" id="usul_jabatan_jf_pengangkatan"
@@ -169,8 +150,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="usul_satuan_kerja_jf_pengangkatan" class="form-label">Usul Satuan Kerja <span
-                                        class="text-danger">*</span></label>
+                                <label for="usul_satuan_kerja_jf_pengangkatan" class="form-label">Usul Satuan Kerja <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="fas fa-building"></i></span>
                                     <input type="text" class="form-control" id="usul_satuan_kerja_jf_pengangkatan"
@@ -197,12 +177,28 @@
                             <p class="text-muted">Unggah dokumen-dokumen yang diperlukan (Otomatis dari Database)</p>
                         </div>
 
+                        @php
+                            $uniqueTypes = $syarat->pluck('allowed_types')
+                                ->map(fn($item) => explode(',', $item))
+                                ->flatten()
+                                ->map(fn($item) => strtoupper(trim($item)))
+                                ->unique()
+                                ->implode(', ');
+
+                            $maxKb = $syarat->max('max_size_kb');
+                            $maxSizeText = $maxKb >= 1024
+                                ? round($maxKb / 1024, 1) . ' MB'
+                                : $maxKb . ' KB';
+                        @endphp
+
                         <div class="alert alert-info">
                             <div class="d-flex">
                                 <i class="fas fa-info-circle me-3 mt-1"></i>
                                 <div>
-                                    <strong>Informasi:</strong> Format file yang diizinkan: PDF, JPG, JPEG, PNG.
-                                    Maksimal ukuran file: 2MB per dokumen.
+                                    <ul class="mb-1 ps-3">
+                                        <li>Format yang didukung sistem: <strong>{{ $uniqueTypes ?: '-' }}</strong> (sesuai kolom masing-masing).</li>
+                                        <li>Ukuran file maksimal hingga: <strong>{{ $maxSizeText ?: '0 KB' }}</strong>.</li>
+                                    </ul>
                                     <div class="mt-2">
                                         <small class="text-muted">
                                             <i class="fas fa-check-circle text-success me-1"></i>
@@ -227,23 +223,40 @@
                                             @endif
                                         </label>
 
+                                        {{-- Logic accept attribute (misal: pdf,jpg -> .pdf,.jpg) --}}
+                                        @php
+                                            $acceptTypes = collect(explode(',', $dokumen->allowed_types))
+                                                ->map(fn($item) => '.' . trim($item))
+                                                ->implode(',');
+                                        @endphp
+
                                         <div class="file-input-wrapper">
-                                            <input type="file" class="form-control file-input-dynamic"
-                                                   id="file_{{ $dokumen->id }}" name="file_{{ $dokumen->id }}"
-                                                   accept=".pdf,.jpg,.jpeg,.png"
+                                            <input type="file"
+                                                   class="form-control file-input-dynamic"
+                                                   id="file_{{ $dokumen->id }}"
+                                                   name="file_{{ $dokumen->id }}"
+                                                   {{-- 1. Accept HTML Standard --}}
+                                                   accept="{{ $acceptTypes }}"
+                                                   {{-- 2. Data Attributes untuk JS Validation --}}
+                                                   data-max-size="{{ $dokumen->max_size_kb }}"
+                                                   data-allowed-types="{{ $dokumen->allowed_types }}"
                                                 {{ $dokumen->is_required ? 'required' : '' }}>
 
                                             <div class="file-preview mt-2 small text-success"
                                                  id="preview-file_{{ $dokumen->id }}"></div>
                                         </div>
-                                        <div class="form-text">Tipe: PDF/Gambar, Max: 2MB</div>
+
+                                        {{-- Info per input --}}
+                                        <div class="form-text">
+                                            Tipe: {{ strtoupper(str_replace(',', ', ', $dokumen->allowed_types)) }},
+                                            Max: {{ $dokumen->max_size_kb >= 1024 ? ($dokumen->max_size_kb/1024).' MB' : $dokumen->max_size_kb.' KB' }}
+                                        </div>
                                     </div>
                                 </div>
                             @empty
                                 <div class="col-12">
                                     <div class="alert alert-warning">
-                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini
-                                        (jf-pengangkatan).
+                                        Belum ada syarat dokumen yang diatur di database untuk layanan ini (jf-pengangkatan).
                                     </div>
                                 </div>
                             @endforelse
@@ -570,21 +583,50 @@
             function handleFileUpload(input) {
                 const previewId = `preview-${input.id}`;
                 const previewEl = document.getElementById(previewId);
-                const maxSize = 2 * 1024 * 1024; // 2MB
+
+                // 1. Ambil aturan dari data-attribute
+                // Default fallback ke 2MB jika error
+                const dbMaxSizeKb = parseInt(input.getAttribute('data-max-size')) || 2048;
+                const maxSizeBytes = dbMaxSizeKb * 1024; // KB ke Bytes
+
+                // Ambil allowed types, misal "pdf,jpg" -> jadi array ["pdf", "jpg"]
+                const rawTypes = input.getAttribute('data-allowed-types') || 'pdf,jpg,jpeg,png';
+                const allowedExtensions = rawTypes.split(',').map(t => t.trim().toLowerCase());
 
                 if (input.files.length > 0) {
                     const file = input.files[0];
+                    const fileName = file.name;
+                    const fileExt = fileName.split('.').pop().toLowerCase();
 
-                    // Validasi Size
-                    if (file.size > maxSize) {
-                        input.value = ''; // Reset
+                    // VALIDASI 1: Ukuran File
+                    if (file.size > maxSizeBytes) {
+                        input.value = ''; // Reset input
                         input.classList.add('is-invalid');
                         input.classList.remove('is-valid');
+
+                        let sizeMsg = dbMaxSizeKb >= 1024
+                            ? (dbMaxSizeKb/1024) + ' MB'
+                            : dbMaxSizeKb + ' KB';
+
                         if (previewEl) {
-                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: Ukuran file > 2MB!</div>`;
+                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: File terlalu besar (Max: ${sizeMsg})</div>`;
                             previewEl.style.display = 'block';
                         }
-                        Swal.fire('File Terlalu Besar', 'Maksimal ukuran file adalah 2MB.', 'warning');
+                        Swal.fire('File Terlalu Besar', `Maksimal ukuran file untuk dokumen ini adalah ${sizeMsg}.`, 'warning');
+                        return;
+                    }
+
+                    // VALIDASI 2: Tipe File (Ekstensi)
+                    if (!allowedExtensions.includes(fileExt)) {
+                        input.value = ''; // Reset input
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+
+                        if (previewEl) {
+                            previewEl.innerHTML = `<div class="text-danger small"><i class="fas fa-exclamation-circle me-1"></i>Gagal: Tipe file tidak diizinkan.</div>`;
+                            previewEl.style.display = 'block';
+                        }
+                        Swal.fire('Format Salah', `Hanya menerima format: ${allowedExtensions.join(', ').toUpperCase()}`, 'warning');
                         return;
                     }
 
@@ -593,7 +635,7 @@
                     input.classList.add('is-valid');
 
                     if (previewEl) {
-                        previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> ${file.name}</div>`;
+                        previewEl.innerHTML = `<div class="text-success small"><i class="fas fa-check-circle me-1"></i> ${file.name} (${(file.size/1024).toFixed(0)} KB)</div>`;
                         previewEl.classList.add('has-file');
                         previewEl.style.display = 'block';
                     }
