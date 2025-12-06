@@ -39,10 +39,10 @@ class JenisLayananSeeder extends Seeder
             ['nama' => 'Naik Jenjang JF', 'slug' => 'jf-naik-jenjang', 'kategori' => 'Jabatan Fungsional'],
 
             // Lainnya
-            ['nama' => 'Tugas Belajar', 'slug' => 'tugas-belajar', 'kategori' => 'Lainnya'],
-            ['nama' => 'Konversi AK Pendidikan', 'slug' => 'konversi-ak-pendidikan', 'kategori' => 'Lainnya'],
-            ['nama' => 'Perbaikan Data ASN', 'slug' => 'perbaikan-data', 'kategori' => 'Lainnya'],
-            ['nama' => 'Satyalancana', 'slug' => 'satyalancana', 'kategori' => 'Lainnya'],
+            ['nama' => 'Tugas Belajar', 'slug' => 'tugas-belajar', 'kategori' => 'Tugas Belajar'],
+            ['nama' => 'Konversi AK Pendidikan', 'slug' => 'konversi-ak-pendidikan', 'kategori' => 'Konversi AK Pendidikan'],
+            ['nama' => 'Perbaikan Data ASN', 'slug' => 'perbaikan-data', 'kategori' => 'Perbaikan Data ASN'],
+            ['nama' => 'Satyalancana', 'slug' => 'satyalancana', 'kategori' => 'Satyalancana'],
             ['nama' => 'Gelar Akademik', 'slug' => 'gelar-akademik', 'kategori' => 'Pencantuman Gelar'],
             ['nama' => 'Gelar Profesi', 'slug' => 'gelar-profesi', 'kategori' => 'Pencantuman Gelar'],
         ];

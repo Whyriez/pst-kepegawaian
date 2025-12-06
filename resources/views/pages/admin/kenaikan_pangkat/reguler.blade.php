@@ -425,8 +425,6 @@
 
             // 3. Logika Tampilan Berdasarkan is_pdf
             if (file.is_pdf) {
-                // --- INI FILE PDF ---
-                console.log('Menampilkan PDF:', file.url);
 
                 if (pdfViewer) {
                     // Trik cloning untuk memaksa browser refresh PDF Viewer

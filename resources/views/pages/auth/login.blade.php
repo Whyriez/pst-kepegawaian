@@ -189,24 +189,23 @@
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-id-card text-muted"></i></span>
                                 <input type="text" class="form-control @error('nip') is-invalid @enderror"
-                                    id="nip" name="nip" placeholder="Masukkan 18 digit NIP"
-                                    value="{{ old('nip') }}" maxlength="18" minlength="18"
-                                    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                    required autofocus>
+                                       id="nip" name="nip" placeholder="Masukkan 18 digit NIP"
+                                       value="{{ old('nip') }}" maxlength="18" minlength="18"
+                                       inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                       required autofocus>
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <div class="d-flex justify-content-between align-items-center">
                                 <label for="password" class="form-label fw-bold small text-muted">PASSWORD</label>
-                                <a href="#" class="small text-decoration-none text-primary">Lupa Password?</a>
                             </div>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
                                 <input type="password" class="form-control" id="password" name="password"
-                                    placeholder="Masukkan password" required>
+                                       placeholder="Masukkan password" required>
                                 <button class="btn btn-outline-secondary border-start-0 border-top-0 border-bottom-0"
-                                    type="button" id="togglePassword" style="border-color: #dee2e6;">
+                                        type="button" id="togglePassword" style="border-color: #dee2e6;">
                                     <i class="fas fa-eye-slash text-muted small"></i>
                                 </button>
                             </div>
@@ -225,8 +224,29 @@
                     </form>
 
                     <div class="mt-4 text-center">
-                        <p class="small text-muted">Belum punya akun? <a href="#"
-                                class="text-decoration-none fw-bold">Hubungi Admin</a></p>
+                        @php
+                            // [BARU] Logika formatting nomor WhatsApp
+                            $waLink = '#'; // Default jika tidak ada nomor
+
+                            if(isset($nomorAdmin) && $nomorAdmin) {
+                                // Hapus karakter selain angka
+                                $cleanPhone = preg_replace('/[^0-9]/', '', $nomorAdmin);
+
+                                // Ubah awalan '0' menjadi '62'
+                                if(substr($cleanPhone, 0, 1) == '0') {
+                                    $cleanPhone = '62' . substr($cleanPhone, 1);
+                                }
+
+                                // Buat link WA
+                                $waLink = "https://wa.me/" . $cleanPhone . "?text=Halo%20Admin,%20saya%20mengalami%20kendala%20saat%20login%20di%20SI%20Kepegawaian.";
+                            }
+                        @endphp
+
+                        <p class="small text-muted">Ada masalah dengan akun anda?
+                            <a href="{{ $waLink }}" target="_blank" class="text-decoration-none fw-bold">
+                                <i class="fab fa-whatsapp me-1"></i>Hubungi Admin
+                            </a>
+                        </p>
                     </div>
                 </div>
             </div>

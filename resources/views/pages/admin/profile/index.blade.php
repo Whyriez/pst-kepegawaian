@@ -51,7 +51,7 @@
                         <h5 class="fw-bold text-primary mb-0"><i class="fas fa-user-shield me-2"></i>Data Pegawai (Admin)</h5>
                     </div>
                     <div class="card-body p-4">
-                        
+
                         {{-- PEMILIHAN SATUAN KERJA (KHUSUS ADMIN) --}}
                         <div class="alert alert-warning border-0 d-flex align-items-center mb-4">
                             <i class="fas fa-building me-3 fa-2x"></i>
@@ -66,7 +66,7 @@
                             <select name="satuan_kerja_id" class="form-select @error('satuan_kerja_id') is-invalid @enderror">
                                 <option value="">-- Pilih Satuan Kerja --</option>
                                 @foreach($satuanKerjas as $satker)
-                                    <option value="{{ $satker->id }}" 
+                                    <option value="{{ $satker->id }}"
                                         {{ (old('satuan_kerja_id', $user->pegawai?->satuan_kerja_id) == $satker->id) ? 'selected' : '' }}>
                                         {{ $satker->kode_satuan_kerja }} - {{ $satker->nama_satuan_kerja }}
                                     </option>
@@ -92,17 +92,26 @@
                                 <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}">
                             </div>
                             <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold small">Nomor WhatsApp (Admin)</label>
+                                <input type="text" name="nomor_telepon" class="form-control"
+                                       placeholder="08xxxxxxxxxx"
+                                       value="{{ old('nomor_telepon', $user->nomor_telepon) }}">
+                                <small class="text-muted d-block mt-1" style="font-size: 0.75rem">*Nomor ini akan digunakan pada link 'Hubungi Admin' di halaman Login.</small>
+                            </div>
+
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold small">Jabatan</label>
                                 <input type="text" name="jabatan" class="form-control" value="{{ old('jabatan', $user->pegawai?->jabatan) }}">
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-bold small">Pangkat</label>
                                 <input type="text" name="pangkat" class="form-control" placeholder="Contoh: Pembina" value="{{ old('pangkat', $user->pegawai?->pangkat) }}">
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class=" mb-3">
                                 <label class="form-label fw-bold small">Golongan Ruang</label>
                                 <select name="golongan_ruang" class="form-select">
                                     <option value="">Pilih Golongan</option>

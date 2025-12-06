@@ -18,9 +18,11 @@ return new class extends Migration
                 ->constrained('jenis_layanans')
                 ->onDelete('cascade');
 
+            $table->boolean('is_unlimited')->default(false);
+
             $table->string('nama_periode'); // Contoh: "Periode April 2025"
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
+            $table->date('tanggal_mulai')->nullable();
+            $table->date('tanggal_selesai')->nullable();
             $table->boolean('is_active')->default(true); // Switch manual jika ingin tutup paksa
             $table->timestamps();
         });

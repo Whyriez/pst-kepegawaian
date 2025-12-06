@@ -452,8 +452,8 @@ class CetakSuratController extends Controller
 
         // 6. DATA PENANDATANGAN
         $kepala_kantor = Pegawai::where('jabatan', 'LIKE', '%Kepala Kantor%')->first();
-        $nama_kepala = $kepala_kantor ? $kepala_kantor->nama_lengkap : 'H. NUR ALIM M. SUMA';
-        $nip_kepala  = $kepala_kantor ? $kepala_kantor->nip : '19900101 202501 1 001';
+        $nama_kepala = $kepala_kantor ? $kepala_kantor->nama_lengkap : '';
+        $nip_kepala  = $kepala_kantor ? $kepala_kantor->nip : '';
 
         $status_kepala = $request->input('status_kepala');
         $jabatan_signer = 'Kepala Kantor Kementerian Agama Kota Gorontalo'; // Default Panjang sesuai gambar

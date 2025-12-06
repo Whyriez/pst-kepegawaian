@@ -26,18 +26,6 @@
                         <small class="fw-bold text-primary">{{ $stats['user_active'] }} Aktif</small>
                     </div>
                 </div>
-                {{-- Dropdown Aksi Cepat --}}
-                <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle px-3" type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-bolt me-2"></i>Aksi Cepat
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="{{ route('admin.kp.fungsional') }}"><i class="fas fa-user-tie me-2"></i>KP Fungsional</a></li>
-                        <li><a class="dropdown-item" href="{{ route('admin.kp.reguler') }}"><i class="fas fa-layer-group me-2"></i>KP Reguler</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-print me-2"></i>Cetak Laporan</a></li>
-                    </ul>
-                </div>
             </div>
         </div>
     </div>

@@ -436,8 +436,6 @@
 
             // 3. Logika Tampilan Berdasarkan is_pdf
             if (file.is_pdf) {
-                // --- INI FILE PDF ---
-                console.log('Menampilkan PDF:', file.url);
 
                 if (pdfViewer) {
                     // Trik cloning untuk memaksa browser refresh PDF Viewer
@@ -450,8 +448,6 @@
                     pdfViewer.parentNode.replaceChild(clone, pdfViewer);
                 }
             } else {
-                // --- INI FILE GAMBAR (JPG, PNG, dll) ---
-                console.log('Menampilkan Gambar:', file.url);
 
                 if (imgViewer) {
                     imgViewer.src = file.url;

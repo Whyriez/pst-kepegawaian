@@ -120,14 +120,14 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label for="golongan_ruang_kp_fungsional" class="form-label">Usulan Golongan Ruang Pegawai</label>
+                                <label for="golongan_ruang_kp_fungsional" class="form-label">Usulan Golongan Ruang Pegawai <span class="text-danger">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="fas fa-layer-group"></i></span>
                                     <input type="text" class="form-control " id="golongan_ruang_kp_fungsional"
-                                           name="golongan_ruang_kp_fungsional"
-                                           >
+                                           name="golongan_ruang_kp_fungsional" required>
                                 </div>
                             </div>
+                            <div class="invalid-feedback">Harap isi Usulan Golongan Ruang Pegawai</div>
                         </div>
 
                         <div class="alert alert-warning small mt-2">
@@ -519,9 +519,13 @@
                 if (currentStep == 1) {
                     // Cukup cek apakah NIP terisi (sebagai indikator data pegawai ada)
                     const nip = document.getElementById('nip_display_kp_fungsional').value.trim();
+                    const golusul = document.getElementById('golongan_ruang_kp_fungsional').value.trim();
                     if (!nip || nip === '-') {
                         isValid = false;
                         errorMsg = 'Data Pegawai tidak ditemukan. Silakan hubungi admin untuk melengkapi profil Anda.';
+                    }else if (!golusul) {
+                        isValid = false;
+                        errorMsg = 'Usulan Golongan Ruang Pegawai!';
                     }
                 }
 

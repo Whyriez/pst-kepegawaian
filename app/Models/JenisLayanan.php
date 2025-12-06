@@ -35,11 +35,20 @@ class JenisLayanan extends Model
 
     public function isCurrentlyOpen()
     {
-        // Cek apakah ada SATU SAJA periode yang aktif dan tanggalnya masuk range hari ini
+        // Cek apakah ada periode yang AKTIF dan memenuhi syarat:
+        // 1. Unlimited = TRUE
+        // ATAU
+        // 2. Tanggal Mulai <= Sekarang <= Tanggal Selesai
+
         return $this->periodes()
             ->where('is_active', true)
-            ->whereDate('tanggal_mulai', '<=', now())
-            ->whereDate('tanggal_selesai', '>=', now())
+            ->where(function($query) {
+                $query->where('is_unlimited', true)
+                    ->orWhere(function($dateQuery) {
+                        $dateQuery->whereDate('tanggal_mulai', '<=', now())
+                            ->whereDate('tanggal_selesai', '>=', now());
+                    });
+            })
             ->exists();
     }
 }

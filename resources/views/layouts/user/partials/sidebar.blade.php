@@ -238,15 +238,6 @@
             </a>
         </li>
 
-        <li>
-            <a href="{{ route('cetak_surat') }}"
-                class="menu-item {{ request()->routeIs('cetak_surat') ? 'active' : '' }}">
-                <i class="fas fa-print"></i>
-                <span>Cetak Surat</span>
-            </a>
-        </li>
-
-
         {{-- <li>
             <form action="{{ route('logout') }}" method="POST" id="logout-form">
                 @csrf

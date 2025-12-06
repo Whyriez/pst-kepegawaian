@@ -36,6 +36,7 @@ class ProfileController extends Controller
         $rules = [
             'nama'      => 'required|string|max:255',
             'email'     => 'required|email|unique:users,email,' . $user->id,
+            'nomor_telepon' => 'nullable|numeric|digits_between:10,15',
             'avatar'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 
             // Validasi Data Pegawai
@@ -57,6 +58,8 @@ class ProfileController extends Controller
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah digunakan oleh pengguna lain.',
+
+            'nomor_telepon.numeric' => 'Nomor telepon harus berupa angka.',
 
             'avatar.image' => 'Avatar harus berupa file gambar.',
             'avatar.mimes' => 'Avatar harus berformat jpeg, png, jpg, atau gif.',
@@ -92,6 +95,7 @@ class ProfileController extends Controller
             $userData = [
                 'name'  => $request->nama,
                 'email' => $request->email,
+                'nomor_telepon' => $request->nomor_telepon,
             ];
 
             if ($request->hasFile('avatar')) {

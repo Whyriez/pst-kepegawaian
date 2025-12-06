@@ -14,12 +14,19 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $activePeriods = Periode::with('jenisLayanan')
+        // Revisi: Hanya ambil yang punya deadline (Bukan Unlimited)
+        $detailPeriods = Periode::with('jenisLayanan')
             ->where('is_active', true)
-            ->whereDate('tanggal_selesai', '>=', now())
-            ->orderBy('tanggal_selesai', 'asc') // Urutkan yang mau deadline duluan
+            ->where('is_unlimited', false) // [BARU] Wajib False (Tidak Unlimited)
+            ->whereDate('tanggal_selesai', '>=', now()) // Wajib belum kadaluarsa
+            ->orderBy('tanggal_selesai', 'asc')
             ->get();
 
-        return view('pages.user.index', compact('activePeriods'));
+        // Grouping untuk MODAL
+        $groupedPeriods = $detailPeriods->groupBy(function ($item) {
+            return $item->jenisLayanan->kategori . '|' . $item->nama_periode;
+        });
+
+        return view('pages.user.index', compact('detailPeriods', 'groupedPeriods'));
     }
 }

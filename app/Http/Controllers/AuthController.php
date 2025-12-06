@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pegawai;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,7 +11,15 @@ class AuthController extends Controller
 {
     public function index()
     {
-        return view('pages.auth.login');
+        $adminContact = User::where('role', 'admin')
+            ->whereNotNull('nomor_telepon')
+            ->where('nomor_telepon', '!=', '')
+            ->first();
+
+        // Ambil nomornya saja, jika tidak ada set null
+        $nomorAdmin = $adminContact ? $adminContact->nomor_telepon : null;
+
+        return view('pages.auth.login', compact('nomorAdmin'));
     }
 
     public function login(Request $request)

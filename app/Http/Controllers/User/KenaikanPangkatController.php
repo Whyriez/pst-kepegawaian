@@ -170,6 +170,7 @@ class KenaikanPangkatController extends Controller
         $request->validate([
             'nip_display_kp_fungsional'              => 'required|exists:pegawais,nip',
             'periode_kenaikan_pangkat_kp_fungsional' => 'required',
+            'golongan_ruang_kp_fungsional' => 'required',
         ], [
             // NIP
             'nip_display_kp_fungsional.required' => 'NIP wajib diisi.',
@@ -177,6 +178,7 @@ class KenaikanPangkatController extends Controller
 
             // Periode
             'periode_kenaikan_pangkat_kp_fungsional.required' => 'Periode kenaikan pangkat wajib dipilih.',
+            'golongan_ruang_kp_fungsional.required' => 'Usulan Golongan Ruang Pegawai wajib dipilih.',
         ]);
 
 

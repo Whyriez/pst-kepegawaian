@@ -182,6 +182,12 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold small">Nomor Telepon</label>
+                                    <input type="number" name="nomor_telepon" class="form-control"
+                                           placeholder="Contoh: 081234567890"
+                                           value="{{ old('nomor_telepon', $user->nomor_telepon) }}">
+                                </div>
                             </div>
 
                             <hr class="my-4">

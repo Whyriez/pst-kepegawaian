@@ -15,20 +15,38 @@ class Periode extends Model
         'nama_periode',
         'tanggal_mulai',
         'tanggal_selesai',
-        'is_active'
+        'is_active',
+        'is_unlimited'
     ];
 
     protected $casts = [
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'is_unlimited' => 'boolean'
     ];
 
     public function isOpen()
     {
+        // Jika tidak aktif secara manual, return false
+        if (!$this->is_active) {
+            return false;
+        }
+
+        // Jika Unlimited (Selalu Buka), return true
+        if ($this->is_unlimited) {
+            return true;
+        }
+
+        // Jika pakai tanggal, cek range tanggal
         $now = Carbon::now();
-        return $this->is_active
-            && $now->between($this->tanggal_mulai, $this->tanggal_selesai);
+
+        // Pastikan tanggal tidak null sebelum dicek
+        if ($this->tanggal_mulai && $this->tanggal_selesai) {
+            return $now->between($this->tanggal_mulai, $this->tanggal_selesai);
+        }
+
+        return false;
     }
 
     public function jenisLayanan()

@@ -388,6 +388,7 @@ Route::middleware(['auth'])->group(function () {
 
             Route::get('/periode', [\App\Http\Controllers\Admin\PeriodeController::class, 'index'])->name('periode.index');
             Route::post('/periode', [\App\Http\Controllers\Admin\PeriodeController::class, 'store'])->name('periode.store');
+            Route::put('/periode/{id}', [\App\Http\Controllers\Admin\PeriodeController::class, 'update'])->name('periode.update');
             Route::delete('/periode/{id}', [\App\Http\Controllers\Admin\PeriodeController::class, 'destroy'])->name('periode.destroy');
         });
 
