@@ -150,7 +150,7 @@
 
     @include('layouts.admin.partials.sidebar')
 
-    <div id="main">
+    <div class="main-content" id="mainContent">
         <header>
             <button class="btn btn-light border-0 me-3" id="sidebarToggle">
                 <i class="fas fa-bars"></i>
@@ -246,7 +246,8 @@
                                         </div>
                                         <div class="w-100">
                                             {{-- Judul Layanan --}}
-                                            <small class="fw-bold d-block text-primary text-truncate" style="max-width: 220px;">
+                                            <small class="fw-bold d-block text-primary text-truncate"
+                                                   style="max-width: 220px;">
                                                 {{ $notif->jenisLayanan->nama_layanan ?? 'Pengajuan' }}
                                             </small>
 
@@ -404,7 +405,7 @@
                         <div id="unsupportedFormat" class="text-center text-muted p-5" style="display: none;">
                             <div class="mb-3">
                                     <span class="fa-stack fa-3x">
-                                        <i class="fas fa-circle fa-stack-2x text-white"></i>
+                                         <i class="fas fa-circle fa-stack-2x text-white"></i>
                                         <i class="fas fa-eye-slash fa-stack-1x text-danger"></i>
                                     </span>
                             </div>
@@ -429,8 +430,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
+
+<script>   document.addEventListener('DOMContentLoaded', function () {
         // 1. Toggle Sidebar Mobile
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebar = document.getElementById('sidebar');

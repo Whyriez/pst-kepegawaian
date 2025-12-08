@@ -307,26 +307,26 @@ body {
         width: var(--sidebar-collapsed-width);
         overflow-y: auto;
     }
-    
+
     .main-content {
         margin-left: var(--sidebar-collapsed-width);
         width: calc(100% - var(--sidebar-collapsed-width));
     }
-    
+
     .logo h1, .menu-item span, .submenu-item span {
         display: none;
     }
-    
+
     .menu-item, .submenu-item {
         justify-content: center;
         padding: 14px 10px;
     }
-    
+
     .submenu-item {
         padding-left: 10px;
         justify-content: center;
     }
-    
+
     .menu-item i, .submenu-item i {
         margin-right: 0;
         font-size: 1.1rem;
@@ -335,7 +335,7 @@ body {
     .menu-item.has-submenu::after {
         display: none;
     }
-    
+
     .submenu {
         position: absolute;
         left: 100%;
@@ -346,29 +346,29 @@ body {
         z-index: 1000;
         border-radius: 0 8px 8px 0;
     }
-    
+
     .submenu-item {
         padding: 12px 15px;
         justify-content: flex-start;
     }
-    
+
     .submenu-item i {
         margin-right: 10px;
     }
-    
+
     .content {
         padding: 15px;
     }
-    
+
     .content-container {
         padding: 15px;
     }
-    
+
     .topbar {
         padding: 12px 20px;
         min-height: 60px;
     }
-    
+
     .topbar h1 {
         font-size: 1.2rem;
     }
@@ -381,48 +381,48 @@ body {
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
         transition: transform 0.3s ease;
     }
-    
+
     .sidebar.active {
         transform: translateX(0);
     }
-    
+
     .main-content {
         margin-left: 0;
         width: 100%;
         transition: margin-left 0.3s ease;
     }
-    
+
     .sidebar.active + .main-content {
         margin-left: 0;
         transform: none;
     }
-    
+
     /* Tampilkan teks di mobile ketika sidebar aktif */
     .sidebar.active .logo h1,
     .sidebar.active .menu-item span,
     .sidebar.active .submenu-item span {
         display: block !important;
     }
-    
+
     .sidebar.active .menu-item,
     .sidebar.active .submenu-item {
         justify-content: flex-start;
         padding: 14px 20px;
     }
-    
+
     .sidebar.active .submenu-item {
         padding-left: 56px;
     }
-    
+
     .sidebar.active .menu-item i,
     .sidebar.active .submenu-item i {
         margin-right: 12px;
     }
-    
+
     .sidebar.active .menu-item.has-submenu::after {
         display: block;
     }
-    
+
     /* Submenu behavior di mobile */
     .sidebar.active .submenu {
         position: static;
@@ -430,25 +430,25 @@ body {
         box-shadow: none;
         border-radius: 0;
     }
-    
+
     .content {
         padding: 12px;
     }
-    
+
     .content-container {
         padding: 15px 12px;
         margin-bottom: 15px;
     }
-    
+
     .topbar {
         padding: 10px 15px;
         min-height: 55px;
     }
-    
+
     .topbar h1 {
         font-size: 1.1rem;
     }
-    
+
     .page-header h2 {
         font-size: 1.3rem;
     }
@@ -458,25 +458,25 @@ body {
     .sidebar {
         width: 260px;
     }
-    
+
     .content {
         padding: 10px;
     }
-    
+
     .content-container {
         padding: 12px 10px;
         margin-bottom: 12px;
     }
-    
+
     .card-body {
         padding: 1rem;
     }
-    
+
     .page-header {
         margin-bottom: 15px;
         padding-bottom: 12px;
     }
-    
+
     /* Better touch targets for mobile */
     .menu-item,
     .submenu-item {
@@ -524,14 +524,14 @@ body {
     .logo-desktop {
         display: none;
     }
-    
+
     .logo-mobile {
         display: block;
         text-align: center;
         padding: 12px 20px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
+
     .logo-mobile h2 {
         color: white;
         font-size: 1rem;
@@ -552,3 +552,5 @@ body {
 .p-4 {
     padding: 1.5rem;
 }
+
+

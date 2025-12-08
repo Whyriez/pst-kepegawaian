@@ -432,12 +432,38 @@
 
         @media (max-width: 768px) {
             .progress-steps {
-                flex-direction: column;
-                align-items: flex-start;
+                /* HAPUS flex-direction: column (biar gak ke bawah) */
+                /* HAPUS align-items: flex-start (biar gak mepet kiri) */
+                padding: 0 5px; /* Jarak aman dikit */
             }
-            .progress-steps::before { display: none; }
-            .step { flex-direction: row; margin-bottom: 10px; }
-            .step-circle { margin-right: 10px; margin-bottom: 0; }
+
+            /* Munculkan garis lagi tapi sesuaikan posisinya */
+            .progress-steps::before {
+                display: block;
+                top: 15px; /* Sesuaikan dgn circle yg mengecil (30px / 2) */
+                left: 20px;
+                right: 20px;
+            }
+
+            .step {
+                /* Reset margin biar gak aneh */
+                margin-bottom: 0;
+                flex-direction: column; /* Label tetap di bawah circle */
+            }
+
+            .step-circle {
+                /* Perkecil ukuran biar muat sebaris */
+                width: 30px;
+                height: 30px;
+                font-size: 12px;
+                border-width: 2px;
+                margin-right: 0;
+                margin-bottom: 4px;
+            }
+
+            .step-label {
+                font-size: 0.7rem; /* Perkecil font label */
+            }
         }
     </style>
 

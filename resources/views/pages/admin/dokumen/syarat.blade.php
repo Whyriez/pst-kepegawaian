@@ -23,46 +23,63 @@
 
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                 <tr>
                     <th class="ps-4">Nama Dokumen</th>
-                    <th>Tipe File</th>
-                    <th>Max Size</th>
+                    <th class="d-none d-md-table-cell">Tipe File</th>
+                    <th class="d-none d-sm-table-cell">Max Size</th>
                     <th>Wajib?</th>
                     <th class="text-end pe-4">Aksi</th>
                 </tr>
-            </thead>
-            <tbody>
+                </thead>
+                <tbody>
                 @forelse($layanan->syaratDokumens as $item)
-                <tr>
-                    <td class="ps-4 fw-bold">{{ $item->nama_dokumen }}</td>
-                    <td><span class="badge bg-secondary">{{ $item->allowed_types }}</span></td>
-                    <td>{{ $item->max_size_kb / 1024 }} MB</td>
-                    <td>
-                        @if($item->is_required)
-                            <span class="badge bg-danger">Wajib</span>
-                        @else
-                            <span class="badge bg-success">Opsional</span>
-                        @endif
-                    </td>
-                    <td class="text-end pe-4">
-                        <button class="btn btn-sm btn-outline-warning me-1" onclick="editSyarat({{ $item }})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <form action="{{ route('admin.manajemen_dokumen.syarat.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus syarat ini?')">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
-                        </form>
-                    </td>
-                </tr>
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold">{{ $item->nama_dokumen }}</div>
+                            <div class="d-block d-md-none small text-muted">
+                                <span class="badge bg-secondary">{{ $item->allowed_types }}</span>
+                                • {{ $item->max_size_kb / 1024 }} MB
+                            </div>
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            <span class="badge bg-secondary">{{ $item->allowed_types }}</span>
+                        </td>
+                        <td class="d-none d-sm-table-cell">{{ $item->max_size_kb / 1024 }} MB</td>
+                        <td>
+                            @if($item->is_required)
+                                <span class="badge bg-danger">Wajib</span>
+                            @else
+                                <span class="badge bg-success">Opsional</span>
+                            @endif
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button class="btn btn-outline-warning" onclick="editSyarat({{ $item }})" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form action="{{ route('admin.manajemen_dokumen.syarat.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus syarat ini?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-outline-danger" type="submit" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
                 @empty
-                <tr>
-                    <td colspan="5" class="text-center py-5 text-muted">Belum ada syarat dokumen yang diatur.</td>
-                </tr>
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fas fa-file-alt fa-2x mb-2 d-block"></i>
+                            Belum ada syarat dokumen yang diatur.
+                        </td>
+                    </tr>
                 @endforelse
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -73,7 +90,7 @@
             @csrf
             <div id="methodSyaratField"></div>
             <input type="hidden" name="jenis_layanan_id" value="{{ $layanan->id }}">
-            
+
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalSyaratTitle">Tambah Syarat Dokumen</h5>
@@ -84,7 +101,7 @@
                         <label>Nama Dokumen</label>
                         <input type="text" name="nama_dokumen" id="nama_dokumen" class="form-control" placeholder="Contoh: SK CPNS" required>
                     </div>
-                    
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label>Tipe File (pisahkan koma)</label>
@@ -116,12 +133,12 @@
         document.getElementById('modalSyaratTitle').innerText = 'Edit Syarat Dokumen';
         document.getElementById('formSyarat').action = `/admin/manajemen-dokumen/syarat/update/${data.id}`;
         document.getElementById('methodSyaratField').innerHTML = '<input type="hidden" name="_method" value="PUT">';
-        
+
         document.getElementById('nama_dokumen').value = data.nama_dokumen;
         document.getElementById('allowed_types').value = data.allowed_types;
         document.getElementById('max_size_kb').value = data.max_size_kb;
         document.getElementById('is_required').checked = data.is_required == 1;
-        
+
         new bootstrap.Modal(document.getElementById('addSyaratModal')).show();
     }
 </script>
