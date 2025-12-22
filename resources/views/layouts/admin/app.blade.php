@@ -35,7 +35,6 @@
 
         /* SIDEBAR */
         #sidebar {
-            width: var(--sidebar-width);
             background-color: #fff;
             position: fixed;
             top: 0;
